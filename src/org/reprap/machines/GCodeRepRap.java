@@ -18,7 +18,6 @@ import org.reprap.devices.GCodeExtruder;
 import org.reprap.geometry.LayerRules;
 import org.reprap.geometry.polygons.Point2D;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
@@ -35,7 +34,6 @@ public class GCodeRepRap extends GenericRepRap {
 	GCodeReaderAndWriter gcode;
 	
 	/**
-	 * @param prefs
 	 * @throws Exception
 	 */
 	public GCodeRepRap() throws Exception {
@@ -56,20 +54,20 @@ public class GCodeRepRap extends GenericRepRap {
 		forceSelection = true;
 	}
 	
+        @Override
 	public void loadMotors()
 	{
-//		motorX = new GCodeStepperMotor(this, 1);
-//		motorY = new GCodeStepperMotor(this, 2);
-//		motorZ = new GCodeStepperMotor(this, 3);
+
 	}
 	
+        @Override
 	public void loadExtruders() throws Exception
 	{
 		try
 		{
 			int extruderCount = Preferences.loadGlobalInt("NumberOfExtruders");
 			extruders = new GCodeExtruder[extruderCount];
-		} catch (Exception e)
+		} catch (IOException e)
 		{
 			Debug.e(e.toString());
 		}
@@ -77,6 +75,7 @@ public class GCodeRepRap extends GenericRepRap {
 		super.loadExtruders();
 	}
 	
+        @Override
 	public Extruder extruderFactory(int count)
 	{
 		return new GCodeExtruder(gcode, count, this);
@@ -99,7 +98,6 @@ public class GCodeRepRap extends GenericRepRap {
 		double dy = y - currentY;
 		
 		double extrudeLength = extruders[extruder].getDistance(Math.sqrt(dx*dx + dy*dy));
-		//Debug.g(extruders[extruder].getMaterial());
 		String se = "";
 
 		if(extrudeLength > 0)

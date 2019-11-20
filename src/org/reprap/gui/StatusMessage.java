@@ -1,7 +1,7 @@
 package org.reprap.gui;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import javax.swing.JFrame;
@@ -29,6 +29,7 @@ public class StatusMessage extends javax.swing.JDialog {
 
 	/**
 	* Auto-generated main method to display this JDialog
+     * @param args
 	*/
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
@@ -59,11 +60,9 @@ public class StatusMessage extends javax.swing.JDialog {
 				getContentPane().add(cancelButton);
 				cancelButton.setText("Cancel");
 				cancelButton.setBounds(105, 84, 91, 28);
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						cancelButtonActionPerformed(evt);
-					}
-				});
+				cancelButton.addActionListener((ActionEvent evt) -> {
+                                    cancelButtonActionPerformed(evt);
+                                });
 			}
 			
 			{

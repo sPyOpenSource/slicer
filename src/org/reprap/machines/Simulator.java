@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import org.reprap.Extruder;
-//import org.reprap.devices.NullStepperMotor;
 import org.reprap.devices.NullExtruder;
 import org.reprap.geometry.LayerRules;
 import org.reprap.utilities.Debug;
@@ -15,7 +14,7 @@ import org.reprap.utilities.Debug;
 public class Simulator extends GenericRepRap {
 	
 	/**
-	 * @param config
+     * @throws java.lang.Exception
 	 */
 	public Simulator() throws Exception {
 		super();
@@ -23,9 +22,7 @@ public class Simulator extends GenericRepRap {
 	
 	public void loadMotors()
 	{
-//		motorX = new NullStepperMotor(1);
-//		motorY = new NullStepperMotor(2);
-//		motorZ = new NullStepperMotor(3);
+
 	}
 	
 	public Extruder extruderFactory(int count)

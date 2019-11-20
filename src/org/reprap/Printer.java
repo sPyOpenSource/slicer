@@ -35,6 +35,7 @@ public interface Printer {
 	 * Range betwen [0..???]
 	 * @param z absolute z position in millimters relative to the home position.
 	 * Range between [0..???]
+     * @param feedrate
 	 * @param startUp ?
 	 * @param endUp ?
 	 * @throws RepRapException
@@ -49,6 +50,7 @@ public interface Printer {
 	 * @param y
 	 * @param z
 	 * @param feedrate
+     * @param really
 	 */
 	public void singleMove(double x, double y, double z, double feedrate, boolean really);
 	
@@ -83,6 +85,7 @@ public interface Printer {
 	/**
 	 * Maybe reverse the extruder at the end of a track; return
 	 * the amount reversed.
+     * @return 
 	 */
 	public double printEndReverse();
 	
@@ -128,7 +131,7 @@ public interface Printer {
 	
 	/**
 	 * Select a specific material to print with
-	 * @param attributes with name of the material
+	 * @param att with name of the material
 	 * @throws Exception 
 	 */
 	public void selectExtruder(Attributes att, Point2D next) throws Exception;
@@ -159,17 +162,6 @@ public interface Printer {
 	 */
 	public void dispose();
 	
-	
-	/**
-	 * @param feedrate in mm/minute
-	 */
-	//public void setFeedrate(double feedrate);
-	
-	/**
-	 * @param feedrate in mm/minute
-	 */
-//	public void setFastFeedrateXY(double feedrate);
-	
 	/**
 	 * @return fast XY movement feedrate in mm/minute
 	 */
@@ -196,11 +188,6 @@ public interface Printer {
 	public double getMaxZAcceleration();
 	
 	/**
-	 * @param feedrate in mm/minute
-	 */
-	//public void setFastFeedrateZ(double feedrate);
-	
-	/**
 	 * @return the extruder feedrate in mm/minute
 	 */
 	public double getFastFeedrateZ();
@@ -212,12 +199,6 @@ public interface Printer {
 	public double getDumpX();
 	public double getDumpY();
 	
-	/**
-	 * The location to go to at the end
-	 * @return
-	 */
-//	public double getFinishX();
-//	public double getFinishY();
 	
 	/**
 	 * Move to the purge point
@@ -226,19 +207,9 @@ public interface Printer {
 	public void moveToPurge(double liftZ);
 	
 	/**
-	 * @param previewer
-	 */
-	//public void setPreviewer(Previewer previewer);
-	
-	/**
 	 * @return is cancelled when ...?
 	 */
 	public boolean isCancelled();
-	
-//	/**
-//	 * @throws Exception
-//	 */
-//	public void initialise() throws Exception;
 	
 	/**
 	 * @return current X position
@@ -343,6 +314,7 @@ public interface Printer {
 	 * 
 	 * @param zeroPoint The point the user selects will be treated as the
 	 * given Z value rather than 0.0 
+     * @throws java.io.IOException 
 	 */
 	public void setZManual(double zeroPoint) throws IOException;
 	
@@ -362,12 +334,6 @@ public interface Printer {
 	 * @return total time the extruder has been moving in seconds
 	 */
 	public double getTotalElapsedTime();
-	
-//	/**
-//	 * The bits of the parts made so for for the simulation
-//	 * @param ls
-//	 */
-//	public void setLowerShell(BranchGroup ls);
 	
 	
 	/**
@@ -442,56 +408,6 @@ public interface Printer {
 	 */
 	public void fanOff();
 	
-	/**
-	 * Get the X stepper
-	 * @return
-	 */
-//	public GenericStepperMotor getXMotor();
-	
-	/**
-	 * Get the Y stepper
-	 * @return
-	 */
-//	public GenericStepperMotor getYMotor();
-	
-	/**
-	 * Get the Z stepper
-	 * @return
-	 */
-//	public GenericStepperMotor getZMotor();
-	
-//	/**
-//	 * Convert XY feedrates in mm/min to internal units
-//	 * @param feedrate
-//	 * @return
-//	 */
-//	public int convertFeedrateToSpeedXY(double feedrate);
-	
-//	/**
-//	 * Convert Z feedrates in mm/min to internal units
-//	 * @param feedrate
-//	 * @return
-//	 */	
-//	public int convertFeedrateToSpeedZ(double feedrate);
-	
-//	/**
-//	 * The X discretisation
-//	 * @return
-//	 */
-//	public double getXStepsPerMM();
-//	
-//	/**
-//	 * The Y discretisation
-//	 * @return
-//	 */
-//	public double getYStepsPerMM();
-//	
-//	/**
-//	 * The Z discretisation
-//	 * @return
-//	 */
-//	public double getZStepsPerMM();
-//	
 	/**
 	 * If we are using an output buffer, it's a good idea to wait till
 	 * it's empty between layers before computing the next one.
@@ -580,9 +496,7 @@ public interface Printer {
 	 * Set the bed temperature. This value is given
 	 * in centigrade, i.e. 100 equals 100 centigrade. 
 	 * @param temperature The temperature of the extruder in centigrade
-	 * @param wait - wait till it gets there (or not).
 	 * @throws Exception 
-	 * @throws Exception
 	 */
 	public void setBedTemperature(double temperature) throws Exception;
 	
@@ -627,15 +541,9 @@ public interface Printer {
 	/**
 	 * Print a file on the machie's SD card
 	 * @param string
-	 * * @return true if success; false otherwise
+	 *  @return true if success; false otherwise
 	 */
 	public boolean printSDFile(String string);
-	
-	/**
-	 * Plot rectangles round the build on layer 0 or above
-	 * @param lc
-	 */
-	//public void plotOutlines(LayerRules lc, boolean started);
 	
 	/**
 	 * Return the current layer rules

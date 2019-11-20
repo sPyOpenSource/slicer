@@ -7,8 +7,6 @@ import org.reprap.Extruder;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-//import GerberGCode.Aperture;
-
 public class GerberGCode {
 	
 	private class Aperture
@@ -36,7 +34,7 @@ public class GerberGCode {
 	}
 	
 	boolean dawingOn = false;
-	LinkedList <Aperture> apertures = new LinkedList<Aperture>(); 
+	LinkedList <Aperture> apertures = new LinkedList<>(); 
 	Aperture curAperture = null;
 	boolean absolute = true;
 	Extruder pcbPen;
@@ -137,54 +135,11 @@ public class GerberGCode {
 		return result;
 	}
 	
-
-//	private void addPointToPolygons(Rr2Point c)
-//	{		
-//		if(currentPolygon == null && dawingOn)
-//		{
-//			currentPolygon = new RrPolygon(new Attributes(null, null, null, looksLike), false);
-//			currentPolygon.add(new Rr2Point(c));
-//		} else if(!dawingOn)
-//		{
-//			if(currentPolygon != null)
-//				if(currentPolygon.size() > 1)
-//					thePattern.add(new RrPolygon(currentPolygon));
-//			currentPolygon = new RrPolygon(new Attributes(null, null, null, looksLike), false);
-//			currentPolygon.add(new Rr2Point(c));
-//		} else
-//			currentPolygon.add(new Rr2Point(c));
-//		
-//		lastCoords = new Rr2Point(c);
-//		enableDrawing();
-//	}
-	
 	private Rectangle circleToRectangle(Point2D c)
 	{
 		Point2D p = new Point2D(0.5*curAperture.width, 0.5*curAperture.width);
 		return new Rectangle(Point2D.sub(c, p), Point2D.add(c, p));
 	}
-	
-//	private void octagon(Rr2Point p, double diameter)
-//	{
-//		double x, y, r;
-//		double ang = 22.5*Math.PI/180;
-//		r = 0.5*diameter;
-//		Rr2Point q;
-//		disableDrawing();
-//		for(int i = 0; i <= 8; i++)
-//		{
-//			q = new Rr2Point(p);
-//			q = Rr2Point.add(q, new Rr2Point(r*Math.cos(ang), r*Math.sin(ang)));
-//			addPointToPolygons(q);
-//			ang += 0.25*Math.PI;
-//		}
-//		disableDrawing();		
-//	}
-	
-//	private void drawOneLine(Rr2Point c)
-//	{
-//		addPointToPolygons(c);
-//	}
 	
 	private Rectangle drawFatLine(Point2D c)
 	{
@@ -226,8 +181,6 @@ public class GerberGCode {
 		if(Preferences.simulate())
 		{
 			RrGraphics simulationPlot1 = new RrGraphics("PCB from gerber");
-			//				if(currentPolygon != null)
-			//					thePattern.add(new RrPolygon(currentPolygon));
 			simulationPlot1.init(pcb.box(), false, "0");
 			simulationPlot1.add(pcb);
 		}
@@ -246,6 +199,5 @@ public class GerberGCode {
 
 		return result;
 	}
-	
 
 }

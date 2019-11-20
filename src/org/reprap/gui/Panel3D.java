@@ -32,6 +32,8 @@ import javax.vecmath.Vector3d;
 import org.reprap.Preferences;
 
 import com.sun.j3d.audioengines.javasound.JavaSoundMixer;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
@@ -68,21 +70,16 @@ abstract public class Panel3D extends JPanel {
 
 	protected Color3f bgColour = new Color3f(0.9f, 0.9f, 0.9f);
 	protected Color3f selectedColour = new Color3f(0.6f, 0.2f, 0.2f);
-	//protected Color3f machineColour = new Color3f(0.3f, 0.4f, 0.3f);
 	protected Color3f machineColour = new Color3f(0.7f, 0.7f, 0.7f);
 	protected Color3f unselectedColour = new Color3f(0.3f, 0.3f, 0.3f);
-//	protected Color3f shellColour = new Color3f(0.1f, 0.6f, 0.1f);
 	
 	// That's the end of the configuration file data
 	
 	//--------------------------------------------------------------
 	
 	protected static final Color3f black = new Color3f(0, 0, 0);	
-//	protected Appearance default_app = null; // Colour for unselected parts
-//	protected Appearance shell_app = null; // Colour for the lower shell during print.
 	protected Appearance picked_app = null; // Colour for the selected part
 	protected Appearance wv_app = null; // Colour for the working volume
-//	protected Appearance extrusion_app = null; // Colour for extruded material
 	protected BranchGroup wv_and_stls = new BranchGroup(); // Where in the scene
 
 	// the
@@ -116,16 +113,15 @@ abstract public class Panel3D extends JPanel {
 		{
 			wv_location = Preferences.getBasePath();
 
-		//System.out.println(wv_location);
 		// Translate and zoom scaling factors
 		
-		mouse_tf = 50; //Preferences.loadGlobalDouble("MouseTranslationFactor");
-		mouse_zf = 50; //Preferences.loadGlobalDouble("MouseZoomFactor");
+		mouse_tf = 50; 
+		mouse_zf = 50; 
 		
-		RadiusFactor = 0.7; //Preferences.loadGlobalDouble("RadiusFactor");
-		BackFactor = 2.0; //Preferences.loadGlobalDouble("BackFactor");
-		FrontFactor = 0.001; //Preferences.loadGlobalDouble("FrontFactor");
-		BoundFactor = 3.0; //Preferences.loadGlobalDouble("BoundFactor");
+		RadiusFactor = 0.7;
+		BackFactor = 2.0;
+		FrontFactor = 0.001;
+		BoundFactor = 3.0;
 
 		xwv = Preferences.loadGlobalDouble("WorkingX(mm)"); // The RepRap machine...
 		ywv = Preferences.loadGlobalDouble("WorkingY(mm)"); // ...working volume in mm.
@@ -133,38 +129,21 @@ abstract public class Panel3D extends JPanel {
 
 		// Factors for front and back clipping planes and so on
 		
-		worldName = "RepRap-World"; //Preferences.loadGlobalString("WorldName");
-		wv_offset = new Vector3d(0, //Preferences.loadGlobalDouble("WorkingOffsetX(mm)"),
-				0, //Preferences.loadGlobalDouble("WorkingOffsetY(mm)"),
-				0); //Preferences.loadGlobalDouble("WorkingOffsetZ(mm)"));
+		worldName = "RepRap-World";
+		wv_offset = new Vector3d(0,
+				0,
+				0);
 
 		// The background, and other colours
-
-//		bgColour = new Color3f((float)Preferences.loadGlobalDouble("BackColourR(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("BackColourG(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("BackColourB(0..1)"));
-//		
-//		selectedColour = new Color3f((float)Preferences.loadGlobalDouble("SelectedColourR(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("SelectedColourG(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("SelectedColourB(0..1)"));
-//
-//		machineColour = new Color3f((float)Preferences.loadGlobalDouble("MachineColourR(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("MachineColourG(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("MachineColourB(0..1)"));
-//			
-//		unselectedColour = new Color3f((float)Preferences.loadGlobalDouble("UnselectedColourR(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("UnselectedColourG(0..1)"), 
-//				(float)Preferences.loadGlobalDouble("UnselectedColourB(0..1)"));
 		
 		bgColour = new Color3f((float)0.9, (float)0.9, (float)0.9);
 		
 		selectedColour = new Color3f((float)0.6, (float)0.2, (float)0.2);
 
-		//machineColour = new Color3f((float)0.3, (float)0.4, (float)0.3);
 		machineColour = new Color3f((float)0.3, (float)0.3, (float)0.3);
 		
 		unselectedColour = new Color3f((float)0.3, (float)0.3, (float)0.3);
-		} catch (Exception ex)
+		} catch (IOException ex)
 		{
 			Debug.e("Refresh Panel3D preferences: " + ex.toString());
 		}
@@ -180,18 +159,10 @@ abstract public class Panel3D extends JPanel {
 		
 		refreshPreferences();
 		
-//		default_app = new Appearance();
-//		default_app.setMaterial(new Material(unselectedColour, black, unselectedColour, black, 0f));
 
 		picked_app = new Appearance();
 		picked_app.setMaterial(new Material(selectedColour, black, selectedColour, black, 0f));
-		
-//		extrusion_app = new Appearance();
-//		extrusion_app.setMaterial(new Material(unselectedColour, black, unselectedColour, black, 101f));
-		
-//		shell_app = new Appearance();
-//		shell_app.setMaterial(new Material(shellColour, black, shellColour, black, 101f));
-		
+				
 		wv_app = new Appearance();
 		wv_app.setMaterial(new Material(machineColour, black, machineColour, black, 0f));
 
@@ -232,11 +203,10 @@ abstract public class Panel3D extends JPanel {
 		try {
 			File file = new File(System.getProperty("user.dir"));
 			return file.toURI().toURL();
-		} catch (Exception e) {
+		} catch (MalformedURLException e) {
 			Debug.e("getWorkingDirectory( ): can't get user dir.");
 		}
 
-		//return getCodeBase( );
 		return null;
 	}
 
@@ -281,7 +251,6 @@ abstract public class Panel3D extends JPanel {
 		GraphicsDevice gd[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		
 		Canvas3D c3d = new Canvas3D(gd[0].getBestConfiguration(gc3D));
-		//c3d.setSize(getCanvas3dWidth(c3d), getCanvas3dHeight(c3d));
 
 		return c3d;
 	}
@@ -419,147 +388,14 @@ abstract public class Panel3D extends JPanel {
 		c3d.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 	
-//	protected void addBlock(BranchGroup root, Appearance appearance,
-//			double x1, double y1, double z1,
-//			double x2, double y2, double z2,
-//			float width, float height) {
-//		root.addChild(addRectangularSegment(appearance, x1, y1, z1, x2, y2, z2, width, height));
-//	}
-//
-//	protected void addBlock(TransformGroup root, Appearance appearance,
-//			double x1, double y1, double z1,
-//			double x2, double y2, double z2,
-//			float width, float height) {
-//		root.addChild(addRectangularSegment(appearance, x1, y1, z1, x2, y2, z2, width, height));
-//	}
-//	
-//	protected TransformGroup addRectangularSegment(Appearance appearance,
-//			double x1, double y1, double z1,
-//			double x2, double y2, double z2,
-//			float width, float height) {
-//		
-//		z1 += width / 2.0;
-//		z2 += width / 2.0;
-//		
-//		Point3d p1 = new Point3d(x1, y1, z1);
-//		//Point3d p2 = new Point3d(x2, y2, z2);
-//
-//		Vector3d unity = new Vector3d(0, 1, 0);
-//		Vector3d v = new Vector3d(x2 - x1, y2 - y1, z2 - z1);
-//		
-//		Primitive segment = new Box(width, (float)v.length() / 2.0f, height, appearance);
-//		
-//		Transform3D transform = new Transform3D();
-//		
-//		Vector3d translate = new Vector3d(p1);
-//		v.scale(0.5);
-//		translate.add(v);
-//		transform.setTranslation(translate);
-//				
-//		double angle = v.angle(unity);
-//		Vector3d axis = new Vector3d();
-//		axis.cross(unity, v);
-//		AxisAngle4d rotationAngle = new AxisAngle4d(axis.x, axis.y, axis.z, angle);
-//		transform.setRotation(rotationAngle);
-//		
-//		TransformGroup tg = new TransformGroup(transform);
-//		tg.addChild(segment);
-//		return tg;
-//	}
-//	
-//	protected TransformGroup addCylindricalSegment(Appearance appearance,
-//			double x1, double y1, double z1,
-//			double x2, double y2, double z2,
-//			float thickness) {
-//		
-//		Point3d p1 = new Point3d(x1, y1, z1);
-//		//Point3d p2 = new Point3d(x2, y2, z2);
-//
-//		Vector3d unity = new Vector3d(0, 1, 0);
-//		Vector3d v = new Vector3d(x2 - x1, y2 - y1, z2 - z1 + thickness / 2.0);
-//		
-//		Primitive segment = new Cylinder(thickness, (float)v.length(), appearance);
-//		
-//		Transform3D transform = new Transform3D();
-//		
-//		Vector3d translate = new Vector3d(p1);
-//		v.scale(0.5);
-//		translate.add(v);
-//		transform.setTranslation(translate);
-//				
-//		double angle = v.angle(unity);
-//		Vector3d axis = new Vector3d();
-//		axis.cross(unity, v);
-//		AxisAngle4d rotationAngle = new AxisAngle4d(axis.x, axis.y, axis.z, angle);
-//		transform.setRotation(rotationAngle);
-//		
-//		TransformGroup tg = new TransformGroup(transform);
-//		tg.addChild(segment);
-//		return tg;
-//	}
-	
 	protected double getScale() {
 		return 1.0;
 	}
-
-//	protected String getStlBackground() throws Exception {
-//		String path = getStlBackground("");
-//		if (path != null)
-//			return path;
-//		path = getStlBackground("lib/");
-//		if (path != null)
-//			return path;
-//                path = getStlBackground("../lib/");
-//		if (path != null)
-//			return path;
-//                
-//                // for eD's version of a NetBeans project - improvements welcome!
-//		path = getStlBackground("../host/lib/");
-//		if (path != null)
-//			return path;
-//		
-//		throw new Exception("Cannot locate background STL file");
-//	}
 	
 	protected String getStlBackground() throws Exception 
 	{
 		//return "File:" + wv_location;
 		return wv_location;
-//		URL u = ClassLoader.getSystemResource(wv_location);
-//		if(u != null)
-//		{
-//			String name = u.toString();
-//			//System.out.println("**- " + name);
-//			return name;
-//		}
-//		
-//		throw new Exception("Cannot locate background STL file");
 	}
 	
-//	protected String getStlBackground(String subdir) {
-//		URL codebase = null;
-//		String stlURL = null;
-//		String stlPath = null;
-//
-//		try {
-////			codebase = Panel3D.getWorkingDirectory();
-////			stlPath = codebase.getPath() + subdir + wv_location;
-////			stlURL = codebase.toExternalForm() + subdir + wv_location;
-//			URL u = ClassLoader.getSystemResource(wv_location);
-//			stlPath = u.getPath();
-//			stlURL = u.toExternalForm();//u.getFile();
-////			System.out.println(stlPath + " : " + stlURL);
-//		} catch (Exception e) {
-//			Debug.e("createSceneBranchGroup(): Exception finding working directory: "
-//							+ codebase.toExternalForm());
-//			e.printStackTrace();
-//		}
-//		
-//		File f = new File(stlPath);
-//		if (f.exists())
-//			return stlURL;
-//		
-//		return null;
-//
-//	}
 }

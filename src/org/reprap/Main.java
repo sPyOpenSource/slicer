@@ -54,8 +54,6 @@ public class Main {
     private static final int localNodeNumber = 0;
 	
 	public static RrDeleteOnExit ftd = null;
-
-    //private static Communicator communicator = null;
     
     private static boolean repRapAttached = false;
     
@@ -119,15 +117,6 @@ public class Main {
         
         // Create menus
         JMenuBar menubar = new JMenuBar();
-        
-
-
-//        JMenu viewMenu = new JMenu("View");
-//        viewMenu.setMnemonic(KeyEvent.VK_V);
-//        menubar.add(viewMenu);
-
-
-
         
         JMenu manipMenu = new JMenu("Click here for help");
         manipMenu.setMnemonic(KeyEvent.VK_M);
@@ -203,15 +192,6 @@ public class Main {
         });
         manipMenu.add(reorder);
         
-        
-//        JMenuItem deleteSTLW = new JMenuItem("Delete selected object", KeyEvent.VK_W);
-//        deleteSTLW.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
-//        deleteSTLW.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				onDelete();
-//			}});
-//        manipMenu.add(deleteSTLW);
-        
         JMenuItem deleteSTL = new JMenuItem("Delete selected object", KeyEvent.VK_DELETE);
         deleteSTL.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
         deleteSTL.addActionListener((ActionEvent arg0) -> {
@@ -219,31 +199,15 @@ public class Main {
         });
         manipMenu.add(deleteSTL);
         
-        
-
-        
         produceProduceB = new JMenuItem("Start build...", KeyEvent.VK_B);
-//        produceProduceB.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.CTRL_MASK));
-//        produceProduceB.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				onProduceB();
-//			}});
-//        produceMenu.add(produceProduceB);
 
         cancelMenuItem = new JMenuItem("Cancel", KeyEvent.VK_P);
         cancelMenuItem.setEnabled(false);
-//        cancelMenuItem.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				if(producer != null)
-//					producer.setCancelled(true);
-//			}});
-//
-//
+
         segmentPause = new JCheckBoxMenuItem("Pause before segment");
 
 
         layerPause = new JCheckBoxMenuItem("Pause before layer");
-
 
         // Create the main window area
         // This is a horizontal box layout that includes
@@ -349,8 +313,6 @@ public class Main {
 				Thread.currentThread().setName("Producer");
 				try {
 					
-
-					
 					if(printer == null)
 						Debug.e("Production attempted with null printer.");
 					producer = new Producer(printer, builder);
@@ -390,7 +352,6 @@ public class Main {
         if(returnVal == JFileChooser.APPROVE_OPTION) 
         {
             f = chooser.getSelectedFile();
-            //result = "file:" + f.getAbsolutePath();
             result = f.getAbsolutePath();
             if(extensions[0].toUpperCase().contentEquals("RFO"))
             	builder.addRFOFile(result);
@@ -418,7 +379,7 @@ public class Main {
  
         chooser.setFileFilter(filter);
 
-        int returnVal = chooser.showSaveDialog(null);// chooser.showOpenDialog(mainFrame);
+        int returnVal = chooser.showSaveDialog(null);
         if(returnVal == JFileChooser.APPROVE_OPTION) 
         {
             f = chooser.getSelectedFile();
@@ -446,7 +407,7 @@ public class Main {
  
         chooser.setFileFilter(filter);
 
-        int returnVal = chooser.showSaveDialog(null);// chooser.showOpenDialog(mainFrame);
+        int returnVal = chooser.showSaveDialog(null);
         if(returnVal == JFileChooser.APPROVE_OPTION) 
         {
             f = chooser.getSelectedFile();
@@ -480,7 +441,6 @@ public class Main {
     
     private void onRescale() 
     {    
-    	//System.out.println("B");
   	  builder.rescale();
     } 
     
@@ -498,10 +458,6 @@ public class Main {
     	builder.doReorder();
     }
     
-//    private void onMaterial() {
-//  	  builder.materialSTL();
-//    }
-    
     private void onDelete() {
     	  builder.deleteSTL();
       }
@@ -510,7 +466,6 @@ public class Main {
     {
     	builder.mouseToWorld();
     }
-
 
     
 	private String getResourceMessage(Producer rProducer) {
@@ -524,13 +479,12 @@ public class Main {
 			"mm^3.  Elapsed time=" + time + "s";
 	}
 	
-	public void dispose() // throws RepRapException
+	public void dispose()
 	{
 		Debug.d("Main dispose()");
 		ftd.killThem();
 		/// TODO This class should be fixed so it gets the dispose on window close
 
-		
 		System.exit(0);
 	}
 	
@@ -555,11 +509,7 @@ public class Main {
                 });
 
 	}
-        
-        
- 
-        
-
+   
         
         public static void setRepRapPresent(boolean a)
         {
@@ -576,6 +526,5 @@ public class Main {
         {
         	return builder.getRrGraphics();
         }
-
 
     }

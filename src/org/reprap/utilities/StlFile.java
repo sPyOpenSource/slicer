@@ -9,7 +9,6 @@ import com.sun.j3d.loaders.IncorrectFormatException;
 import com.sun.j3d.loaders.ParsingErrorException;
 import com.sun.j3d.utils.geometry.GeometryInfo;
 import com.sun.j3d.utils.geometry.NormalGenerator;
-import com.sun.j3d.utils.geometry.Stripifier;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -28,17 +27,12 @@ import java.util.ArrayList;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
-import javax.media.j3d.DirectionalLight;
-import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Shape3D;
 
 // New from JDK 1.4 for endian related problems
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
-
-import org.reprap.utilities.StlFileParser;      // File parser
 
 /**
  * Title:         STL Loader
@@ -97,7 +91,7 @@ public class StlFile implements Loader
   private int[] stripCounts = null;
 
   // Default = Not available
-  private String objectName=new String("Not available");
+  private String objectName="Not available";
 
   /**
   *  Constructor
@@ -123,9 +117,6 @@ public class StlFile implements Loader
 			  System.err.println("IO Error on line " + parser.lineno() + ": " + e.getMessage());
 		  }
 	  }while (parser.ttype != StlFileParser.TT_EOL);
-    //{
-    //  System.err.println("Format Error:expecting End Of Line on line " + parser.lineno());
-    //}
   }
 
   /**
@@ -630,6 +621,7 @@ public class StlFile implements Loader
    * @throws IncorrectFormatException
    * @throws ParsingErrorException
    */
+  @Override
   public Scene load(String filename) throws FileNotFoundException,
 					    IncorrectFormatException,
 					    ParsingErrorException
@@ -656,6 +648,7 @@ public class StlFile implements Loader
    * @throws IncorrectFormatException
    * @throws ParsingErrorException
    */
+  @Override
   public Scene load(URL url) throws FileNotFoundException,
 				    IncorrectFormatException,
 				    ParsingErrorException
@@ -689,6 +682,7 @@ public class StlFile implements Loader
    * @throws IncorrectFormatException
    * @throws ParsingErrorException
    */
+  @Override
   public Scene load(Reader reader) throws FileNotFoundException,
                                           IncorrectFormatException,
                                           ParsingErrorException
@@ -784,8 +778,6 @@ public class StlFile implements Loader
     gi.setStripCounts(stripCounts); 
     NormalGenerator ng = new NormalGenerator();  // Added by AB
     ng.generateNormals(gi);						 // Added by AB
-    //gi.setNormals(normArray);					 // Removed by AB
-    //gi.setStripCounts(stripCounts);  			 // Removed by AB
 
     // Put geometry into Shape3d
     Shape3D shape = new Shape3D();
@@ -821,18 +813,10 @@ public class StlFile implements Loader
     StringTokenizer stok =
       new StringTokenizer(url.toString(), "/\\", true);
     int tocount = stok.countTokens() - 1;
-    StringBuffer sb = new StringBuffer(MAX_PATH_LENGTH);
+    StringBuilder sb = new StringBuilder(MAX_PATH_LENGTH);
     for(int i = 0; i < tocount ; i++) {
 	String a = stok.nextToken();
 	sb.append(a);
-// 	if((i == 0) && (!a.equals("file:"))) {
-// 	    sb.append(a);
-// 	    sb.append(java.io.File.separator);
-// 	    sb.append(java.io.File.separator);
-// 	} else {
-// 	    sb.append(a);
-// 	    sb.append( java.io.File.separator );
-// 	}
     }
     try {
       baseUrl = new URL(sb.toString());
@@ -843,6 +827,7 @@ public class StlFile implements Loader
   } // End of setBaseUrlFromUrl
 
 
+  @Override
   public String getBasePath()
   {
     return basePath;
@@ -856,10 +841,11 @@ public class StlFile implements Loader
    *
    * @param pathName The new Path to the file
    */
+  @Override
   public void setBasePath(String pathName)
   {
     basePath = pathName;
-    if (basePath == null || basePath == "")
+    if (basePath == null || "".equals(basePath))
 	basePath = "." + java.io.File.separator;
     basePath = basePath.replace('/', java.io.File.separatorChar);
     basePath = basePath.replace('\\', java.io.File.separatorChar);
@@ -878,7 +864,7 @@ public class StlFile implements Loader
       new StringTokenizer(fileName, java.io.File.separator);
 
     //  Get memory in which to put the path
-    StringBuffer sb = new StringBuffer(MAX_PATH_LENGTH);
+    StringBuilder sb = new StringBuilder(MAX_PATH_LENGTH);
 
     // Check for initial slash
     if (fileName!= null && fileName.startsWith(java.io.File.separator))
@@ -893,11 +879,13 @@ public class StlFile implements Loader
     setBasePath(sb.toString());
   } // End of setBasePathFromFilename
 
+  @Override
   public int getFlags()
   {
     return flag;
   }
 
+  @Override
   public void setFlags(int parm)
   {
     this.flag=parm;
@@ -921,7 +909,7 @@ public class StlFile implements Loader
 
   public void setFileName(String filename)
   {
-    this.fileName=new String(filename);
+    this.fileName=filename;
   }
 
 

@@ -40,6 +40,7 @@ enum Bop
         this.name = name;
     }
     
+        @Override
     public String toString() { return name; }
     
     /**
@@ -73,7 +74,7 @@ class Variable implements Comparator<Variable>
 			Debug.e("Variable(Variable v): input Variable undefined!");
 		bv = v.bv;
 		init = v.init;
-		n = new String(v.n);
+		n = v.n;
 	}
 	
 	public static boolean same(Variable a, Variable b)
@@ -84,13 +85,13 @@ class Variable implements Comparator<Variable>
 	/**
 	 * Compare means compare the lexical order of the names.
 	 */
+        @Override
 	public final int compare(Variable a, Variable b)
 	{
 		return(a.n.compareTo(b.n));
 	}
 	
 }
-
 
 
 /**
@@ -280,15 +281,19 @@ class BooleanExpression
 	{
 		if(leafCount < 0)
 		{
-			if(leafOp == Bop.LEAF) // || leafOp == bop.ZERO || leafOp == bop.ONE)
-			{
-				leafCount = 1;
-			}
-			else if(leafOp == Bop.NOT)
-			{
-				leafCount = c1.leafCount();
-			} else
-				leafCount = c1.leafCount()+c2.leafCount();
+			if(null == leafOp) 
+                            leafCount = c1.leafCount()+c2.leafCount();
+			else switch (leafOp) {
+                        case LEAF:
+                            leafCount = 1;
+                            break;
+                        case NOT:
+                            leafCount = c1.leafCount();
+                            break;
+                        default:
+                            leafCount = c1.leafCount()+c2.leafCount();
+                            break;
+                    }
 		}
 
 		return leafCount;		
@@ -301,19 +306,27 @@ class BooleanExpression
 		variables = new Variable[vc];
 		int i = 0;
 		int k;
-		if(leafOp == Bop.LEAF) // || leafOp == bop.ZERO || leafOp == bop.ONE)
-			variables[i++] = leaf;
-		else if(leafOp == Bop.NOT)
-		{
-			for(k = 0; k < c1.variables.length; k++)
-				variables[i++] = c1.variables[k];			
-		} else
-		{
-			for(k = 0; k < c1.variables.length; k++)
-				variables[i++] = c1.variables[k];
-			for(k = 0; k < c2.variables.length; k++)
-				variables[i++] = c2.variables[k];
-		}		
+		if(null == leafOp) {
+                    for(k = 0; k < c1.variables.length; k++)
+                        variables[i++] = c1.variables[k];
+                    for(k = 0; k < c2.variables.length; k++)
+                        variables[i++] = c2.variables[k];
+            } else switch (leafOp) {
+            // || leafOp == bop.ZERO || leafOp == bop.ONE)
+                case LEAF:
+                    variables[i++] = leaf;
+                    break;
+                case NOT:
+                    for(k = 0; k < c1.variables.length; k++)
+                        variables[i++] = c1.variables[k];		
+                    break;
+                default:
+                    for(k = 0; k < c1.variables.length; k++)
+                        variables[i++] = c1.variables[k];
+                    for(k = 0; k < c2.variables.length; k++)
+                        variables[i++] = c2.variables[k];
+                    break;
+            }		
 	}
 	
 	public void setAll(int i)
@@ -438,9 +451,6 @@ class BooleanExpression
 }
 
 
-
-
-
 /**
  * A row of variables in a function table, and the table value.
  * Also contains useful functions for variable arrays.
@@ -466,11 +476,13 @@ class TableRow implements Comparator<TableRow>
 	public Variable get(int i) { return vs[i]; }
 	public Variable[] all() { return vs; }
 	
+        @Override
 	public String toString()
 	{
 		String result = "";
-		for(int i = 0; i < vs.length; i++)
-			result += vs[i].name() + " ";
+            for (Variable v : vs) {
+                result += v.name() + " ";
+            }
 		return result;
 	}
 	
@@ -483,14 +495,14 @@ class TableRow implements Comparator<TableRow>
 	public static void setAll(Variable[] vars, int v)
 	{
 		int k = 1;
-		for(int i = 0; i < vars.length; i++)
-		{
-			if((v & k) == 0)
-				vars[i].set(false);
-			else
-				vars[i].set(true);
-			k *= 2;	
-		}
+            for (Variable var : vars) {
+                if ((v & k) == 0) {
+                    var.set(false);
+                } else {
+                    var.set(true);
+                }
+                k *= 2;
+            }
 	}
 	
 	/**
@@ -504,14 +516,12 @@ class TableRow implements Comparator<TableRow>
 		Variable[] result = new Variable[vars.length - 1];
 		int k = 0;
 		
-		for(int i = 0; i < vars.length; i++)
-		{
-			if(vars[i] != remove)
-			{
-				result[k] = new Variable(vars[i]);
-				k++;
-			}
-		}
+            for (Variable var : vars) {
+                if (var != remove) {
+                    result[k] = new Variable(var);
+                    k++;
+                }
+            }
 		
 		return result;
 	}
@@ -573,6 +583,7 @@ class TableRow implements Comparator<TableRow>
 	 * @param a
 	 * @param b
 	 */
+        @Override
 	public final int compare(TableRow a,TableRow b)
 	{
 		int va = a.number();
@@ -608,7 +619,7 @@ class FunctionTable
 	 */
 	public FunctionTable()
 	{
-		rows = new ArrayList<TableRow>();
+		rows = new ArrayList<>();
 		allFalse = true;
 		allTrue = true;
 	}
@@ -738,6 +749,7 @@ class FunctionTable
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+        @Override
 	public String toString()
 	{
 		String result = "\n\t// " + rows.get(0).toString();
@@ -746,13 +758,13 @@ class FunctionTable
 			TableRow tr = rows.get(i);
 			Variable[] vs = tr.all();
 			result += "\n\t// ";
-			for(int j = 0; j < vs.length; j++)
-			{
-				if(vs[j].value())
-					result += "1 ";
-				else
-					result += "0 ";
-			}
+                    for (Variable v : vs) {
+                        if (v.value()) {
+                            result += "1 ";
+                        } else {
+                            result += "0 ";
+                        }
+                    }
 			
 			result += "| ";
 			if(tr.value())
@@ -786,25 +798,23 @@ public class CodeGenerator
 		if(b2.length != 2)
 			Debug.e("generateAllPairs: array not of length 2: " + b2.length);
 		
-		List<BooleanExpression> bel2 = new ArrayList<BooleanExpression>();
+		List<BooleanExpression> bel2 = new ArrayList<>();
 		
 		Bop[] bopValues = Bop.values();
-		for(int i = 0; i < bopValues.length; i++)
-		{
-			if(bopValues[i].diadic())
-			{
-				BooleanExpression be = new BooleanExpression(b2[0], b2[1], bopValues[i]);
-				bel2.add(be);
-				BooleanExpression bf = new BooleanExpression(be, Bop.NOT);
-				bel2.add(bf);
-				BooleanExpression bg = new BooleanExpression(new BooleanExpression(b2[0], Bop.NOT), b2[1], bopValues[i]);
-				bel2.add(bg);				
-				BooleanExpression bh = new BooleanExpression(b2[0], new BooleanExpression(b2[1], Bop.NOT), bopValues[i]);
-				bel2.add(bh);
-				BooleanExpression bi = new BooleanExpression(new BooleanExpression(b2[0], Bop.NOT), new BooleanExpression(b2[1], Bop.NOT), bopValues[i]);
-				bel2.add(bi);				
-			}
-		}
+            for (Bop bopValue : bopValues) {
+                if (bopValue.diadic()) {
+                    BooleanExpression be = new BooleanExpression(b2[0], b2[1], bopValue);
+                    bel2.add(be);
+                    BooleanExpression bf = new BooleanExpression(be, Bop.NOT);
+                    bel2.add(bf);
+                    BooleanExpression bg = new BooleanExpression(new BooleanExpression(b2[0], Bop.NOT), b2[1], bopValue);
+                    bel2.add(bg);
+                    BooleanExpression bh = new BooleanExpression(b2[0], new BooleanExpression(b2[1], Bop.NOT), bopValue);
+                    bel2.add(bh);
+                    BooleanExpression bi = new BooleanExpression(new BooleanExpression(b2[0], Bop.NOT), new BooleanExpression(b2[1], Bop.NOT), bopValue);
+                    bel2.add(bi);
+                }
+            }
 		return bel2;
 	}	
 	
@@ -812,7 +822,7 @@ public class CodeGenerator
 	{
 		BooleanExpression[] b2a = new BooleanExpression[2];
 		BooleanExpression[] b2b = new BooleanExpression[2];
-		List<BooleanExpression> bel3 = new ArrayList<BooleanExpression>();
+		List<BooleanExpression> bel3 = new ArrayList<>();
 		List<BooleanExpression> bel2a, bel2b;
 		int i, j;
 		
@@ -897,63 +907,10 @@ public class CodeGenerator
 		return null;
 	}
 	
-//	private static void oneCase3(Variable [] variables, int exp, int j, int k, boolean opposite, boolean fts)
-//	{
-//		BooleanExpression a = new BooleanExpression(variables, exp);
-//		
-////		FunctionTable tt = new FunctionTable(a);
-////		System.out.println(tt.toString()+"\n\n");
-//		
-//		FunctionTable f = new FunctionTable(a, variables[j], variables[k], opposite);
-//		
-//		//BooleanExpression g = findEqualTwo(f, variables[j], variables[3-(j+k)]);
-//		BooleanExpression g = findEqualTwo(f, eliminate(variables, k));
-//				
-//		int caseVal = 0;
-//		if(opposite)
-//			caseVal |= 1;
-//		if(j == 1)
-//			caseVal |= 2;
-//		if(k == 2)
-//			caseVal |= 4;
-//		caseVal |= exp << 3;
-//
-//		System.out.println("\tcase " + caseVal + ": ");
-//		if(fts)
-//		{
-//			System.out.println("\t// " + a.toJava());
-//			System.out.print("\t// " + variables[j].name() + " = ");
-//			if(opposite)
-//				System.out.print("!");	
-//			System.out.println(variables[k].name() + " ->");
-//			System.out.println(f.toString());
-//		}
-//
-//		if(g != null || f.allOnes() || f.allZeros())
-//		{
-//			if(f.allOnes())
-//				System.out.println("\t\tr = RrCSG.universe();");
-//			else if(f.allZeros())
-//				System.out.println("\t\tr = RrCSG.nothing();");
-//			else
-//				System.out.println("\t\t" + g.toJava());
-////			if(fts)
-////			{
-////				FunctionTable h = new FunctionTable(g);
-////				System.out.println(h.toString());
-////			}
-//		} else
-//			System.out.println("\t\t// No equivalence." + "\n");
-//		System.out.println("\t\tbreak;\n");
-//	}
-	
 	private static void oneCase4(Variable [] variables, int exp, int j, int k, boolean opposite, boolean fts)
 	{
 		BooleanExpression a = new BooleanExpression(variables, exp);
-		
-//		FunctionTable tt = new FunctionTable(a);
-//		System.out.println(tt.toString()+"\n\n");
-		
+				
 		FunctionTable f = new FunctionTable(a, variables[j], variables[k], opposite);
 		
 		BooleanExpression g = findEqualThree(f, eliminate(variables, k));
@@ -1008,29 +965,11 @@ public class CodeGenerator
 				System.out.println("\t\tr = RrCSG.nothing();");
 			else
 				System.out.println("\t\t" + g.toJava());
-//			if(fts)
-//			{
-//				FunctionTable h = new FunctionTable(g);
-//				System.out.println(h.toString());
-//			}
 		} else
 			System.out.println("\t\t// No equivalence." + "\n");
 		System.out.println("\t\tbreak;\n");
 	}
 	
-//	private static void allCases3(Variable [] variables)
-//	{	
-//		for(int exp = 0; exp < 4; exp++)
-//		{
-//			for(int j = 0; j < 2; j++)
-//				for(int k = j+1; k < 3; k++)
-//				{
-//					oneCase3(variables, exp, j, k, false, true);
-//					oneCase3(variables, exp, j, k, true, true);
-//				}
-//		}		
-//	}
-//	
 	private static void allCases4(Variable [] variables)
 	{	
 		for(int exp = 0; exp < 16; exp++)
@@ -1055,10 +994,7 @@ public class CodeGenerator
 		variables[2] = new Variable("c");
 		variables[3] = new Variable("d");
 		
-		//oneCase3(variables, 2, 0, 2, false, true);
-		//allCases3(variables);
 		allCases4(variables);
 	}	
 
 }
-

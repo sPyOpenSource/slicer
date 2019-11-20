@@ -25,8 +25,6 @@ public class MachineFactory {
 	{
 		String machine = org.reprap.Preferences.RepRapMachine();
 
-//		if (machine.compareToIgnoreCase("SNAPRepRap") == 0)
-//		  	return new SNAPReprap();
 		if (machine.compareToIgnoreCase("GCodeRepRap") == 0)
 		  	return new GCodeRepRap();
 		else if (machine.compareToIgnoreCase("simulator") == 0)

@@ -68,11 +68,9 @@ class PCBOffsets extends JPanel {
 			JButton okButton = new JButton();
 			radioPanel.add(okButton);
 			okButton.setText("OK");
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					OKHandler();
-				}
-			});
+			okButton.addActionListener((ActionEvent evt) -> {
+                            OKHandler();
+                        });
 			
 			add(radioPanel, BorderLayout.LINE_START);
 			setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
@@ -80,7 +78,6 @@ class PCBOffsets extends JPanel {
 		} catch (Exception ex)
 		{
 			Debug.e(ex.toString());
-			ex.printStackTrace();
 		}	
 	}
 	
@@ -109,8 +106,6 @@ class PCBOffsets extends JPanel {
         dialog.setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
         dialog.setVisible(true);
     }
-    
-    
     
     public static double getXoff()
     {
@@ -393,33 +388,26 @@ public class PCB {
 				Debug.d("Type: " + apertureType);
 				
 
-				if(apertureType.equals("C"))
-				{
-					double s = scale*Double.parseDouble(apertureSize);
-					gerberGcode.addCircleAperture(Integer.parseInt(apertureNum), s); 
-					Debug.d("Size: " + s + " mm");
-				}
-				else
-					if(apertureType.equals("R"))
-					{
-
-						String rectSides[] = apertureSize.split("X");
-						double x = scale*Double.parseDouble(rectSides[0]);
-						double y = scale*Double.parseDouble(rectSides[1]);
-
-						gerberGcode.addRectangleAperture(Integer.parseInt(apertureNum), x, y);
-						Debug.d("Size: " + x + "x" + y + "mm x mm");
-					}
-					else
-						if(apertureType.equals("OC8"))
-						{
-							gerberGcode.addCircleAperture(Integer.parseInt(apertureNum), scale*Double.parseDouble(apertureSize));							
-						}
-						else
-						{
-							Debug.e(" [-] aparture type: " + apertureType + " not supported [" + line+"]\n");
-							//System.exit(-1);
-						}
+                    switch (apertureType) {
+                        case "C":
+                            double s = scale*Double.parseDouble(apertureSize);
+                            gerberGcode.addCircleAperture(Integer.parseInt(apertureNum), s);
+                            Debug.d("Size: " + s + " mm");
+                            break;
+                        case "R":
+                            String rectSides[] = apertureSize.split("X");
+                            double x = scale*Double.parseDouble(rectSides[0]);
+                            double y = scale*Double.parseDouble(rectSides[1]);
+                            gerberGcode.addRectangleAperture(Integer.parseInt(apertureNum), x, y);
+                            Debug.d("Size: " + x + "x" + y + "mm x mm");
+                            break;
+                        case "OC8":
+                            gerberGcode.addCircleAperture(Integer.parseInt(apertureNum), scale*Double.parseDouble(apertureSize));
+                            break;
+                        default:
+                            Debug.e(" [-] aparture type: " + apertureType + " not supported [" + line+"]\n");
+                            break;
+                    }
 
 			} else
 				if(line.startsWith("T") && drill && line.length() > 3)

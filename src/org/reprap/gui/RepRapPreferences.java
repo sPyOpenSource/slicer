@@ -18,8 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
 import javax.swing.Box;
 import java.awt.Button;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import org.reprap.utilities.Debug;
 
@@ -108,9 +108,8 @@ public class RepRapPreferences extends JFrame {
 			}
 				
 				
-			} catch (Exception ex) {
+			} catch (IOException ex) {
 			JOptionPane.showMessageDialog(null, "Updating preferences: " + ex);
-			ex.printStackTrace();
 		}
 	}
 	
@@ -145,9 +144,8 @@ public class RepRapPreferences extends JFrame {
 			}
 			
 			org.reprap.Preferences.saveGlobal();
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			JOptionPane.showMessageDialog(null, "Saving preferences: " + ex);
-			ex.printStackTrace();
 		}
 	}
 	
@@ -169,7 +167,7 @@ public class RepRapPreferences extends JFrame {
 			globals = makeLabels(g);
 			globalValues = makeValues(globals);
 			globalCats = categorise(globalValues);
-		}catch (Exception ex)
+		}catch (IOException ex)
 		{
 			Debug.e("Preferences window: Can't load the globals!");
 			ex.printStackTrace();
@@ -179,7 +177,7 @@ public class RepRapPreferences extends JFrame {
 		
 		try{
 			extruderCount = Integer.parseInt(loadString("NumberOfExtruders"));
-		} catch (Exception ex)
+		} catch (IOException | NumberFormatException ex)
 		{
 			Debug.e("Preferences window: Can't load the extruder count!");
 			ex.printStackTrace();
@@ -199,7 +197,7 @@ public class RepRapPreferences extends JFrame {
 				extruderValues[i]= makeValues(extruders[i]);
 				extruderCats[i] = categorise(extruderValues[i]);
 			}
-		}catch (Exception ex)
+		}catch (IOException ex)
 		{
 			Debug.e("Preferences window: Can't load extruder(s)!");
 			ex.printStackTrace();
@@ -208,7 +206,6 @@ public class RepRapPreferences extends JFrame {
 		// Paint the lot on the screen...
 		
 		initGUI();
-        //Utility.centerWindowOnParent(this, frame);
 	}
 	
 	private JButton OKButton()
@@ -217,6 +214,7 @@ public class RepRapPreferences extends JFrame {
 		jButtonOK.setText("OK");
 		jButtonOK.addMouseListener(new MouseAdapter() 
 		{
+                        @Override
 			public void mouseClicked(MouseEvent evt) 
 			{
 				jButtonOKMouseClicked(evt);
@@ -231,6 +229,7 @@ public class RepRapPreferences extends JFrame {
 		jButtonCancel.setText("Cancel");
 		jButtonCancel.addMouseListener(new MouseAdapter() 
 		{
+                        @Override
 			public void mouseClicked(MouseEvent evt) 
 			{
 				jButtonCancelMouseClicked(evt);
@@ -239,9 +238,7 @@ public class RepRapPreferences extends JFrame {
 		return jButtonCancel;
 	}	
 	
-	
-	
-	
+
 	private void addValueToPanel(PreferencesValue value, JPanel panel)
 	{
 		
@@ -267,8 +264,6 @@ public class RepRapPreferences extends JFrame {
 	{
 		setSize(400, 500);
 		
-		//Dimension box = new Dimension(30, 10);
-
 		// Put it all together
 
 		try {
@@ -278,14 +273,14 @@ public class RepRapPreferences extends JFrame {
 			JPanel panel  = new JPanel();
 			String[] configfiles =  { "reprap.properties" };
 			
-			File dir = new File( org.reprap.Preferences.getMachineFilePath());//getUsersRootDir()); 
+			File dir = new File( org.reprap.Preferences.getMachineFilePath());
 			
 			if (dir.list() != null)
 			{
 				configfiles = dir.list();
 				for (int i=0; i<configfiles.length; i++) 
 				{
-					if(configfiles[i].indexOf(".properties") != -1)
+					if(configfiles[i].contains(".properties"))
 						configfiles[i] = configfiles[i].substring(0, configfiles[i].indexOf(".properties"));
 				}	
 			} 
@@ -299,83 +294,52 @@ public class RepRapPreferences extends JFrame {
 			configName = configName.substring(0, configName.indexOf(".properties"));
     		configfileList.setSelectedItem(configName);
     		
-    		configfileList.addActionListener(new ActionListener() 
-			 {
-	               
-	            public void actionPerformed(ActionEvent e)
-	            {
-	            	
-	            	if ("comboBoxChanged".equals(e.getActionCommand())) 
-	            	{
-		            	String configName = (String)configfileList.getSelectedItem() + ".properties";
-		            	String configPath = org.reprap.Preferences.getUsersRootDir() + configName;
-		            	if((new File(configPath)).exists())
-		            	{
-		            		Debug.d("loading config " + configName);
-		            		org.reprap.Preferences.loadConfig(configName);		
-		            		updatePreferencesValues();
-		            		
-		            	}
-		           
-	            	}
-	            }
-	     }); 
+    		configfileList.addActionListener((ActionEvent e) -> {
+                            if ("comboBoxChanged".equals(e.getActionCommand())) {
+                                String configName1 = (String)configfileList.getSelectedItem() + ".properties";
+                                String configPath = org.reprap.Preferences.getUsersRootDir() + configName1;
+                                if ((new File(configPath)).exists()) {
+                                    Debug.d("loading config " + configName1);
+                                    org.reprap.Preferences.loadConfig(configName1);
+                                    updatePreferencesValues();
+                                }
+                            }
+                        }); 
 			
 			
 			panel.add(new JLabel("preferences file:"));
 			
 			
 			Button prefCreateButton = new Button("create");
-			prefCreateButton.addActionListener(new ActionListener() 
-			 {
-				 public void actionPerformed(ActionEvent e)
-		         {
-					
-					String configName = (String)configfileList.getSelectedItem() + ".properties";
-					String configPath = org.reprap.Preferences.getUsersRootDir() + configName;
-					File configFileObj = new File(configPath);
-					
-					if(!configFileObj.exists())
-	            	{
-						configfileList.addItem(configfileList.getSelectedItem());
-						Debug.a("loading config " + configName);
-						org.reprap.Preferences.loadConfig(configName);	
-						updatePreferencesValues();
-		         
-	            	}
-		         }
-			 });
+			prefCreateButton.addActionListener((ActionEvent e) -> {
+                            String configName1 = (String)configfileList.getSelectedItem() + ".properties";
+                            String configPath = org.reprap.Preferences.getUsersRootDir() + configName1;
+                            File configFileObj = new File(configPath);
+                            if (!configFileObj.exists()) {
+                                configfileList.addItem(configfileList.getSelectedItem());
+                                Debug.a("loading config " + configName1);
+                                org.reprap.Preferences.loadConfig(configName1);
+                                updatePreferencesValues();
+                            }
+                        });
 			
 			Button prefDeleteButton = new Button("delete");
-			prefDeleteButton.addActionListener(new ActionListener() 
-			 {
-	               
-		            public void actionPerformed(ActionEvent e)
-		            {
-		            	
-		            	String configName = (String)configfileList.getSelectedItem() + ".properties";
-		            	if(!configName.equals("reprap.properties"))
-		            	{
-			            	String configPath = org.reprap.Preferences.getUsersRootDir() + configName;
-			            	File configFileObj = new File(configPath);
-			            	if(configFileObj.exists())
-			            	{
-			            		configFileObj.delete();
-			            		configfileList.removeItem(configfileList.getSelectedItem());
-			            		updatePreferencesValues();
-			            	}
-			            	else
-			            	{
-			            		
-			            		configName = org.reprap.Preferences.getDefaultPropsFile();
-			            		configName = configName.substring(0, configName.indexOf(".properties"));
-			            		
-			            		configfileList.setSelectedItem(configName);
-			            	}
-		            
-		            	}
-		            }
-		     }); 
+			prefDeleteButton.addActionListener((ActionEvent e) -> {
+                            String configName1 = (String)configfileList.getSelectedItem() + ".properties";
+                            if (!configName1.equals("reprap.properties")) {
+                                String configPath = org.reprap.Preferences.getUsersRootDir() + configName1;
+                                File configFileObj = new File(configPath);
+                                if (configFileObj.exists()) {
+                                    configFileObj.delete();
+                                    configfileList.removeItem(configfileList.getSelectedItem());
+                                    updatePreferencesValues();
+                                } else {
+                                    configName1 = org.reprap.Preferences.getDefaultPropsFile();
+                                    configName1 = configName1.substring(0, configName1.indexOf(".properties"));
+                                    configfileList.setSelectedItem(configName1);
+                                }
+                            }
+                        }); 
 			
 			panel.add(configfileList);
 			panel.add(prefCreateButton);
@@ -454,7 +418,6 @@ public class RepRapPreferences extends JFrame {
 				else
 					rows = keys.length/2 + 1;
 				jPanelExtruder.setLayout(new GridLayout(rows, 4, 5, 5));
-				//jTabbedPane1.addTab("Extruder " + j, null, jScrollPaneExtruder, null);
 				jTabbedPane1.addTab(loadString("Extruder" + j +"_MaterialType(name)"), null, jScrollPaneExtruder, null);
 				// Do it in two chunks, so they're vertically ordered, not horizontally
 				
@@ -487,14 +450,12 @@ public class RepRapPreferences extends JFrame {
 				jPanelExtruder.add(CancelButton());
 				jPanelExtruder.setSize(600, 700);
 			}	
-		} catch (Exception e) {
+		} catch (HeadlessException | IOException e) {
 			e.printStackTrace();
 		}
 
 		// Wrap it all up
-		//getContentPane().setLayout(null);
 		setTitle("RepRap Preferences");
-//		setSize(xall, yall);
 		pack();
 	}
 
@@ -519,9 +480,7 @@ public class RepRapPreferences extends JFrame {
 	
 	private String removeExtruder(String s)
 	{
-		//if(!s.startsWith("Extruder", 0))
 			return s;
-		//return s.substring(s.indexOf("_")+1, s.length());
 	}
 	
 	/**
@@ -560,7 +519,7 @@ public class RepRapPreferences extends JFrame {
 				result[i].setText(value);
 				
 				
-			} catch (Exception ex)
+			} catch (IOException ex)
 			{
 				ex.printStackTrace();
 			}
@@ -577,9 +536,7 @@ public class RepRapPreferences extends JFrame {
 	{
 		if(s.equalsIgnoreCase("true"))
 			return true;
-		if(s.equalsIgnoreCase("false"))
-			return true;
-		return false;
+		return s.equalsIgnoreCase("false");
 	}
 	
 	/**
@@ -655,7 +612,3 @@ public class RepRapPreferences extends JFrame {
 		return result;
 	}
 }
-
-
-
-

@@ -6,25 +6,17 @@ import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-//import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.Date;
 
-//import gnu.io.CommPortIdentifier;
-//import gnu.io.NoSuchPortException;
-//import gnu.io.PortInUseException;
-//import gnu.io.SerialPort;
-//import gnu.io.UnsupportedCommOperationException;
-
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
 import org.reprap.utilities.ExtensionFileFilter;
-//import org.reprap.Main;
 import org.reprap.Preferences;
 import org.reprap.geometry.LayerRules;
 
@@ -35,7 +27,6 @@ public class GCodeReaderAndWriter
 	// to be resent.
 	
 	private static final long shutDown = -3;
-	//private static final long startOrNullResponse = -2;
 	private static final long allSentOK = -1;
 	private double eTemp;
 	private double bTemp;
@@ -62,11 +53,6 @@ public class GCodeReaderAndWriter
 	String portName;
 	
 	/**
-	* this is if we need to talk over serial
-	*/
-	//private SerialPort port;
-	
-	/**
 	 * Flag to tell it we've finished
 	 */
 	private boolean exhaustBuffer = false;
@@ -87,16 +73,6 @@ public class GCodeReaderAndWriter
 	private String opFileName;
 			
 	private String layerFileNames;
-	
-	/**
-	 * List of file names - used to reverse layer order when layers are done top-down
-	 */
-	//private String[] opFileArray;
-	
-	/**
-	 * Index into opFileArray
-	 */
-	//private int opFileIndex;
 	
 	/**
 	 * How does the first file name in a multiple set end?
@@ -134,11 +110,6 @@ public class GCodeReaderAndWriter
 	private PrintStream fileOutStream = null;
 	
 	/**
-	 * The last command sent
-	 */
-	//private String lastCommand;
-	
-	/**
 	 * The current linenumber
 	 */
 	private long lineNumber;
@@ -156,7 +127,6 @@ public class GCodeReaderAndWriter
 	 * The transmission to the RepRap machine is handled by
 	 * a separate thread.  These control that.
 	 */
-	//private boolean threadLock = false;
 	private Thread bufferThread = null;
 	private int myPriority;
 	
@@ -165,11 +135,7 @@ public class GCodeReaderAndWriter
 	 * a response.  Return that as a string.
 	 */
 	private int responsesExpected = 0;
-//	private boolean responseAvailable = false;
-//	private String response;
-	
-	//private boolean sendFileToMachine = false;
-		
+			
 	public GCodeReaderAndWriter()
 	{
 		init();
@@ -197,22 +163,11 @@ public class GCodeReaderAndWriter
 		tail = 0;
 		nonRunningWarn = true;
 		lineNumber = 0;
-		//threadLock = false;
 		exhaustBuffer = false;
 		responsesExpected = 0;
-//		responseAvailable = false;
-//		response = "0000";
-		//opFileIndex = -1;
+
 		lastResp = "";
-//		try
-//		{
-//			portName = Preferences.loadGlobalString("Port(name)");
-//		} catch (Exception ex)
-//		{
-//			Debug.e("Cannot load preference Port(name).");
-//			portName = "stdout";
-//		}
-		
+                
 		portName = "/dev/ttyUSB0";
 		
 		openSerialConnection(portName);
@@ -224,8 +179,6 @@ public class GCodeReaderAndWriter
 	
 	private void nonRunningWarning(String s)
 	{
-//		if(nonRunningWarn)
-//			Debug.d("GCodeReaderAndWriter(): attempt to " + s + " a non-running output buffer.  Further attempts will not be reported.");
 		nonRunningWarn = false;		
 	}
 
@@ -247,11 +200,6 @@ public class GCodeReaderAndWriter
 	public void pause()
 	{
 		paused = true;
-//		while(!bufferEmpty())
-//		{
-//			//Debug.e("Waiting for buffer to empty.");
-//			sleep (131);
-//		}
 	}
 	
 	/**
@@ -276,7 +224,7 @@ public class GCodeReaderAndWriter
 	
 	/**
 	 * Send a GCode file to the machine if that's what we have to do, and
-	 * return true.  Otherwise return false.
+	 * @return true.  Otherwise return false.
 	 *
 	 */
 	public Thread filePlay()
@@ -291,18 +239,10 @@ public class GCodeReaderAndWriter
 
 		if(Preferences.simulate())
 			simulationPlot = new RrGraphics("RepRap building simulation");
-
-//		if(bufferThread == null)
-//		{
-//			Debug.e("GCodeWriter: attempt to write to non-existent buffer.");
-//			return true;
-//		}			
-		
-		// Launch a thread to run through the file, so we can return control
-		// to the user
 		
 		Thread playFile = new Thread() 
 		{
+                        @Override
 			public void run() 
 			{
 				Thread.currentThread().setName("GCode file printer");
@@ -329,7 +269,6 @@ public class GCodeReaderAndWriter
 				} catch (Exception e) 
 				{  
 					Debug.e("Error printing file: " + e.toString());
-					e.printStackTrace();
 				}
 			}
 			
@@ -354,20 +293,9 @@ public class GCodeReaderAndWriter
 		try
 		{
 			Thread.sleep(millis);
-		} catch (Exception ex)
+		} catch (InterruptedException ex)
 		{}		
 	}
-
-	
-	/**
-	 * Anything in the buffer?  (NB this still works if we aren't
-	 * using the buffer as then head == tail == 0 always).
-	 * @return
-	 */
-//	public boolean bufferEmpty()
-//	{
-//		return head == tail;
-//	}
 	
 	/**
 	 * Between layers nothing will be queued.  Use the next two
@@ -490,29 +418,29 @@ public class GCodeReaderAndWriter
 			long resp = waitForResponse();
 			if(resp == shutDown)
 			{
-				throw new Exception("The RepRap machine has flagged a hard error!");
+                            throw new Exception("The RepRap machine has flagged a hard error!");
 			} else if (resp == allSentOK)
 			{
-				lineNumber++;
-				return;
+                            lineNumber++;
+                            return;
 			} else // Must be a re-send line number
 			{
-				long gotTo = lineNumber;
-				lineNumber = resp;
-				String rCmd = " ";
-				while(lineNumber <= gotTo && !rCmd.contentEquals(""))
-				{
-					rCmd = ringGet(lineNumber);
-					if(sendLine(rCmd))
-					{
-						resp = waitForResponse();
-						if (resp == allSentOK)
-							return;
-						if(resp == shutDown)
-							throw new Exception("The RepRap machine has flagged a hard error!");
-					}
-				}
-			}
+                            long gotTo = lineNumber;
+                            lineNumber = resp;
+                            String rCmd = " ";
+                            while(lineNumber <= gotTo && !rCmd.contentEquals(""))
+                            {
+                                rCmd = ringGet(lineNumber);
+                                if(sendLine(rCmd))
+                                {
+                                    resp = waitForResponse();
+                                    if (resp == allSentOK)
+                                        return;
+                                    if(resp == shutDown)
+                                        throw new Exception("The RepRap machine has flagged a hard error!");
+                                }
+                            }
+                    }
 		} 
 		Debug.d("bufferQueue(): did not send " + cmd);	
 	}
@@ -749,7 +677,7 @@ public class GCodeReaderAndWriter
 			try
 			{
 				i = serialInStream.read();
-			} catch (Exception e)
+			} catch (IOException e)
 			{
 				i = -1;
 			}
@@ -802,7 +730,7 @@ public class GCodeReaderAndWriter
 					eTemp = parseReturnedValue(resp, " T:");
 					bTemp = parseReturnedValue(resp, " B:");
 					sdFiles = parseReturnedNames(resp, " Files: {");
-					if(resp.indexOf(" C:") >= 0)
+					if(resp.contains(" C:"))
 					{
 						x = parseReturnedValue(resp, " X:");
 						y = parseReturnedValue(resp, " Y:");
@@ -825,6 +753,7 @@ public class GCodeReaderAndWriter
 	/**
 	 * Send a G-code command to the machine or into a file.
 	 * @param cmd
+     * @throws java.lang.Exception
 	 */
 	public void queue(String cmd) throws Exception
 	{
@@ -845,6 +774,7 @@ public class GCodeReaderAndWriter
 	
 	/**
 	 * Copy a file of G Codes straight to output - generally used for canned cycles
+     * @param fileName
 	 */
 	public void copyFile(String fileName)
 	{
@@ -867,93 +797,12 @@ public class GCodeReaderAndWriter
 		} catch (Exception e) 
 		{
 			Debug.e("GCodeReaderAndWriter().copyFile: exception reading file " + fileName);
-			return;
 		}
 	}
 	
 
 	private void openSerialConnection(String portName)
 	{
-		
-//		int baudRate = 115200;
-//		serialInStream = null;
-//		serialOutStream = null;
-//		
-//		portName = portName.trim();
-//		
-//		//open our port.
-//		Debug.d("GCode opening port " + portName);
-//		Main.setRepRapPresent(false);
-//		try 
-//		{
-//			CommPortIdentifier commId = CommPortIdentifier.getPortIdentifier(portName);
-//			port = (SerialPort)commId.open(portName, 30000);
-//		} catch (NoSuchPortException e) {
-//			Debug.d("Can't open port: " + portName + " - no RepRap attached.");
-//			return;
-//		}
-//		catch (PortInUseException e){
-//			Debug.e("Port '" + portName + "' is already in use.");
-//			return;			
-//		}
-//		Main.setRepRapPresent(true);
-		/*
-//		//get our baudrate
-//		try {
-//			baudRate = Preferences.loadGlobalInt("BaudRate");
-//		}
-//		catch (IOException e){}
-//		*/
-//		// Workround for javax.comm bug.
-//		// See http://forum.java.sun.com/thread.jspa?threadID=673793
-//		// FIXME: jvandewiel: is this workaround also needed when using the RXTX library?
-//		try {
-//			port.setSerialPortParams(baudRate,
-//					SerialPort.DATABITS_8,
-//					SerialPort.STOPBITS_1,
-//					SerialPort.PARITY_NONE);
-//		}
-//		catch (UnsupportedCommOperationException e) {
-//			Debug.d("An unsupported comms operation was encountered.\n" + e.toString());
-//			return;		
-//		}
-//		
-//		// Wait for baud rate change to take effect
-//		try {Thread.sleep(1000);} catch (Exception e) {}
-//
-//		
-//		try {
-//			port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-//		} catch (Exception e) {
-//			// Um, Linux USB ports don't do this. What can I do about it?
-//		}
-//		
-//		try {
-//			port.enableReceiveTimeout(1);
-//		} catch (UnsupportedCommOperationException e) {
-//			Debug.d("Read timeouts unsupported on this platform");
-//		}
-//
-//		//create our steams
-//		try {
-//			OutputStream writeStream = port.getOutputStream();
-//			serialInStream = port.getInputStream();
-//			serialOutStream = new PrintStream(writeStream);
-//		} catch (IOException e) {
-//			Debug.e("GCodeWriter: Error opening serial port stream.");
-//			serialInStream = null;
-//			serialOutStream = null;
-//			return;		
-//		}
-//
-//		//arduino bootloader skip.
-//		//Debug.d("Attempting to initialize Arduino/Sanguino");
-//        try {Thread.sleep(1000);} catch (Exception e) {}
-//        //for(int i = 0; i < 10; i++)
-//        //        serialOutStream.write('0');
-//        try {Thread.sleep(1000);} catch (Exception e) {}
-//        //serialOutStream.write('\n');
-//        return;
 	}
 	
 
@@ -965,7 +814,6 @@ public class GCodeReaderAndWriter
         filter = new ExtensionFileFilter("G Code file to be read", new String[] { "gcode" });
         chooser.setFileFilter(filter);
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		//chooser.setCurrentDirectory();
 
 		int result = chooser.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION)
@@ -1004,8 +852,6 @@ public class GCodeReaderAndWriter
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		
 		opFileName = null;
-		//opFileArray = null;
-		//opFileIndex = -1;
 		int result = chooser.showSaveDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION)
 		{
@@ -1019,7 +865,6 @@ public class GCodeReaderAndWriter
 				String fn = opFileName;
 				if(topDown)
 				{
-					//opFileIndex = 0;
 					fn += firstEnding;
 					fn += tmpString;
 					doe = true;
@@ -1043,8 +888,6 @@ public class GCodeReaderAndWriter
 				return shortName;
 			} catch (FileNotFoundException e) 
 			{
-				//opFileArray = null;
-				//opFileIndex = -1;
 				Debug.e("Can't write to file '" + opFileName);
 				opFileName = null;
 				fileOutStream = null;
@@ -1079,76 +922,31 @@ public class GCodeReaderAndWriter
 	
 	public void startingLayer(LayerRules lc)
 	{
-		// If no filename or the index is not set, forget about the start layer. - Vik, 23-Feb-2009
-		//if((opFileIndex < 0)  || (opFileName == null))
-		//	return;
 		
-		
-		//if(opFileArray == null)
-//		if(lc.getPrologueFileName() == null)
-//		{
-//			if(lc.getTopDown())
-//			{
-//				//opFileIndex = 0;
-//				//opFileArray = new String[lc.getMachineLayerMax() + 3];
-//				//opFileArray[opFileIndex] = opFileName + firstEnding + tmpString + gcodeExtension;
-//				lc.setPrologueFileName(opFileName + firstEnding + tmpString + gcodeExtension);
-//				finishedLayer(lc);
-//			}
-//		}
-		
-		//opFileArray[opFileIndex] = opFileName + lc.getMachineLayer() + tmpString + gcodeExtension;
 		lc.setLayerFileName(layerFileNames + "reprap" + lc.getMachineLayer() + tmpString + gcodeExtension);
-		//System.out.println("Name out: " + lc.getLayerFileName());
 		if(!lc.getReversing())
 		try
 		{
-			//File fl = new File(opFileArray[opFileIndex]);
 			File fl = new File(lc.getLayerFileName());
 			fl.deleteOnExit();
 			FileOutputStream fileStream = new FileOutputStream(fl);
 			fileOutStream = new PrintStream(fileStream);
-			//System.out.println("Opening: " + lc.getLayerFileName());
-		} catch (Exception e)
+		} catch (FileNotFoundException e)
 		{
-			//Debug.e("Can't write to file " + opFileArray[opFileIndex]);
 			Debug.e("Can't write to file " + lc.getLayerFileName());
 		}
 	}
 	
 	public void finishedLayer(LayerRules lc)
 	{
-		//if(opFileArray == null)
-		//if(lc.getPrologueFileName() == null)
-			//return;
-		//System.out.println("Name close: " + lc.getLayerFileName());
 		if(!lc.getReversing())
 		{
-			//System.out.println("Closing: " + lc.getLayerFileName());
 			fileOutStream.close();
 		}
-		//opFileIndex++;
 	}
 	
 	public void startingEpilogue(LayerRules lc)
 	{
-		//if(opFileArray == null)
-		//if(lc.getPrologueFileName() == null)
-		//	return;
-		//opFileArray[opFileIndex] = opFileName + lastEnding + tmpString + gcodeExtension;
-		//lc.setEpilogueFileName(opFileName + lastEnding + tmpString + gcodeExtension);
-//		try
-//		{
-//			//File fl = new File(opFileArray[opFileIndex]);
-//			File fl = new File(lc.getEpilogueFileName());
-//			fl.deleteOnExit();
-//			FileOutputStream fileStream = new FileOutputStream(fl);
-//			fileOutStream = new PrintStream(fileStream);
-//		} catch (Exception e)
-//		{
-//			//Debug.e("Can't write to file " + opFileArray[opFileIndex]);
-//			Debug.e("Can't write to file " + lc.getEpilogueFileName());
-//		}
 	}
 	
 
@@ -1158,18 +956,12 @@ public class GCodeReaderAndWriter
 	/**
 	 * All done.
 	 *
+     * @param lc
 	 */
 	public void finish(LayerRules lc)
 	{
 		
 		Debug.d("disposing of GCodeReaderAndWriter.");
-		//lc.reverseLayers(opFileName + gcodeExtension);
-		//	// Wait for the ring buffer to be exhausted
-		//	if(fileOutStream == null && bufferThread != null)
-		//	{
-		//		exhaustBuffer = true;
-		//		while(exhaustBuffer) sleep(200);
-		//	}
 
 		try
 		{
@@ -1182,10 +974,7 @@ public class GCodeReaderAndWriter
 			if (fileInStream != null)
 				fileInStream.close();
 
-			//if (fileOutStream != null)
-			//	fileOutStream.close();
-
-		} catch (Exception e) {}
+		} catch (IOException e) {}
 
 	}
 	

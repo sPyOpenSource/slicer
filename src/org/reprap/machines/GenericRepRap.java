@@ -10,11 +10,8 @@ import org.reprap.Preferences;
 import org.reprap.RepRapException;
 import org.reprap.devices.NullExtruder;
 import org.reprap.devices.GenericExtruder;
-//import org.reprap.devices.GenericStepperMotor;
-//import org.reprap.devices.NullStepperMotor;
 import org.reprap.geometry.LayerRules;
 import org.reprap.gui.ContinuationMesage;
-//import org.reprap.gui.Previewer;
 import org.reprap.gui.StatusMessage;
 import org.reprap.Extruder;
 import org.reprap.utilities.Debug;
@@ -22,7 +19,6 @@ import org.reprap.utilities.RrGraphics;
 import org.reprap.utilities.Timer;
 import org.reprap.geometry.polygons.Point2D;
 import org.reprap.geometry.polygons.Rectangle;
-import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 
 public abstract class GenericRepRap implements CartesianPrinter
 {

@@ -85,13 +85,9 @@ public class StlFileParser extends StreamTokenizer
         nextToken();
 	if (ttype != TT_WORD)
 	  throw new IOException("Expected number on line " + lineno());
-	nval =  (Double.valueOf(sval)).doubleValue();
+	nval =  (Double.valueOf(sval));
     }
-    catch (IOException e) {
-      System.err.println(e.getMessage());
-      return false;
-    }
-    catch (NumberFormatException e) {
+    catch (IOException | NumberFormatException e) {
       System.err.println(e.getMessage());
       return false;
     }
