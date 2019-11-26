@@ -15,23 +15,14 @@ public interface Extruder
 	/**
 	 * Reload the preferences from the preferences file
 	 *
+     * @return 
 	 */
 	public int refreshPreferences();
-
-	/**
-	 * Start the extruder motor at a given speed.  For old extruders this ranges from 0
-	 * to 255 but is scaled by maxSpeed and t0, so that 255 corresponds to the
-	 * highest permitted speed.  It is also scaled so that 0 would correspond
-	 * with the lowest extrusion speed.
-	 * For new extruders this is in mm/minute
-	 * @param speed The speed to drive the motor at (0-255)
-	 * @throws IOException
-	 */
-	//public void setExtrusion(double speed) throws IOException;
 	
 	/**
 	 * For stepper extruders, return the PWM to use to drive them in [0, 1]
 	 * Negative values returned mean this feature is disabled.
+     * @return 
 	 */
 	public double getPWM();
 	
@@ -50,23 +41,26 @@ public interface Extruder
 	
 	/**
 	* start extruding at the normal rate.
+     * @throws java.lang.Exception
 	*/
 	public void startExtruding() throws Exception;
 	
 	/**
 	* stop extruding
+     * @throws java.lang.Exception
 	*/
 	public void stopExtruding() throws Exception;
 	
 	/**
 	* Start/stop the extruder motor
+     * @param motorOn
+     * @throws java.io.IOException
 	 * @throws Exception 
 	*/
 	public void setMotor(boolean motorOn) throws IOException, Exception;
 		
 	/**
 	 * Open and close the valve (if any).
-	 * @param pulseTime
 	 * @param valveOpen
 	 * @throws IOException
 	 * @throws Exception 
@@ -74,13 +68,15 @@ public interface Extruder
 	public void setValve(boolean valveOpen) throws IOException, Exception;
 	
 	/**
-	 * Turn the heater of the extruder on. Inital temperatur is defined by ???
+	 * Turn the heater of the extruder on.Inital temperatur is defined by ???
+     * @param wait
 	 * @throws Exception
 	 */
 	public void heatOn(boolean wait) throws Exception; 
 
 	/**
 	* Turns the heater for the extruder off.
+     * @throws java.lang.Exception
 	*/
 	public void heatOff() throws Exception; 
 
@@ -121,6 +117,7 @@ public interface Extruder
 
 	/**
 	 * @return the current temperature of the extruder 
+     * @throws java.lang.Exception 
 	 */
 	public double getTemperature() throws Exception; 
 
@@ -167,6 +164,7 @@ public interface Extruder
 	/**
 	 * Turn the cooler (fan?) on or off
 	 * @param f true if the cooler is to be turned on, false to turn off
+     * @param really
 	 * @throws IOException
 	 * @throws Exception 
 	 */
@@ -215,6 +213,8 @@ public interface Extruder
     /**
      * Purge the extruder
      *
+     * @param liftZ
+     * @throws java.lang.Exception
      */
     public void purge(double liftZ) throws Exception;
     
@@ -274,6 +274,7 @@ public interface Extruder
     /**
      * Find out how far we have extruded so far
      * @return
+     * @throws java.lang.Exception
      */
     public ExtruderState getExtruderState() throws Exception;
     
@@ -286,26 +287,12 @@ public interface Extruder
 	
 	/**
 	 * Zero the extruded length
+     * @param really
 	 * @throws Exception 
 	 *
 	 */
 	public void zeroExtrudedLength(boolean really) throws Exception;
-    
-//    /**
-//     * @return the X offset in millimeters
-//     */
-//    public double getOffsetX();
-// 
-//    /**
-//     * @return the Y offset in millimeters
-//     */
-//    public double getOffsetY();
-// 
-//    /**
-//     * @return the Z offset in millimeters
-//     */
-//    public double getOffsetZ();
-    
+
     /**
      * @return the appearance (colour) to use in the simulation window for this material
      */

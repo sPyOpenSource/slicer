@@ -21,9 +21,6 @@ public interface Printer {
 	 * Method to calibrate the printer.
 	 */
 	public void calibrate();
-
-//	public void printSegment(double startX, double startY,
-//			double startZ, double endX, double endY, double endZ) throws ReprapException, IOException;
 	
 	
 	/**

@@ -34,6 +34,7 @@ import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 import org.reprap.geometry.polyhedra.CSGReader;
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
+import org.xml.sax.SAXException;
 
 public class RFO 
 {
@@ -204,7 +205,7 @@ public class RFO
 			try
 			{
 				xr = XMLReaderFactory.createXMLReader();
-			} catch (Exception e)
+			} catch (SAXException e)
 			{
 				Debug.e("XMLIn() 1: " + e);
 			}
@@ -214,7 +215,7 @@ public class RFO
 			try
 			{
 				xr.parse(new InputSource(legendFile));
-			} catch (Exception e)
+			} catch (IOException | SAXException e)
 			{
 				Debug.e("XMLIn() 2: " + e);
 			}
@@ -509,21 +510,6 @@ public class RFO
 		copyFile(inputFile, outputFile);		
 	}
 	
-//	/**
-//	 * Create the name of STL file number i
-//	 * @param i
-//	 * @return
-//	 */
-//	private static String stlName(int i)
-//	{
-//	if (uNames == null)
-//	{
-//		Debug.e("RFO.createLegend(): no list of unique names saved.");
-//		return;
-//	}
-//		return stlPrefix + i + stlSuffix;
-//	}
-	
 	/**
 	 * 
 	 * Copy each unique STL file to a directory.  Files used more
@@ -638,24 +624,20 @@ public class RFO
 			byte[] buffer = new byte[4096]; 
 			int bytesIn = 0; 
 
-			for(int i=0; i<fileList.length; i++) 
-			{ 
-				File f = new File(dirToZip, fileList[i]); 
-				FileInputStream fis = new FileInputStream(f); 
-				String zEntry = f.getPath();
-				//Debug.a("\n" + zEntry);
-				int start = zEntry.indexOf(uniqueName);
-				zEntry = zEntry.substring(start + uniqueName.length() + 1, zEntry.length());
-				//Debug.a(tempDir);
-				//Debug.a(zEntry + "\n");
-				ZipEntry entry = new ZipEntry(zEntry); 
-				rfoFile.putNextEntry(entry); 
-				while((bytesIn = fis.read(buffer)) != -1) 
-					rfoFile.write(buffer, 0, bytesIn); 
-				fis.close();
-			}
+                    for (String fileList1 : fileList) {
+                        File f = new File(dirToZip, fileList1);
+                        FileInputStream fis = new FileInputStream(f);
+                        String zEntry = f.getPath();
+                        int start = zEntry.indexOf(uniqueName);
+                        zEntry = zEntry.substring(start + uniqueName.length() + 1, zEntry.length());
+                        ZipEntry entry = new ZipEntry(zEntry);
+                        rfoFile.putNextEntry(entry);
+                        while((bytesIn = fis.read(buffer)) != -1)
+                            rfoFile.write(buffer, 0, bytesIn);
+                        fis.close();
+                    }
 			rfoFile.close();
-		} catch (Exception e)
+		} catch (IOException e)
 		{
 			Debug.e("RFO.compress(): " + e);
 		}
@@ -710,20 +692,23 @@ public class RFO
 		String result = "";
 		for(int i = 0; i < is.length(); i++)
 		{
-			if(is.charAt(i) == '\\')
-			{
-				if(File.separator.charAt(0) == '/')
-					result += '/';
-				else
-					result += '\\';
-			} else if(is.charAt(i) == '/')
-			{
-				if(File.separator.charAt(0) == '\\')
-					result += '\\';
-				else
-					result += '/';
-			} else
-				result += is.charAt(i);
+                    switch (is.charAt(i)) {
+                        case '\\':
+                            if(File.separator.charAt(0) == '/')
+                                result += '/';
+                            else
+                                result += '\\';
+                            break;
+                        case '/':
+                            if(File.separator.charAt(0) == '\\')
+                                result += '\\';
+                            else
+                                result += '/';
+                            break;
+                        default:
+                            result += is.charAt(i);
+                            break;
+                    }
 		}
 		
 		return result;
@@ -752,7 +737,7 @@ public class RFO
 					os.write(buffer, 0, bytesIn);
 				os.close();
 			}
-		} catch (Exception e)
+		} catch (IOException e)
 		{
 			Debug.e("RFO.unCompress(): " + e);
 		}
@@ -796,16 +781,6 @@ public class RFO
 		// Tidy up - delete the temporary files and the directory
 		// containing them.
 		
-//		File td = new File(rfo.rfoDir);
-//		String[] fileList = td.list(); 
-//		for(int i=0; i<fileList.length; i++) 
-//		{ 
-//			File f = new File(rfo.rfoDir, fileList[i]);
-//			if(!f.delete())
-//				Debug.e("RFO.AllSTLsToBuild(): Can't delete file: " + fileList[i]);
-//		}
-//		if(!td.delete())
-//			Debug.e("RFO.AllSTLsToBuild(): Can't delete file: " + rfo.rfoDir);
 		return rfo.astl;
 	}
 }

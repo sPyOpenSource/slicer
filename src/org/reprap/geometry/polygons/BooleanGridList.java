@@ -20,7 +20,7 @@ public class BooleanGridList
 		
 		public BooleanGridList()
 		{
-			shapes = new ArrayList<BooleanGrid>();
+			shapes = new ArrayList<>();
 		}
 		
 		/**
@@ -29,7 +29,7 @@ public class BooleanGridList
 		 */
 		public BooleanGridList(BooleanGridList a)
 		{
-			shapes = new ArrayList<BooleanGrid>();
+			shapes = new ArrayList<>();
 			
 			if(a == null) return;
 			
@@ -91,7 +91,7 @@ public class BooleanGridList
 		
 		/**
 		 * Add a shape on the end
-		 * @param p
+		 * @param b
 		 */
 		public void add(BooleanGrid b)
 		{
@@ -106,7 +106,7 @@ public class BooleanGridList
 		
 		/**
 		 * Add another list of shapes on the end
-		 * @param a
+		 * @param aa
 		 */
 		public void add(BooleanGridList aa)
 		{
@@ -159,9 +159,7 @@ public class BooleanGridList
 						e = att.getExtruder();
 						shells = e.getShells();					
 					}
-					//System.out.println("Shells: " + shells);
-//					if(shellOverride > 0)
-//						shells = shellOverride;
+
 					if(outline)
 					{
 						int shell = 0;
@@ -230,7 +228,7 @@ public class BooleanGridList
 		 * @param overrideDirection
 		 * @return
 		 */
-		public PolygonList hatch(LayerRules layerConditions, boolean surface, HalfPlane overrideDirection, boolean support) //, Rr2Point startNearHere)
+		public PolygonList hatch(LayerRules layerConditions, boolean surface, HalfPlane overrideDirection, boolean support) 
 		{
 			PolygonList result = new PolygonList();
 			boolean foundation = layerConditions.getLayingSupport();
@@ -442,7 +440,7 @@ public class BooleanGridList
 		 * 
 		 * @param a
 		 * @param b
-		 * @param onlyNullSupport
+		 * @param ignoreAttributes
 		 * @return
 		 */
 		public static BooleanGridList differences(BooleanGridList a, BooleanGridList b, boolean ignoreAttributes)
@@ -482,6 +480,5 @@ public class BooleanGridList
 			}
 			return result.unionDuplicates();
 		}
-		
 
 }

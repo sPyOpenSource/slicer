@@ -94,16 +94,6 @@ public class Line
 	}
 	
 	/**
-	 * Destroy just me
-	 */
-//	protected void finalize() throws Throwable
-//	{
-//		direction = null;
-//		origin = null;
-//		super.finalize();
-//	}
-	
-	/**
 	 * Line between two points
 	 * @param a
 	 * @param b
@@ -123,19 +113,6 @@ public class Line
 		origin = new Point2D(r.origin);
 		direction = new Point2D(r.direction);
 	}
-	
-	/**
-	 * Make from an implicit half-plane
-	 */
-//	public RrLine(RrHalfPlane p)
-//	{
-//		origin = new Rr2Point(p.pLine().origin);
-//		direction = new Rr2Point(p.pLine().direction);		
-////		origin = new Rr2Point(-p.normal().x()*p.offset(), 
-////				-p.normal().y()*p.offset());
-////		direction = new Rr2Point(p.normal().y(), -p.normal().x());
-//	}
-	
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -222,7 +199,7 @@ public class Line
 	 * The parameter value where another line crosses
 	 * @param a
 	 * @return parameter value
-	 * @throws rr_ParallelLineException
+	 * @throws ParallelException
 	 */
 	public double cross_t(Line a) throws ParallelException 
 	{
@@ -238,7 +215,7 @@ public class Line
 	 * The point where another line crosses
 	 * @param a
 	 * @return crossing point 
-	 * @throws rr_ParallelLineException
+	 * @throws ParallelException
 	 */
 	public Point2D cross_point(Line a) throws ParallelException
 	{

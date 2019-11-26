@@ -62,7 +62,9 @@ public class Attributes {
 	
 	/**
 	 * Just say the name of the material
+     * @return 
 	 */
+        @Override
 	public String toString()
 	{
 		String result = new String();

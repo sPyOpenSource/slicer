@@ -55,64 +55,62 @@
  
  */
 
-package org.reprap.geometry.polygons;
+package org.reprap.geometry.polyhedra;
+
+import javax.vecmath.Matrix4d;
 
 /**
- * Class for (x, y) points and vectors
+ * Class for (x, y, z) points and vectors
  */
-public class Point2D
+public class Point3D
 {
 	/**
 	 * 
 	 */
-	private double x, y;
-	
-	/**
-	 * Destroy me and all I point to
-	 */
-	public void destroy()
-	{
-		// I don't point to anything
-	}
+	private double x, y, z;
 	
 	/**
 	 * Default to the origin
 	 */
-	public Point2D()
+	public Point3D()
 	{
 		x = 0;
 		y = 0;
+		z = 0;
 	}
 	
 	/**
 	 * Usual constructor
 	 * @param a
 	 * @param b
+     * @param c
 	 */
-	public Point2D(double a, double b)
+	public Point3D(double a, double b, double c)
 	{
 		x = a;
 		y = b;
+		z = c;
 	}
 	
 	/**
 	 * Copy
 	 * @param r Rr2Point to copy from
 	 */
-	public Point2D(Point2D r)
+	public Point3D(Point3D r)
 	{
 		x = r.x;
 		y = r.y;
+		z = r.z;
 	}
 	
-
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+        @Override
 	public String toString()
 	{
-		return Double.toString(x) + " " + Double.toString(y);
+		return Double.toString(x) + " " + Double.toString(y) + " " + Double.toString(z);
 	}
 	
 	/**
@@ -120,34 +118,43 @@ public class Point2D
 	 */
 	public double x() { return x; }
 	public double y() { return y; }
+	public double z() { return z; }
 	
 	/**
 	 * Arithmetic
 	 * @return neg of point
 	 */
-	public Point2D neg()
+	public Point3D neg()
 	{
-		return new Point2D(-x, -y);
+		return new Point3D(-x, -y, -z);
 	}
 	
 	/**
-	 * @return orthogonal of (this) point
+	 * Go somewhere else
+	 * @param m
+	 * @return
 	 */
-	public Point2D orthogonal()
+	public Point3D transform(Matrix4d m)
 	{
-		return new Point2D(y, -x);
+		Point3D result = new Point3D(m.m00*x + m.m10*y + m.m20*z + m.m30,
+				m.m01*x + m.m11*y + m.m21*z + m.m31,
+				m.m02*x + m.m12*y + m.m22*z + m.m32);
+		double d = m.m03*x + m.m13*y + m.m23*z + m.m33;
+		return Point3D.div(result, d);
 	}
+	
 	
 	/**
 	 * @param a
 	 * @param b
 	 * @return a new point based on a vector addition of points a and b
 	 */
-	public static Point2D add(Point2D a, Point2D b)
+	public static Point3D add(Point3D a, Point3D b)
 	{
-		Point2D r = new Point2D(a);
+		Point3D r = new Point3D(a);
 		r.x += b.x;
 		r.y += b.y;
+		r.z += b.z;
 		return r;
 	}
 	
@@ -156,7 +163,7 @@ public class Point2D
 	 * @param b
 	 * @return a new point based on a vector subtraction of a - b
 	 */
-	public static Point2D sub(Point2D a, Point2D b)
+	public static Point3D sub(Point3D a, Point3D b)
 	{
 		return add(a, b.neg());
 	}
@@ -168,9 +175,9 @@ public class Point2D
 	 * @param factor A scale factor
 	 * @return The point Rr2Point scaled by a factor of factor
 	 */
-	public static Point2D mul(Point2D b, double factor)
+	public static Point3D mul(Point3D b, double factor)
 	{
-		return new Point2D(b.x*factor, b.y*factor);
+		return new Point3D(b.x*factor, b.y*factor, b.z*factor);
 	}
 	
 	/**
@@ -178,7 +185,7 @@ public class Point2D
 	 * @param b
 	 * @return the point Rr2Point scaled by a factor of a
 	 */
-	public static Point2D mul(double a, Point2D b)
+	public static Point3D mul(double a, Point3D b)
 	{
 		return mul(b, a);
 	}
@@ -189,7 +196,7 @@ public class Point2D
 	 * @param factor A scale factor
 	 * @return The point Rr2Point divided by a factor of a
 	 */
-	public static Point2D div(Point2D b, double factor)
+	public static Point3D div(Point3D b, double factor)
 	{
 		return mul(b, 1/factor);
 	}
@@ -200,9 +207,9 @@ public class Point2D
 	 * @param b
 	 * @return The scalar product of the points
 	 */
-	public static double mul(Point2D a, Point2D b)
+	public static double mul(Point3D a, Point3D b)
 	{
-		return a.x*b.x + a.y*b.y;
+		return a.x*b.x + a.y*b.y + a.z*b.z;
 	}
 	
 	
@@ -220,7 +227,7 @@ public class Point2D
 	 * Unit length normalization
 	 * @return normalized unit lenght 
 	 */
-	public Point2D norm()
+	public Point3D norm()
 	{
 		return div(this, mod());
 	}
@@ -232,27 +239,9 @@ public class Point2D
 	 * @param b
 	 * @return oute product
 	 */
-	public static double op(Point2D a, Point2D b)
+	public static Point3D op(Point3D a, Point3D b)
 	{
-		return a.x*b.y - a.y*b.x;
-	}
-	
-	/**
-	 * Gradient
-	 * @return gradient
-	 */
-	public double gradient()
-	{
-		double g;
-		if(x == 0)
-		{
-			if(y > 0)
-				g = Double.POSITIVE_INFINITY;
-			else
-				g = Double.NEGATIVE_INFINITY;
-		} else
-			g = y/x;
-		return g;
+		return new Point3D(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z,  a.x*b.y - a.y*b.x);
 	}
 	
 	/**
@@ -261,9 +250,9 @@ public class Point2D
 	 * @param b
 	 * @return squared distance
 	 */
-	public static double dSquared(Point2D a, Point2D b)
+	public static double dSquared(Point3D a, Point3D b)
 	{
-		Point2D c = sub(a, b);
+		Point3D c = sub(a, b);
 		return mul(c, c);
 	}
 	
@@ -273,7 +262,7 @@ public class Point2D
 	 * @param b
 	 * @return distance
 	 */
-	public static double d(Point2D a, Point2D b)
+	public static double d(Point3D a, Point3D b)
 	{
 		return Math.sqrt(dSquared(a, b));
 	}
@@ -286,7 +275,7 @@ public class Point2D
 	 * @return true if the squared distance between points a and b 
 	 * is within tolerance tol_2, otherwise false
 	 */
-	public static boolean same(Point2D a, Point2D b, double tol_2)
+	public static boolean same(Point3D a, Point3D b, double tol_2)
 	{
 		return dSquared(a, b) < tol_2;
 	}

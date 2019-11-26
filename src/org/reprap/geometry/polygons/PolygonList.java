@@ -60,30 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.reprap.Extruder;
-import org.reprap.Attributes;
 import org.reprap.geometry.LayerRules;
 import org.reprap.utilities.Debug;
-
-// Stuff for kabeja DXF import
-
-import java.io.InputStream;
-import java.util.Iterator;
-
-/*
-import org.kabeja.dxf.DXFCircle;
-import org.kabeja.dxf.DXFConstants;
-import org.kabeja.dxf.DXFDocument;
-import org.kabeja.dxf.DXFLayer;
-import org.kabeja.dxf.DXFLine;
-import org.kabeja.dxf.DXFPolyline;
-import org.kabeja.dxf.DXFVertex;
-import org.kabeja.dxf.DXFConstants;
-import org.kabeja.dxf.helpers.Point;
-import org.kabeja.parser.ParseException;
-import org.kabeja.parser.Parser;
-import org.kabeja.parser.DXFParser;
-import org.kabeja.parser.ParserBuilder;
-*/
 
 /**
  * Small class to hold a polygon index and the index of a point within it

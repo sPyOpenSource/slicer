@@ -22,6 +22,7 @@
 package org.reprap.geometry.polygons;
 
 
+import java.io.IOException;
 import org.reprap.Attributes;
 import org.reprap.Preferences;
 import java.util.ArrayList;
@@ -299,7 +300,7 @@ public class BooleanGrid
 		
 		public iPolygon(boolean c)
 		{
-			points = new ArrayList<iPoint>();
+			points = new ArrayList<>();
 			closed = c;
 		}
 		
@@ -309,7 +310,7 @@ public class BooleanGrid
 		 */
 		public iPolygon(iPolygon a)
 		{
-			points = new ArrayList<iPoint>();
+			points = new ArrayList<>();
 			for(int i = 0; i < a.size(); i++)
 				add(a.point(i));
 			closed = a.closed;
@@ -504,7 +505,7 @@ public class BooleanGrid
 		
 		public iPolygonList()
 		{
-			polygons = new ArrayList<iPolygon>();
+			polygons = new ArrayList<>();
 		}
 		
 		/**
@@ -614,14 +615,6 @@ public class BooleanGrid
 		private int steps, taken;
 		private boolean xPlus, yPlus, finished;
 		
-//		protected void finalize() throws Throwable
-//		{
-//			delta = null;
-//			count = null;
-//			p = null;
-//			super.finalize();
-//		}
-		
 		/**
 		 * Set up the DDA between a start and an end point
 		 * @param s
@@ -696,12 +689,6 @@ public class BooleanGrid
 	{
 		public iPolygon track;
 		public int hitPlaneIndex;
-		
-//		protected void finalize() throws Throwable
-//		{
-//			track = null;
-//			super.finalize();
-//		}
 		
 		public SnakeEnd(iPolygon t, int h)
 		{
@@ -865,7 +852,7 @@ public class BooleanGrid
 	
 	/**
 	 * Build the grid from a CSG expression
-	 * @param csgP
+	 * @param csgExp
 	 */
 	public BooleanGrid(CSG2D csgExp, Rectangle rectangle, Attributes a)
 	{
@@ -1029,9 +1016,7 @@ public class BooleanGrid
 			return false;
 		if(p.x >= rec.size.x)
 			return false;
-		if(p.y >= rec.size.y)
-			return false;
-		return true;
+		return p.y < rec.size.y;
 	}
 	
 	
@@ -1111,7 +1096,7 @@ public class BooleanGrid
 			try
 			{
 				p = h[i].cross_point(h[(i+1)%4]);
-			} catch (Exception e)
+			} catch (ParallelException e)
 			{}
 			xMin = Math.min(xMin, p.x());
 			xMax = Math.max(xMax, p.x());
@@ -2618,7 +2603,7 @@ public class BooleanGrid
 		//	HalfPlane(org, Point2D.add(org, hp.pLine().direction()));
 		
 
-		List<HalfPlane> hatches = new ArrayList<HalfPlane>();
+		List<HalfPlane> hatches = new ArrayList<>();
 		iPolygonList iHatches = new iPolygonList();
 		
 		double g = 0;		
@@ -2661,7 +2646,7 @@ public class BooleanGrid
 		{
 			if(Preferences.loadGlobalBool("PathOptimise"))
 				joinUpSnakes(snakes, hatches, gap);
-		} catch (Exception e)
+		} catch (IOException e)
 		{}
 		
 		resetVisited();
@@ -2729,7 +2714,6 @@ public class BooleanGrid
 		}
 		if(result.isEmpty())
 			return nothingThere;
-		//if(dist < 0)
 			result.deWhisker();
 		return result;
 	}

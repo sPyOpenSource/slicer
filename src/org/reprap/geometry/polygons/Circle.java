@@ -15,9 +15,9 @@ public class Circle {
 	 * Constructor makes a circle from three points on its
 	 * circumference.
 	 * (See "A Programmer's Geometry" p 65, by Adrian Bowyer and John Woodwark)
-	 * @param pk
-	 * @param pl
-	 * @param pm
+	 * @param k
+	 * @param l
+	 * @param m
 	 */
 	public Circle(Point2D k, Point2D l, Point2D m) throws ParallelException
 	{

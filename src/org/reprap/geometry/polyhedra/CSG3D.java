@@ -48,14 +48,15 @@
  
  */
 
-package org.reprap.geometry.polygons;
+package org.reprap.geometry.polyhedra;
 
 import java.util.ArrayList;
 
+import javax.vecmath.Matrix4d;
+
 import org.reprap.CSGOp;
-import org.reprap.geometry.polyhedra.CSG3D;
-import org.reprap.geometry.polyhedra.Point3D;
 import org.reprap.utilities.Debug;
+import org.reprap.geometry.polygons.Interval;
 
 /**
  * RepRap Constructive Solid Geometry class
@@ -63,23 +64,23 @@ import org.reprap.utilities.Debug;
  * RrCSG: 2D polygons as boolean combinations of half-planes
  * First version 14 November 2005 
  */
-public class CSG2D
+public class CSG3D
 {
 	
 	/**
 	 * Universal set 
 	 */
-	private static final CSG2D u = new CSG2D(true);  
+	private static final CSG3D u = new CSG3D(true);  
 	
 	/**
 	 * Null set  
 	 */
-	private static final CSG2D n = new CSG2D(false); 
+	private static final CSG3D n = new CSG3D(false); 
 	
 	/**
 	 * Leaf half plane 
 	 */
-	private HalfPlane hp = null;
+	private HalfSpace hp = null;
 	
 	/**
 	 * Type of set
@@ -89,41 +90,26 @@ public class CSG2D
 	/**
 	 * Non-leaf child operands 
 	 */
-	private CSG2D c1 = null;
-	private CSG2D c2 = null; 
+	private CSG3D c1 = null;
+	private CSG3D c2 = null; 
 	
 	/**
 	 * The complement (if there is one) 
 	 */
-	private CSG2D comp = null;        
+	private CSG3D comp = null;        
 	
 	/**
 	 * How much is in here (leaf count)?
 	 */
 	private int complexity;
-	
-	/**
-	 * Flag to prevent cyclic graphs going round forever
-	 */
-	private boolean beingDestroyed = false;
-	
-	private CSG2D()
-	{
-		hp = null;
-		op = CSGOp.LEAF;
-		c1 = null;
-		c2 = null;
-		comp = null;
-		complexity = 1;
-	}	
-	
+		
 	/**
 	 * Make a leaf from a single half-plane
 	 * @param h
 	 */
-	public CSG2D(HalfPlane h)
+	public CSG3D(HalfSpace h)
 	{
-		hp = new HalfPlane(h);
+		hp = new HalfSpace(h);
 		op = CSGOp.LEAF;
 		c1 = null;
 		c2 = null;
@@ -135,7 +121,7 @@ public class CSG2D
 	 * One off constructor for the universal and null sets
 	 * @param b
 	 */
-	private CSG2D(boolean b)
+	private CSG3D(boolean b)
 	{
 		hp = null;
 		if(b)
@@ -152,7 +138,7 @@ public class CSG2D
 	 * Universal or null set
 	 * @return universal or null set
 	 */
-	public static CSG2D universe()
+	public static CSG3D universe()
 	{
 		return u;
 	}
@@ -160,7 +146,7 @@ public class CSG2D
 	/**
 	 * @return nothing/null set
 	 */
-	public static CSG2D nothing()
+	public static CSG3D nothing()
 	{
 		return n;
 	}
@@ -169,23 +155,23 @@ public class CSG2D
 	 * Deep copy
 	 * @param c
 	 */
-	public CSG2D(CSG2D c)
+	public CSG3D(CSG3D c)
 	{
 		if(c == u || c == n)
 			Debug.e("RrCSG deep copy: copying null or universal set.");
 		
 		if(c.hp != null)
-			hp = new HalfPlane(c.hp);
+			hp = new HalfSpace(c.hp);
 		else
 			hp = null;
 		
 		if(c.c1 != null)
-			c1 = new CSG2D(c.c1);
+			c1 = new CSG3D(c.c1);
 		else
 			c1 = null;
 		
 		if(c.c2 != null)
-			c2 = new CSG2D(c.c2);
+			c2 = new CSG3D(c.c2);
 		else
 			c2 = null;
 		
@@ -196,60 +182,13 @@ public class CSG2D
 	}
 	
 	/**
-	 * Compute a 2D slice of a 3D CSG at a given Z value
-	 * @param t
-	 * @param z
-	 * @return
-	 */
-	public static CSG2D slice(CSG3D t, double z)
-	{
-		CSG2D r = new CSG2D();	
-		
-		switch(t.operator())
-		{
-		case LEAF:
-			r.op = CSGOp.LEAF;
-			r.complexity = 1;
-			try 
-			{
-				r.hp = new HalfPlane(t.hSpace(), z);
-			} catch (ParallelException e) 
-			{
-				if(t.hSpace().value(new Point3D(0,0,z)) <= 0)
-					return universe();
-				else
-					return nothing();
-			}
-			break;
-			
-		case NULL:
-				Debug.e("CSG2D constructor from CSG3D: null set in tree!");
-			break;
-			
-		case UNIVERSE:
-				Debug.e("CSG2D constructor from CSG3D: universal set in tree!");
-			break;
-			
-		case UNION:  
-			return CSG2D.union(slice(t.c_1(), z), slice(t.c_2(), z));
-			
-		case INTERSECTION:
-			return CSG2D.intersection(slice(t.c_1(), z), slice(t.c_2(), z));			
-			
-		default:
-			Debug.e("CSG2D constructor from CSG3D: invalid operator " + t.operator());
-		}
-		return r;
-	}
-	
-	/**
 	 * Get children, operator etc
 	 * @return children
 	 */
-	public CSG2D c_1() { return c1; }
-	public CSG2D c_2() { return c2; }
+	public CSG3D c_1() { return c1; }
+	public CSG3D c_2() { return c2; }
 	public CSGOp operator() { return op; }
-	public HalfPlane hPlane() { return hp; }
+	public HalfSpace hSpace() { return hp; }
 	public int complexity() { return complexity; }
 	
 	/**
@@ -297,9 +236,10 @@ public class CSG2D
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+        @Override
 	public String toString()
 	{
-		String result = "2D RrCSG: complexity = " + 
+		String result = "3D RrCSG: complexity = " + 
 			Integer.toString(complexity) + "\n";
 		result = toString_r(result, " ");
 		return result;
@@ -310,7 +250,7 @@ public class CSG2D
 	 * @param a
 	 * @param b
 	 */
-	private CSG2D(CSG2D a, CSG2D b)
+	private CSG3D(CSG3D a, CSG3D b)
 	{
 		hp = null;
 		comp = null;
@@ -332,7 +272,7 @@ public class CSG2D
 	 * @param b
 	 * @return union of passed CSG objects a and b
 	 */
-	public static CSG2D union(CSG2D a, CSG2D b)
+	public static CSG3D union(CSG3D a, CSG3D b)
 	{
 		if(a == b)
 			return a;
@@ -347,7 +287,7 @@ public class CSG2D
 			if(a.comp == b)
 				return universe();
 		
-		CSG2D r = new CSG2D(a, b);
+		CSG3D r = new CSG3D(a, b);
 		r.op = CSGOp.UNION;
 		return r;
 	}
@@ -358,7 +298,7 @@ public class CSG2D
 	 * @param b
 	 * @return intersection of passed CSG objects a and b
 	 */
-	public static CSG2D intersection(CSG2D a, CSG2D b)
+	public static CSG3D intersection(CSG3D a, CSG3D b)
 	{
 		if(a == b)
 			return a;
@@ -373,7 +313,7 @@ public class CSG2D
 			if(a.comp == b)
 				return nothing();
 		
-		CSG2D r = new CSG2D(a, b);
+		CSG3D r = new CSG3D(a, b);
 		r.op = CSGOp.INTERSECTION;
 		return r;
 	}
@@ -382,17 +322,17 @@ public class CSG2D
 	 * Lazy evaluation for complement.
 	 * @return complement
 	 */
-	public CSG2D complement()
+	public CSG3D complement()
 	{		
 		if(comp != null)
 			return comp;
 		
-		CSG2D result;
+		CSG3D result;
 		
 		switch(op)
 		{
 		case LEAF:
-			result = new CSG2D(hp.complement());
+			result = new CSG3D(hp.complement());
 			break;
 			
 		case NULL:
@@ -418,7 +358,6 @@ public class CSG2D
 		// (I do hope that the Java garbage collector is up to 
 		// spotting this deadly embrace, or we - I mean it - has
 		// a memory leak.)
-		// It turned out it was dumb.  Hence addition of destroy() above...
 		
 		comp = result;
 		result.comp = this;
@@ -427,168 +366,67 @@ public class CSG2D
 	}
 	
 	/**
+	 * Move somewhere else.  Note - this expects the inverse transform
+	 * @return
+	 */
+	private CSG3D xform(Matrix4d iM)
+	{				
+		CSG3D result;
+		
+		switch(op)
+		{
+		case LEAF:
+			result = new CSG3D(hp.transform(iM));
+			break;
+			
+		case NULL:
+			return nothing();
+			
+		case UNIVERSE:
+			return universe();
+			
+		case UNION:
+			result = union(c1.xform(iM), c2.xform(iM));
+			break;
+			
+		case INTERSECTION:
+			result = intersection(c1.xform(iM), c2.xform(iM));
+			break;
+			
+		default:
+			Debug.e("transform(): invalid operator.");
+			return nothing();
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Go somewhere else
+	 * @param m
+	 * @return
+	 */
+	public CSG3D transform(Matrix4d m)
+	{
+		Matrix4d iM = new Matrix4d(m);
+		iM.invert();
+		return xform(iM);
+	}
+	
+	/**
 	 * Set difference is intersection with complement
 	 * @param a
 	 * @param b
 	 * @return set difference as CSG object based on input CSG objects a and b
 	 */		
-	public static CSG2D difference(CSG2D a, CSG2D b)
+	public static CSG3D difference(CSG3D a, CSG3D b)
 	{
 		return intersection(a, b.complement());
 	}
 	
-	/**
-	 * Make a rectangle
-	 */
-	public static CSG2D RrCSGFromBox(Rectangle b)
-	{
-		CSG2D r = new CSG2D(new HalfPlane(b.nw(), b.ne()));
-		r = CSG2D.intersection(r, new CSG2D(new HalfPlane(b.ne(), b.se())));
-		r = CSG2D.intersection(r, new CSG2D(new HalfPlane(b.se(), b.sw())));
-		r = CSG2D.intersection(r, new CSG2D(new HalfPlane(b.sw(), b.nw())));
-		return r;
-	}
-	
-	/**
-	 * This takes a complicated expression assumed to contain multiple instances of leafA
-	 * and returns the equivalent CSG expression involving just leafA.
-	 * @param leafA
-	 * @return equivalent CSG expression involving just leafA
-	 */
-	private CSG2D categorise(CSG2D leafA)
-	{
-		HalfPlane a = leafA.hPlane();
-		Point2D an = a.normal();
-		Point2D x = Point2D.add(a.pLine().origin(), an);
-		if(value(x) <= 0)
-			return leafA.complement();
-		else
-			return leafA;
-	}
-	
-	/**
-	 * This takes a complicated expression assumed to contain multiple instances of leafA
-	 * and leafB and returns the equivalent CSG expression involving at most leafA and leafB once 
-	 * (except for non-manifold shapes).
-	 * @param leafA
-	 * @param leafB
-	 * @return equivalent CSG expression involving at most leafA and leafB once
-	 */
-	private CSG2D crossCategorise(CSG2D leafA, CSG2D leafB)
-	{
-		HalfPlane a = leafA.hPlane();
-		HalfPlane b = leafB.hPlane();
-		Point2D an = a.normal();
-		Point2D bn = b.normal();
-		Point2D v02 = Point2D.add(an, bn);
-		Point2D v31 = Point2D.sub(bn, an);
-		Point2D x, x0, x1, x2, x3;
-		int category = 0;
-		try
-		{
-			x = a.cross_point(b);
-			v02 = v02.norm();
-			v31 = v31.norm();
-			x2 = Point2D.add(x, v02);
-			x0 = Point2D.sub(x, v02);
-			x1 = Point2D.add(x, v31);
-			x3 = Point2D.sub(x, v31);
-			if(value(x0) <= 0)
-				category |= 1;
-			if(value(x1) <= 0)
-				category |= 2;
-			if(value(x2) <= 0)
-				category |= 4;
-			if(value(x3) <= 0)
-				category |= 8;
-			
-			switch(category)
-			{
-			case 0:
-				return nothing();
-			case 1:
-				return intersection(leafA, leafB);
-			case 2:
-				return intersection(leafA, leafB.complement());
-			case 3:
-				return leafA;
-			case 4:
-				return intersection(leafA.complement(), leafB.complement());
-			case 5:
-				Debug.e("RrCSG crossCategorise: non-manifold shape (case 0101)!");
-				return union(intersection(leafA, leafB), intersection(leafA.complement(), leafB.complement()));
-			case 6:
-				return leafB.complement();
-			case 7:
-				return union(leafA, leafB.complement());
-			case 8:
-				return intersection(leafA.complement(), leafB);
-			case 9:
-				return leafB;
-			case 10:
-				Debug.e("RrCSG crossCategorise: non-manifold shape (case 1010)!");
-				return union(CSG2D.intersection(leafA.complement(), leafB), intersection(leafA, leafB.complement()));
-			case 11:
-				return union(leafA, leafB);
-			case 12:
-				return leafA.complement();
-			case 13:
-				return union(leafA.complement(), leafB);
-			case 14:
-				return union(leafA.complement(), leafB.complement());
-			case 15:
-				return universe();
-			default:
-				Debug.e("RrCSG crossCategorise: bitwise | doesn't seem to work...");
-				return this;
-			}
-		} catch (ParallelException e)
-		{
-			// leafA and leafB are parallel
-			
-			x0 = Point2D.mul(Point2D.add(a.pLine().origin(), b.pLine().origin()), 0.5);
-			x1 = Point2D.mul(Point2D.sub(a.pLine().origin(), b.pLine().origin()), 3);
-			x2 = Point2D.add(x0, x1);
-			x1 = Point2D.sub(x0, x1);
-			if(value(x0) <= 0)
-				category |= 1;
-			if(value(x1) <= 0)
-				category |= 2;
-			if(value(x2) <= 0)
-				category |= 4;
-			
-			if(leafA.value(x0) <= 0)
-				leafA = leafA.complement();
-			
-			if(leafB.value(x0) <= 0)
-				leafB = leafB.complement();			
-			
-			switch(category)
-			{
-			case 0:
-				return nothing();
-			case 1:
-				return intersection(leafA.complement(), leafB.complement());
-			case 2:
-				return leafB;
-			case 3:
-				return leafA.complement();
-			case 4:
-				return leafA;
-			case 5:
-				return union(leafA, leafB);
-			case 6:
-				return leafB.complement();
-			case 7:
-				return universe();
-			default:
-				Debug.e("RrCSG crossCategorise: bitwise | doesn't seem to work...");
-				return this;	
-			}
-		}
 
+	
 
-	}
 	
 	/**
 	 * Run through a GSG expression looking at its leaves and return
@@ -598,12 +436,12 @@ public class CSG2D
 	 * @param expression
 	 * @return
 	 */
-	private void uniqueList_r(ArrayList<CSG2D> list)
+	private void uniqueList_r(ArrayList<CSG3D> list)
 	{
 		switch(op)
 		{
 		case LEAF:
-			CSG2D entry;
+			CSG3D entry;
 			for(int i = 0; i < list.size(); i++)
 			{
 				entry = list.get(i);
@@ -637,47 +475,13 @@ public class CSG2D
 	 * @param expression
 	 * @return
 	 */
-	private ArrayList<CSG2D> uniqueList()
+	private ArrayList<CSG3D> uniqueList()
 	{
-		ArrayList<CSG2D> result = new ArrayList<>();
+		ArrayList<CSG3D> result = new ArrayList<>();
 		uniqueList_r(result);
 		return result;
 	}	
 	
-	/**
-	 * Regularise a set with simple contents ( <= 4 )
-	 * This assumes simplify has been run over the set
-	 * @return regularised CSG object
-	 */	
-	public CSG2D regularise()
-	{	
-		CSG2D r = this;
-
-		if(complexity < 3 || complexity > 4)
-			return r;
-
-		ArrayList<CSG2D> list = uniqueList();
-		if(list.size() == 1)
-			return categorise(list.get(0));
-		if(list.size() == 2)
-			return crossCategorise(list.get(0), list.get(1));
-		
-		return r;
-	}
-	
-	/**
-	 * Force an approximation to the regulariseing of a set
-	 * This assumes simplify has been run over the set
-	 * @return regularised CSG object
-	 */	
-	public CSG2D forceRegularise()
-	{	
-		ArrayList<CSG2D> list = uniqueList();
-		if(list.size() == 1)
-			return categorise(list.get(0));
-		
-		return crossCategorise(list.get(0), list.get(1));
-	}
 	
 	/**
 	 * Replace duplicate of leaf with leaf itself
@@ -685,7 +489,7 @@ public class CSG2D
 	 * @param leaf
 	 * @param tolerance
 	 */		
-	private void replaceAllSameLeaves(CSG2D leaf, double tolerance)
+	private void replaceAllSameLeaves(CSG3D leaf, double tolerance)
 	{	
 		int same;
 		switch(op)
@@ -698,10 +502,10 @@ public class CSG2D
 			
 		case UNION:
 		case INTERSECTION:    
-			HalfPlane hp = leaf.hp;
+			HalfSpace hp = leaf.hp;
 			if(c1.op == CSGOp.LEAF)
 			{
-				same = HalfPlane.same(hp, c1.hp, tolerance);
+				same = HalfSpace.same(hp, c1.hp, tolerance);
 				if(same == 0)
 					c1 = leaf;
 				if(same == -1)
@@ -711,7 +515,7 @@ public class CSG2D
 			
 			if(c2.op == CSGOp.LEAF)
 			{
-				same = HalfPlane.same(hp, c2.hp, tolerance);
+				same = HalfSpace.same(hp, c2.hp, tolerance);
 				if(same == 0)
 					c2 = leaf;
 				if(same == -1)
@@ -732,7 +536,7 @@ public class CSG2D
 	 * @param tolerance
 	 * @return simplified CSG object
 	 */		
-	private void simplify_r(CSG2D root, double tolerance)
+	private void simplify_r(CSG3D root, double tolerance)
 	{
 		switch(op)
 		{
@@ -762,15 +566,17 @@ public class CSG2D
 	 * @param tolerance
 	 * @return simplified CSG object
 	 */		
-	public CSG2D simplify(double tolerance)
+	public CSG3D simplify(double tolerance)
 	{
 		if(this == u || this == n)
 			return this;
 		
-		CSG2D root = new CSG2D(this);
+		CSG3D root = new CSG3D(this);
 		simplify_r(root, tolerance);
 		return root;
 	}
+	
+
 	
 	/**
 	 * Offset by a distance (+ve or -ve)
@@ -778,14 +584,14 @@ public class CSG2D
 	 * @param d
 	 * @return offset CSG object by distance d
 	 */
-	public CSG2D offset(double d)
+	public CSG3D offset(double d)
 	{
-		CSG2D result;
+		CSG3D result;
 		
 		switch(op)
 		{
 		case LEAF:
-			result = new CSG2D(hp.offset(d));
+			result = new CSG3D(hp.offset(d));
 			break;
 			
 		case NULL:
@@ -814,9 +620,9 @@ public class CSG2D
 	 * @param p
 	 * @return leaf?
 	 */
-	public CSG2D leaf(Point2D p)
+	public CSG3D leaf(Point3D p)
 	{
-		CSG2D result, r1, r2;
+		CSG3D result, r1, r2;
 		
 		switch(op)
 		{
@@ -862,9 +668,10 @@ public class CSG2D
 	 * @param p
 	 * @return potential value of a point
 	 */
-	public double value(Point2D p)
+	public double value(Point3D p)
 	{
 		double result = 1;
+//		RrCSG c = leaf(p);
 		switch(op)
 		{
 		case LEAF:
@@ -893,12 +700,14 @@ public class CSG2D
 		return result;
 	}
 	
+
+	
 	/**
 	 * The interval value of a box (analagous to point)
 	 * @param b
 	 * @return value of a box
 	 */
-	public Interval value(Rectangle b)
+	public Interval value(Box b)
 	{
 		Interval result;
 		
@@ -937,9 +746,9 @@ public class CSG2D
 	 * @param b
 	 * @return pruned box as new CSG object
 	 */
-	public CSG2D prune(Rectangle b)
+	public CSG3D prune(Box b)
 	{
-		CSG2D result = this;
+		CSG3D result = this;
 		
 		switch(op)
 		{

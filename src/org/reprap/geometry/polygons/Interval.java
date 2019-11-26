@@ -74,14 +74,6 @@ public class Interval
 		// I don't point to anything
 	}
 	
-	/**
-	 * Destroy just me
-	 */
-//	protected void finalize() throws Throwable
-//	{
-//		super.finalize();
-//	}
-	
 	public Interval()
 	{
 		empty = true;
@@ -349,9 +341,7 @@ public class Interval
 		
 		if( Math.abs(a.low - b.low) > tolerance)
 			return false;
-		if (Math.abs(a.high - b.high) > tolerance)
-			return false;
-		return true;
+		return Math.abs(a.high - b.high) <= tolerance;
 	}
 	
 	/**
@@ -380,7 +370,6 @@ public class Interval
 	
 	/**
 	 * Sign of an interval
-	 * @param x
 	 * @return sign of the interval
 	 */
 	public Interval sign()

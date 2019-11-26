@@ -142,7 +142,7 @@ public class Preferences {
 		try
 		{
 			RepRapUtils.copyTree(new File(sysConfig), usersDir);
-		} catch (Exception e)
+		} catch (IOException e)
 		{
 			Debug.e("Error copying RepRap configurations to user's directory: " + usersDir.toString());
 		}
@@ -246,7 +246,7 @@ public class Preferences {
 				i++;
 			}
 			outFile.close();
-		} catch (Exception e)
+		} catch (IOException e)
 		{
 			Debug.e("Can't write to file: " + getMachineFilePath());
 		}
@@ -437,8 +437,7 @@ public class Preferences {
 		String strVal = loadString(name);
 		if (strVal == null) return false;
 		if (strVal.length() == 0) return false;
-		if (strVal.compareToIgnoreCase("true") == 0) return true;
-		return false;
+		return strVal.compareToIgnoreCase("true") == 0;
 	}
 
 	public static boolean loadConfig(String configName)
@@ -547,7 +546,7 @@ public class Preferences {
 	{
 		initIfNeeded();
 		Enumeration<?> allOfThem = globalPrefs.mainPreferences.propertyNames();
-		List<String> r = new ArrayList<String>();
+		List<String> r = new ArrayList<>();
 		
 		while(allOfThem.hasMoreElements())
 		{
@@ -567,7 +566,7 @@ public class Preferences {
 	{
 		initIfNeeded();
 		Enumeration<?> allOfThem = globalPrefs.mainPreferences.propertyNames();
-		List<String> r = new ArrayList<String>();
+		List<String> r = new ArrayList<>();
 		
 		while(allOfThem.hasMoreElements())
 		{

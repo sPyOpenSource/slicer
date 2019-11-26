@@ -77,7 +77,6 @@ import org.reprap.Attributes;
 import org.reprap.Preferences;
 import org.reprap.Extruder;
 import org.reprap.geometry.LayerRules;
-//import org.reprap.geometry.polygons.PolygonAttributes;
 import org.reprap.machines.VelocityProfile;
 import org.reprap.utilities.Debug;
 
@@ -192,15 +191,6 @@ public class Polygon
 		//return new Rr2Point(points.get(i));
 		return points.get(i);
 	}
-	
-//	/**
-//	 * Get the polygon attribute (may be null)
-//	 * @return
-//	 */
-//	public PolygonAttributes getPolygonAttribute()
-//	{
-//		return pa;
-//	}
 	
 	/**
 	 * Get the speed
@@ -328,20 +318,7 @@ public class Polygon
 		valveEnd  = p.valveEnd;
 		extrudeEndDistance2 = p.extrudeEndDistance2;
 		valveEndDistance2 = p.valveEndDistance2;
-//		if(p.pa != null)
-//			pa = new PolygonAttributes(p.pa);
-//		else
-//			pa = null;
 	}
-	
-//	/**
-//	 * Set the polygon attribute
-//	 * @return
-//	 */
-//	public void setPolygonAttribute(PolygonAttributes p)
-//	{
-//		pa = p;
-//	}
 	
 	/**
 	 * Add a new point to the polygon

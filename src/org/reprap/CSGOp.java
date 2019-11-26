@@ -72,7 +72,7 @@ public enum CSGOp
     /**
      * 
      */
-    private String name;
+    private final String name;
     
     /**
      * @param name
@@ -85,6 +85,7 @@ public enum CSGOp
     /* (non-Javadoc)
      * @see java.lang.Enum#toString()
      */
+    @Override
     public String toString() { return name; }
 }
 
