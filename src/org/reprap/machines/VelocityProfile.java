@@ -19,7 +19,7 @@ import org.reprap.utilities.Debug;
 public class VelocityProfile 
 {
 	private double v, s1, s2;
-	private int flat;
+	private final int flat;
 	
 	public VelocityProfile(double s, double vStart, double maxSpeed, double vEnd, double acceleration)
 	{

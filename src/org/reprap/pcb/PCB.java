@@ -3,12 +3,12 @@ package org.reprap.pcb;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.FileReader;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -144,9 +144,9 @@ public class PCB {
 	GCodeReaderAndWriter gcode;
 
 	/**
-	 * @param args
+	 * @param itp
 	 */
-	public void pcb(File itp, File id, File og, Extruder pp) 
+	public PCB(File itp, File id, File og, Extruder pp) 
 	{
 		inputTracksAndPads = itp;
 		inputDrill = id;
@@ -170,15 +170,11 @@ public class PCB {
 		if(Preferences.simulate() && penPaths.size() > 0)
 		{
 			RrGraphics simulationPlot2 = new RrGraphics("PCB pen plotlines");
-			//				if(currentPolygon != null)
-			//					thePattern.add(new RrPolygon(currentPolygon));
 			simulationPlot2.init(penPaths.getBox(), false, "0");
 			simulationPlot2.add(penPaths);
 		}
 
-		
-		writeGCodes();
-			
+					
 		Debug.d("GCode file generated succesfully !");
 	}
 	
@@ -280,7 +276,7 @@ public class PCB {
 		raisePen();
 	}
 	
-	private void writeGCodes()
+	public void writeGCodes()
 	{
 		try {
 			gcode = new GCodeReaderAndWriter(new PrintStream(outputGCodes));
@@ -343,7 +339,7 @@ public class PCB {
 					processLine(line, true);
 				}
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -425,7 +421,7 @@ public class PCB {
 
 						Debug.d("\n\nDrill: " + apertureNum);
 
-						drillDef = true;
+						//drillDef = true;
 
 						double s = scale*Double.parseDouble(apertureSize);
 						gerberGcode.addCircleAperture(Integer.parseInt(apertureNum), s);
@@ -505,20 +501,19 @@ public class PCB {
 
 											Debug.d(" X: "+x+" Y:"+y+" D:"+d);
 
-											if(d==1)
-											{
-												result = gerberGcode.drawLine(new Point2D(x, y));
-											}
-											else
-												if(d==2)
-												{
-													gerberGcode.goTo(new Point2D(x, y));
-												}	
-												else
-													if(d==3)
-													{
-														result = gerberGcode.exposePoint(new Point2D(x, y));
-													}
+                    switch (d) {
+                        case 1:
+                            result = gerberGcode.drawLine(new Point2D(x, y));
+                            break;
+                        case 2:
+                            gerberGcode.goTo(new Point2D(x, y));
+                            break;
+                        case 3:
+                            result = gerberGcode.exposePoint(new Point2D(x, y));
+                            break;
+                        default:
+                            break;
+                    }
 										}
 										else
 											if(line.startsWith("D") || (line.startsWith("T") && drill && !drillDef))

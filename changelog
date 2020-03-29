@@ -1,3 +1,6 @@
+v1.1 XW 29-03-2020
+working version
+
 reprap-host (1.0.0.20090213) intrepid; urgency=low
 
   * Packaged as part of build script which builds zip files and

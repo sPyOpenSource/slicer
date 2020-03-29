@@ -123,6 +123,7 @@ import javax.vecmath.Vector3d;
 import com.sun.j3d.utils.picking.PickCanvas;
 import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.picking.PickTool;
+import java.io.IOException;
 
 import org.reprap.Attributes;
 import org.reprap.Printer;
@@ -190,10 +191,9 @@ class MaterialRadioButtons extends JPanel {
 					matnumber = i;
 				JRadioButton b = new JRadioButton(names[i]);
 		        b.setActionCommand(names[i]);
-		        b.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						att.setMaterial(e.getActionCommand());
-					}});
+		        b.addActionListener((ActionEvent e) -> {
+                            att.setMaterial(e.getActionCommand());
+                                });
 		        if(i == matnumber)
 		        	b.setSelected(true);
 		        bGroup.add(b);
@@ -210,25 +210,21 @@ class MaterialRadioButtons extends JPanel {
 			JButton okButton = new JButton();
 			radioPanel.add(okButton);
 			okButton.setText("OK");
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					OKHandler();
-				}
-			});
+			okButton.addActionListener((ActionEvent evt) -> {
+                            OKHandler();
+                        });
 			
 			add(radioPanel, BorderLayout.LINE_START);
 			setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 			
-		} catch (Exception ex)
+		} catch (IOException ex)
 		{
 			Debug.e(ex.toString());
-			ex.printStackTrace();
 		}	
 	}
 	
 	public static void OKHandler()
 	{
-		//System.out.println("Copies: " + copies.getText());
 		int number = Integer.parseInt(copies.getText().trim()) - 1;
 		STLObject stl = rrb.getSTLs().get(stlIndex);
 		rrb.moreCopies(stl, att, number);
@@ -294,7 +290,6 @@ class ScaleXYZ extends JPanel {
 	private ScaleXYZ(double xi, double yi, double zi)
 	{
 		super(new BorderLayout());
-		//System.out.println("C");
 		if(!called)
 		{
 			x = xi;
@@ -341,19 +336,15 @@ class ScaleXYZ extends JPanel {
 		JButton okButton = new JButton();
 		radioPanel.add(okButton);
 		okButton.setText("OK");
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				OKHandler();
-			}
-		});
+		okButton.addActionListener((ActionEvent evt) -> {
+                    OKHandler();
+                });
 		JButton cancelButton = new JButton();
 		radioPanel.add(cancelButton);
 		cancelButton.setText("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				cancelHandler();
-			}
-		});
+		cancelButton.addActionListener((ActionEvent evt) -> {
+                    cancelHandler();
+                });
 		
 		add(radioPanel, BorderLayout.LINE_START);
 		setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
@@ -365,7 +356,6 @@ class ScaleXYZ extends JPanel {
 	
 	public static void OKHandler()
 	{
-		//System.out.println("Copies: " + copies.getText());
 		x = Double.parseDouble(xv.getText().trim());
 		y = Double.parseDouble(yv.getText().trim());
 		z = Double.parseDouble(zv.getText().trim());
@@ -373,7 +363,6 @@ class ScaleXYZ extends JPanel {
 	}
 	public static void cancelHandler()
 	{
-		//System.out.println("Copies: " + copies.getText());
 		x = 1;
 		y = 1;
 		z = 1;
@@ -382,7 +371,6 @@ class ScaleXYZ extends JPanel {
     
     public static void createAndShowGUI() 
     {
-    	//System.out.println("A");
     	JFrame f = new JFrame();
     	dialog = new JDialog(f, "scale");
         dialog.setLocation(500, 400);
@@ -417,9 +405,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	private MouseObject mouse = null;
 	private PickCanvas pickCanvas = null; // The thing picked by a mouse click
 	private STLObject lastPicked = null; // The last thing picked
-	//private java.util.List<STLObject> stls = new ArrayList<STLObject>(); // All the STLObjects to be built
 	private AllSTLsToBuild stls;
-	//private int objectIndex = 0; // Counter for STLs as they are loaded
 	private boolean reordering;
 	private RrGraphics graphics;
 
@@ -437,21 +423,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		return stls;
 	}
 	
-	/**
-	 * Set the material to make an STL object from.
-	 * @param stl 
-	 */
-//	private void getMaterialName(STLObject stl)
-//	{
-//		try {
-//			MaterialRadioButtons.createAndShowGUI(stl);
-//		}
-//      	catch (Exception ex) {
-//     		JOptionPane.showMessageDialog(null, "RepRapBuild material select exception: " + ex);
-// 			ex.printStackTrace();
-//     	}
-//	}
-	
 	// Set bg light grey
 	protected Background createBackground() {
 		Background back = new Background(bgColour);
@@ -467,11 +438,11 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			Group parentGroup = vpBranchGroup;
 			TransformGroup curTg = null;
 
-			for (int n = 0; n < tgArray.length; n++) {
-				curTg = tgArray[n];
-				parentGroup.addChild(curTg);
-				parentGroup = curTg;
-			}
+                    for (TransformGroup tgArray1 : tgArray) {
+                        curTg = tgArray1;
+                        parentGroup.addChild(curTg);
+                        parentGroup = curTg;
+                    }
 
 			tgArray[tgArray.length - 1].addChild(vp);
 		} else
@@ -569,16 +540,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 
 	// Find the stl object in the scene with the given name
-
-//	protected STLObject findSTL(String name) {
-//		STLObject stl;
-//		for (int i = 0; i < stls.size(); i++) {
-//			stl = stls.get(i);
-//			if (stl.name == name)
-//				return stl;
-//		}
-//		return null;
-//	}
 
 	public void mouseEntered(MouseEvent e) {
 	}
@@ -797,14 +758,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		lastPicked.setAppearance(picked_app);
 		mouse.move(lastPicked, true);
 	}
-	
-//	public void materialSTL()
-//	{
-//		if (lastPicked == null)
-//			return;
-//		getMaterialName(lastPicked);
-//		mouseToWorld();
-//	}
 	
 	// Callback to delete one of the loaded objects
 	

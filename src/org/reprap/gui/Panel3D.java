@@ -394,7 +394,6 @@ abstract public class Panel3D extends JPanel {
 	
 	protected String getStlBackground() throws Exception 
 	{
-		//return "File:" + wv_location;
 		return wv_location;
 	}
 	

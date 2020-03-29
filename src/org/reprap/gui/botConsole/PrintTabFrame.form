@@ -44,12 +44,8 @@
                           <Component id="displayPathsCheck" min="-2" max="-2" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Group type="102" attributes="1">
-                              <Component id="preferencesButton" min="-2" max="-2" attributes="1"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="getWebPage" min="-2" pref="190" max="-2" attributes="0"/>
-                          </Group>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="preferencesButton" alignment="0" min="-2" max="-2" attributes="1"/>
                           <Group type="102" attributes="0">
                               <Component id="printButton" min="-2" pref="72" max="-2" attributes="1"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -99,43 +95,38 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="getWebPage" min="-2" pref="72" max="-2" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="loadSTL" min="-2" pref="41" max="-2" attributes="1"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="loadGCode" min="-2" pref="41" max="-2" attributes="1"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="toSNAPRepRapRadioButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="toGCodeRepRapRadioButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="gCodeToFileRadioButton" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="preferencesButton" min="-2" pref="45" max="-2" attributes="1"/>
-                      </Group>
+                      <Component id="loadSTL" min="-2" pref="41" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="layerPauseCheck" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="displayPathsCheck" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                              <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                                  <Component id="pauseButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                                  <Component id="printButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                                  <Component id="stopButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                                  <Component id="exitButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                              </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="loadRFO" min="-2" pref="41" max="-2" attributes="1"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="saveRFO" min="-2" pref="41" max="-2" attributes="1"/>
-                              </Group>
-                          </Group>
+                      <Component id="loadGCode" min="-2" pref="41" max="-2" attributes="1"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="toSNAPRepRapRadioButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="toGCodeRepRapRadioButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="gCodeToFileRadioButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="preferencesButton" min="-2" pref="45" max="-2" attributes="1"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="layerPauseCheck" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="displayPathsCheck" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                      <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                          <Component id="pauseButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
+                          <Component id="printButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
+                          <Component id="stopButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
+                          <Component id="exitButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="loadRFO" min="-2" pref="41" max="-2" attributes="1"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="saveRFO" min="-2" pref="41" max="-2" attributes="1"/>
                       </Group>
                   </Group>
               </Group>
@@ -161,7 +152,7 @@
                   </Group>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="24" max="32767" attributes="0"/>
+              <EmptySpace pref="26" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -233,16 +224,6 @@
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="selectorRadioButtonMousePressed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="getWebPage">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/org/reprap/gui/botConsole/rr-logo-green-url.png"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getWebPageActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="expectedBuildTimeLabel">

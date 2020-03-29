@@ -10,7 +10,7 @@ public class GCodeExtruder extends GenericExtruder
 	GCodeReaderAndWriter gcode;
 	
 	/**
-	 * @param prefs
+	 * @param p
 	 * @param extruderId
 	 */
 	public GCodeExtruder(GCodeReaderAndWriter writer, int extruderId, Printer p)
@@ -26,8 +26,6 @@ public class GCodeExtruder extends GenericExtruder
 	 */
 	public void zeroExtrudedLength(boolean really) throws Exception
 	{
-		//if(es.length() > 0)
-		//{
 			super.zeroExtrudedLength(really);
 			if(really)
 			{
@@ -36,7 +34,6 @@ public class GCodeExtruder extends GenericExtruder
 					s += " ; zero the extruded length";
 				gcode.queue(s);
 			}
-		//}
 	}
 	
 
@@ -162,6 +159,5 @@ public class GCodeExtruder extends GenericExtruder
 	{
 		return false;
 	}
-	
 
 }

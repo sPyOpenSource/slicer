@@ -131,7 +131,6 @@ public class GerberGCode {
 			return result;
 		pcb.disc(c, curAperture.width*0.5, colour);
 		lastCoords = new Point2D(fixCoords(c));
-		//octagon(fixCoords(c), curAperture.width);
 		return result;
 	}
 	

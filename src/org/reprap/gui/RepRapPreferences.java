@@ -154,7 +154,6 @@ public class RepRapPreferences extends JFrame {
 	 * converts it into arrays of JPanels and JTextFields, then builds the
 	 * menus from them.
 	 * 
-	 * @param frame
 	 */
 	public RepRapPreferences() 
 	{

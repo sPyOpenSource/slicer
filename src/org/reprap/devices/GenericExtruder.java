@@ -35,34 +35,14 @@ public abstract class GenericExtruder implements Extruder
 	protected boolean fiveD;
 	
 	/**
-	 * Flag to record if we're going backwards
-	 */
-	//protected boolean reversing;
-	
-	/**
-	 * The current extrude speed
-	 */
-	//protected double currentSpeed = 0;
-	
-	/**
 	 * Offset of 0 degrees centigrade from absolute zero
 	 */
 	public static final double absZero = 273.15;
-	
-	/**
-	 * The temperature most recently read from the device 
-	 */
-	//protected double currentTemperature = 0; 
 
 	/**
 	 * Maximum motor speed (value between 0-255)
 	 */
 	protected int maxExtruderSpeed; 
-	
-	/**
-	 * The actual extrusion speed
-	 */
-	//protected double extrusionSpeed;
 	
 	/**
 	 * The time to run the extruder at the start
@@ -184,32 +164,14 @@ public abstract class GenericExtruder implements Extruder
 	protected double infillOverlap = 0;
 	
 	/**
-	 * Where to put the nozzle
-	 */
-	//protected double offsetX, offsetY, offsetZ;
-	
-	/**
 	 * The diameter of the feedstock (if any)
 	 */
 	protected double feedDiameter = -1;
 	
 	/**
-	 * 
-	 */
-	//protected long lastTemperatureUpdate = 0;
-	
-	/**
 	 * Identifier of the extruder 
 	 */
 	protected int myExtruderID;
-	
-	/**
-	 * One physical extruder can have several of this class attached to it
-	 * with different myExtruderIDs.  physicalExtruder is a unique integer
-	 * for each actual extruder, derived from the old SNAP address of the extruder,
-	 * which is necessarily unique.
-	 */
-	//protected int physicalExtruder;
 	
 	/**
 	* prefix for our preferences.
@@ -341,7 +303,6 @@ public abstract class GenericExtruder implements Extruder
 	/**
      * This decides how many layers to fine-infill for areas that are upward- 
      * or downward-facing surfaces of the object. 
-     * @return
      */
 	
 	protected int surfaceLayers = 2;
@@ -423,17 +384,15 @@ public abstract class GenericExtruder implements Extruder
 		try
 		{
 			result = Preferences.loadGlobalInt(prefName + "Address");
-			maxExtruderSpeed = 255; //Preferences.loadGlobalInt(prefName + "MaxSpeed(0..255)");
-//			extrusionSpeed = Preferences.loadGlobalDouble(prefName + "ExtrusionSpeed(mm/minute)");
+			maxExtruderSpeed = 255;
 			purgeTime = Preferences.loadGlobalDouble(prefName + "Purge(ms)");
-			//extrusionPWM = Preferences.loadGlobalDouble(prefName + "ExtrusionPWM(0..1)");
 			extrusionPWM = -1;
 			extrusionTemp = Preferences.loadGlobalDouble(prefName + "ExtrusionTemp(C)");
 			extrusionSize = Preferences.loadGlobalDouble(prefName + "ExtrusionSize(mm)");
 			extrusionHeight = Preferences.loadGlobalDouble(prefName + "ExtrusionHeight(mm)");		
 			extrusionInfillWidth =  Preferences.loadGlobalDouble(prefName + "ExtrusionInfillWidth(mm)");
-			lowerFineLayers = 2; //Preferences.loadGlobalInt(prefName + "LowerFineLayers(0...)");
-			upperFineLayers = 2; //Preferences.loadGlobalInt(prefName + "UpperFineLayers(0...)");
+			lowerFineLayers = 2; 
+			upperFineLayers = 2; 
 			extrusionBroadWidth = Preferences.loadGlobalDouble(prefName + "ExtrusionBroadWidth(mm)");		
 			coolingPeriod = Preferences.loadGlobalDouble(prefName + "CoolingPeriod(s)");
 			fastXYFeedrate = Preferences.loadGlobalDouble(prefName + "FastXYFeedrate(mm/minute)");
@@ -441,18 +400,15 @@ public abstract class GenericExtruder implements Extruder
 			slowXYFeedrate = Preferences.loadGlobalDouble(prefName + "SlowXYFeedrate(mm/minute)");
 			maxAcceleration = Preferences.loadGlobalDouble(prefName + "MaxAcceleration(mm/minute/minute)");
 			middleStart = Preferences.loadGlobalBool(prefName + "MiddleStart");
-			t0 = 0; //Preferences.loadGlobalInt(prefName + "t0(0..255)");
+			t0 = 0;
 			iSpeed = Preferences.loadGlobalDouble(prefName + "InfillSpeed(0..1)");
 			oSpeed = Preferences.loadGlobalDouble(prefName + "OutlineSpeed(0..1)");
-			asLength = -1; //Preferences.loadGlobalDouble(prefName + "AngleSpeedLength(mm)");
-			asFactor = 0.5; //Preferences.loadGlobalDouble(prefName + "AngleSpeedFactor(0..1)");
+			asLength = -1; 
+			asFactor = 0.5; 
 			material = Preferences.loadGlobalString(prefName + "MaterialType(name)");
 			supportMaterial = Preferences.loadGlobalString(prefName + "SupportMaterialType(name)");
 			inFillMaterial = Preferences.loadGlobalString(prefName + "InFillMaterialType(name)");			
-//			offsetX = Preferences.loadGlobalDouble(prefName + "OffsetX(mm)");
-//			offsetY = Preferences.loadGlobalDouble(prefName + "OffsetY(mm)");
-//			offsetZ = Preferences.loadGlobalDouble(prefName + "OffsetZ(mm)");
-			nozzleWipeEnabled = false; //Preferences.loadGlobalBool(prefName + "NozzleWipeEnabled");
+			nozzleWipeEnabled = false; 
 			nozzleWipeDatumX = 22.4; //Preferences.loadGlobalDouble(prefName + "NozzleWipeDatumX(mm)");
 			nozzleWipeDatumY = 4; //Preferences.loadGlobalDouble(prefName + "NozzleWipeDatumY(mm)");
 			nozzleWipeStrokeX = 0; //Preferences.loadGlobalDouble(prefName + "NozzleWipeStrokeX(mm)");
@@ -497,7 +453,7 @@ public abstract class GenericExtruder implements Extruder
 			singleLine = Preferences.loadGlobalBool(prefName + "SingleLine");
 			feedDiameter = Preferences.loadGlobalDouble(prefName + "FeedDiameter(mm)");
 			insideOut = Preferences.loadGlobalBool(prefName + "InsideOut");
-		} catch (Exception ex)
+		} catch (IOException ex)
 		{
 			Debug.e("Refresh extruder preferences: " + ex.toString());
 		}
@@ -753,7 +709,7 @@ public abstract class GenericExtruder implements Extruder
     	try
     	{
     		return Preferences.loadGlobalDouble(prefName + "ExtrusionSpeed(mm/minute)");
-    	} catch (Exception e)
+    	} catch (IOException e)
     	{
     		Debug.e(e.toString());
     		return 200;  //Hack
@@ -836,30 +792,6 @@ public abstract class GenericExtruder implements Extruder
     {
     	return coolingPeriod;
     } 
-    
-//    /* (non-Javadoc)
-//     * @see org.reprap.Extruder#getOffsetX()
-//     */
-//    public double getOffsetX()
-//    {
-//    	return offsetX;
-//    }    
-//    
-//    /* (non-Javadoc)
-//     * @see org.reprap.Extruder#getOffsetY()
-//     */
-//    public double getOffsetY()
-//    {
-//    	return offsetY;
-//    }
-//    
-//    /* (non-Javadoc)
-//     * @see org.reprap.Extruder#getOffsetZ()
-//     */
-//    public double getOffsetZ()
-//    {
-//    	return offsetZ;
-//    }
     
     /* (non-Javadoc)
      * @see org.reprap.Extruder#getColour()
@@ -1145,15 +1077,6 @@ public abstract class GenericExtruder implements Extruder
 		return org.reprap.Main.gui.getPrinter().getExtruder(inFillMaterial);
 	}
 	
-	/**
-	 * What are the dimensions for infill?
-	 * @return
-	 */
-//	public String getBroadInfillMaterial()
-//	{
-//		return inFillMaterial;
-//	}
-	
     public static int getNumberFromMaterial(String material)
     {
     	if(material.equalsIgnoreCase("null"))
@@ -1290,7 +1213,6 @@ public abstract class GenericExtruder implements Extruder
     		return distance;
     	
     	double r = distance*getExtrusionHeight()*getExtrusionSize()/(getFeedDiameter()*getFeedDiameter()*Math.PI/4);
-    	//Debug.g("d/D: " + r/distance + ", m: " + getMaterial());
     	return r;
     }
     
@@ -1311,8 +1233,7 @@ public abstract class GenericExtruder implements Extruder
     /**
      * Get how much extrudate is deposited for a given xy movement
      * currentSpeed is in mm per minute.  Valve extruders cannot know, so return 0.
-     * @param xyDistance (mm)
-     * @param xyFeedrate (mm/minute)
+     * @param distance (mm)
      * @return
      */
     public double getDistance(double distance)
@@ -1416,9 +1337,6 @@ public abstract class GenericExtruder implements Extruder
 		getPrinter().moveToPurge(liftZ);
 		try
 		{
-			//if(homeZ)
-			//	getPrinter().homeToZeroZ();
-			//heatOn(true);
 			if(getPurgeTime() > 0)
 			{
 				setExtrusion(getFastXYFeedrate(), false);

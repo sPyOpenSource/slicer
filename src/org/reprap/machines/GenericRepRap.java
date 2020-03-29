@@ -246,9 +246,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 	
 	public void loadMotors()
 	{
-//		motorX = new NullStepperMotor(1);
-//		motorY = new NullStepperMotor(2);
-//		motorZ = new NullStepperMotor(3);
 	}
 	
 	public void loadExtruders() throws Exception
@@ -293,16 +290,11 @@ public abstract class GenericRepRap implements CartesianPrinter
 		try
 		{
 			//load axis prefs
-			int axes = 3;//Preferences.loadGlobalInt("AxisCount");
-			//if (axes != 3)
-			//	throw new Exception("A Cartesian Bot must contain 3 axes");
+			int axes = 3;
 			
-			xYReZeroInterval =  -1; //Preferences.loadGlobalDouble("XYReZeroInterval(mm)");
+			xYReZeroInterval =  -1;
 
 			// TODO This should be from calibration
-			//scaleX = 7.99735; //Preferences.loadGlobalDouble("XAxisScale(steps/mm)");
-			//scaleY = 7.99735; //Preferences.loadGlobalDouble("YAxisScale(steps/mm)");
-			//scaleZ = 320; //Preferences.loadGlobalDouble("ZAxisScale(steps/mm)");
 			
 			double xNE = Preferences.loadGlobalDouble("WorkingX(mm)");
 			double yNE = Preferences.loadGlobalDouble("WorkingY(mm)");
@@ -323,17 +315,12 @@ public abstract class GenericRepRap implements CartesianPrinter
 			fastXYFeedrate = Math.min(maxFeedrateX, maxFeedrateY);
 			setFastFeedrateZ(maxFeedrateZ);
 			
-			idleZ = true; //Preferences.loadGlobalBool("IdleZAxis");
+			idleZ = true;
 			
 			fanLayer = Preferences.loadGlobalInt("FanLayer");
 			
 			foundationLayers = Preferences.loadGlobalInt("FoundationLayers");
-			//dumpX = Preferences.loadGlobalDouble("DumpX(mm)");
-			//dumpY = Preferences.loadGlobalDouble("DumpY(mm)");
-			
-			//finishX = Preferences.loadGlobalDouble("FinishX(mm)");
-			//finishY = Preferences.loadGlobalDouble("FinishY(mm)");
-			
+						
 			bedTemperatureTarget = Preferences.loadGlobalDouble("BedTemperature(C)");
 			int extruderCount = Preferences.loadGlobalInt("NumberOfExtruders");
 			if (extruderCount < 1)
@@ -348,8 +335,9 @@ public abstract class GenericRepRap implements CartesianPrinter
 			Debug.e("Refresh Reprap preferences: " + ex.toString());
 		}
 		
-		for(int i = 0; i < extruders.length; i++)
-			extruders[i].refreshPreferences();
+            for (Extruder extruder1 : extruders) {
+                extruder1.refreshPreferences();
+            }
 		
 		Debug.refreshPreferences();
 	}
@@ -379,7 +367,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 					selectExtruder(e, true, false, new Point2D(r.x().low(), r.y().low()));
 					singleMove(r.x().low(), r.y().low(), currentZ, getExtruder().getFastXYFeedrate(), true);
 					printStartDelay(true);
-					//getExtruder().zeroExtrudedLength(true);
 					getExtruder().setExtrusion(getExtruder().getExtruderSpeed(), false);
 					singleMove(r.x().high(), r.y().low(), currentZ, getExtruder().getFastXYFeedrate(), true);
 					singleMove(r.x().high(), r.y().high(), currentZ, getExtruder().getFastXYFeedrate(), true);
@@ -394,7 +381,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 					physicalExtruderUsed[pe] = false; // Stop us doing it again
 				}
 			}
-			//getExtruder().zeroExtrudedLength(true);
 		} catch (RepRapException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -435,7 +421,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 		{
 			getExtruder().setCooler(true, lc.getReversing()); //***
 			Debug.d("Start of cooling period");
-			//setFeedrate(getFastXYFeedrate());
 
 			// Go home. Seek (0,0) then callibrate X first
 			homeToZeroXYE(lc.getReversing()); //***
@@ -489,20 +474,8 @@ public abstract class GenericRepRap implements CartesianPrinter
 		} else
 		{
 			getExtruder().zeroExtrudedLength(lc.getReversing());
-//			int extruderNow = extruder;
-//			for(int i = 0; i < extruders.length; i++)
-//			{
-//				selectExtruder(i, lc.getReversing());
-//				extruders[i].zeroExtrudedLength(lc.getReversing()); //***
-//			}
-//			selectExtruder(extruderNow, lc.getReversing()); //***
 		}
 
-		//		double datumX = getExtruder().getNozzleWipeDatumX();
-		//		double datumY = getExtruder().getNozzleWipeDatumY();
-		//		double strokeY = getExtruder().getNozzleWipeStrokeY();
-		//		double clearTime = getExtruder().getNozzleClearTime();
-		//		double waitTime = getExtruder().getNozzleWaitTime();
 		double coolTime = getExtruder().getCoolingPeriod();
 
 		if (layerPauseCheckbox != null && layerPauseCheckbox.isSelected())
@@ -539,47 +512,8 @@ public abstract class GenericRepRap implements CartesianPrinter
 
 		// If we were cooling, wait for warm-up
 
-		//		if(startCooling >= 0)
-		//		{
-		//			machineWait(200 * coolTime, false);			
-		//			Debug.d("End of cooling period");			
-		//		}
-
-		// Do the clearing extrude then
-		// Wipe the nozzle on the doctor blade
-
-		//		if(getExtruder().getNozzleWipeEnabled())
-		//		{
-		//			//setFeedrate(getExtruder().getOutlineFeedrate());
-		//			
-		//			// Now hunt down the wiper.
-		//			singleMove(datumX, datumY, currentZ, getExtruder().getOutlineFeedrate());
-		//			
-		//			if(clearTime > 0)
-		//			{
-		//				getExtruder().setValve(true);
-		//				getExtruder().setMotor(true);
-		//				machineWait(1000*clearTime, false);
-		//				getExtruder().setMotor(false);
-		//				getExtruder().setValve(false);
-		//				machineWait(1000*waitTime, false);
-		//			}
-		//
-		//			singleMove(datumX, datumY + strokeY, currentZ, currentFeedrate);
-		//		}
-
 		lc.moveZAtStartOfLayer(lc.getReversing()); //***
-		//setFeedrate(getFastXYFeedrate());
-
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * Go to the purge point
@@ -722,15 +656,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 		return extruders;
 	}
 	
-//	public void delay(long millis)
-//	{
-//		if(millis <= 0)
-//			return;
-//		try {
-//			Thread.sleep(millis);
-//		} catch (Exception e) {}
-//	}
-	
 	/**
 	 * Extrude for the given time in milliseconds, so that polymer is flowing
 	 * before we try to move the extruder.  But first take up the slack from any
@@ -777,7 +702,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 				getExtruder().setMotor(true);
 				machineWait(eDelay, false, true);
 			}
-			//getExtruder().setMotor(false);  // What's this for?  - AB
 		} catch(Exception e)
 		{
 			// If anything goes wrong, we'll let someone else catch it.
@@ -813,23 +737,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 		}
 		return 0;
 	}
-	
-	/**
-	 * @param startX
-	 * @param startY
-	 * @param startZ
-	 * @param endX
-	 * @param endY
-	 * @param endZ
-	 * @throws RepRapException
-	 * @throws IOException
-	 * @throws Exception 
-	 */
-//	public void printSegment(double startX, double startY, double startZ, 
-//			double endX, double endY, double endZ, boolean turnOff) throws ReprapException, IOException {
-//		moveTo(startX, startY, startZ, true, true);
-//		printTo(endX, endY, endZ, turnOff);
-//	}
 	
 	private void checkCoordinates(double x, double y, double z)
 	{
@@ -877,33 +784,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 		}
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see org.reprap.Printer#printTo(double, double, double)
-	 */
-//	public void printTo(double x, double y, double z, boolean turnOff) throws ReprapException, IOException
-//	{		
-//		Debug.e("printing");
-//		if (previewer != null)
-//			previewer.addSegment(currentX, currentY, currentZ, x, y, z);
-//		else
-//			Debug.e("previewer null!");
-//		
-//		if (isCancelled())
-//			return;
-//
-//		double distance = segmentLength(x - currentX, y - currentY);
-//		if (z != currentZ)
-//			distance += Math.abs(currentZ - z);
-//			
-//		totalDistanceExtruded += distance;
-//		totalDistanceMoved += distance;
-//		
-//		currentX = x;
-//		currentY = y;
-//		currentZ = z;
-//	}
-	
 	/**
 	 * Occasionally re-zero X and Y if that option is selected (i.e. xYReZeroInterval > 0)
 	 * @throws Exception 
@@ -926,7 +806,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 		{
 			double liftedZ = currentZ + (getExtruder().getMinLiftedZ());
 
-			//setFeedrate(getFastFeedrateZ());
 			moveTo(currentX, currentY, liftedZ, getFastFeedrateZ(), false, false);
 		}
 		
@@ -935,19 +814,16 @@ public abstract class GenericRepRap implements CartesianPrinter
 		homeToZeroX();
 		homeToZeroY();
 		
-		//setFeedrate(getFastXYFeedrate());
 		moveTo(oldX, oldY, currentZ, getExtruder().getFastXYFeedrate(), false, false);
 		
 		if (!excludeZ)
 		{
 			double liftedZ = currentZ - (getExtruder().getMinLiftedZ());
 
-			//setFeedrate(getFastFeedrateZ());
 			moveTo(currentX, currentY, liftedZ, getFastFeedrateZ(), false, false);
 		}
 
 		moveTo(currentX, currentY, currentZ, oldFeedrate, false, false);
-		//setFeedrate(oldFeedrate);
 		printStartDelay(false);		
 	}
 	
@@ -959,41 +835,10 @@ public abstract class GenericRepRap implements CartesianPrinter
 		getExtruder().setCooler(enable, true);
 	}
 		
-//	/* (non-Javadoc)
-//	 * @see org.reprap.Printer#setLowerShell(javax.media.j3d.Shape3D)
-//	 */
-//	public void setLowerShell(BranchGroup ls)
-//	{
-//		if (previewer != null)
-//			previewer.setLowerShell(ls);
-//	}
-	
-	/* (non-Javadoc)
-	 * @see org.reprap.Printer#setPreviewer(org.reprap.gui.Previewer)
-	 */
-//	public void setPreviewer(Previewer previewer) {
-//		this.previewer = previewer;
-//	}
-	
-//	public void setFeedrate(double feedrate)
-//	{
-//		currentFeedrate = feedrate;
-//	}
-		
 	public double getFeedrate()
 	{
 		return currentFeedrate;
 	}
-
-//	private void setFastXYFeedrate(double feedrate)
-//	{
-//		fastXYFeedrate = feedrate;
-//	}
-	
-//	public double getFastXYFeedrate()
-//	{
-//		return getExtruder().getFastXYFeedrate();
-//	}
 
 	private void setFastFeedrateZ(double feedrate)
 	{
@@ -1048,26 +893,11 @@ public abstract class GenericRepRap implements CartesianPrinter
 	{
 		return extruder;
 	}
-	
-//	public double getMaxFeedrateX()
-//	{
-//		return maxFeedrateX;
-//	}
-
-//	public double getMaxFeedrateY()
-//	{
-//		return maxFeedrateY;
-//	}
 
 	public double getMaxFeedrateZ()
 	{
 		return maxFeedrateZ;
 	}
-	
-
-
-	
-
 	
 	/**
 	 * Display a message indicating a segment is about to be
@@ -1353,27 +1183,10 @@ public abstract class GenericRepRap implements CartesianPrinter
 	}
 	
 	/**
-	 * The XY location to go to at the end of a build
-	 * @return
-	 */
-//	public double getFinishX()
-//	{
-//		return finishX;
-//	}
-//	
-//	public double getFinishY()
-//	{
-//		return finishY;
-//	}
-	
-	
-	/**
 	 * Set the bed temperature. This value is given
 	 * in centigrade, i.e. 100 equals 100 centigrade. 
 	 * @param temperature The temperature of the extruder in centigrade
-	 * @param wait - wait till it gets there (or not).
 	 * @throws Exception 
-	 * @throws Exception
 	 */
 	public void setBedTemperature(double temperature) throws Exception
 	{

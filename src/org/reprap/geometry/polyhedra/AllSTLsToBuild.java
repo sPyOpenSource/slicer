@@ -509,9 +509,9 @@ public class AllSTLsToBuild
 		//	return;
 		
 		rectangles = new ArrayList<>();
-            for (STLObject stl : stls) {
-                rectangles.add(null);	
-            }
+                stls.forEach((_item) -> {
+                    rectangles.add(null);
+            });
 		
 		BoundingBox s;
 		
@@ -1473,8 +1473,8 @@ public class AllSTLsToBuild
 			CSG3D csg = stlObject.getCSG(i);
 			for(extruderID = 0; extruderID < extruders.length; extruderID++)
 			{
-				edges[extruderID] = new ArrayList<LineSegment>();
-				csgs[extruderID] = new ArrayList<CSG3D>();
+				edges[extruderID] = new ArrayList<>();
+				csgs[extruderID] = new ArrayList<>();
 			}
 			if(csg != null)
 				csgs[attr.getExtruder().getID()].add(csg.transform(m4));

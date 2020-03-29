@@ -204,8 +204,6 @@ public class MouseObject
         trans.addChild(movingThing.handle());
         movingThing.top().addChild(top); 
         
-        //top.setUserData(movingThing.name);
-        //trans.setUserData(movingThing.name);
         top.setUserData(movingThing);
         trans.setUserData(movingThing);
         

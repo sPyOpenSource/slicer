@@ -45,10 +45,7 @@ public class GCodeRepRap extends GenericRepRap {
 		if(Debug.d())
 			s += " ; Reset the line numbers";
 		gcode.queue(s);
-		//gcode.queue("M115 ; Get the firmware version numbers etc");
-		//String FirmwareConfig = gcode.lastResponse();
-		//FirmwareConfig = FirmwareConfig.replace('\\','\n'); //make it easier to read for humans if it has "continuations" 
-		//Debug.d("Firmware configuration string: " + FirmwareConfig);
+
 		loadExtruders();
 		
 		forceSelection = true;
@@ -236,7 +233,7 @@ public class GCodeRepRap extends GenericRepRap {
 			Debug.d("Attempt to move z to " + z + " which is outside [0, " + Preferences.loadGlobalDouble("WorkingZ(mm)") + "]");
 			z = Math.max(0, Math.min(z, Preferences.loadGlobalDouble("WorkingZ(mm)")));
 		}
-		} catch (Exception e)
+		} catch (IOException e)
 		{}
 
 		x = round(x, 2);
@@ -423,18 +420,6 @@ public class GCodeRepRap extends GenericRepRap {
 			Debug.e(e.toString());
 		}
 	}
-	
-	/**
-	 * make a single, non building move (between plots, or zeroing an axis etc.) when we know it starts somewhere
-	 * other than the current position.
-	 */
-/*	public void singleMove(double x0, double y0, double z0, double x, double y, double z, double feedrate)
-	{
-		currentX = round(x0, 1);
-		currentY = round(y0, 1);
-		currentZ = round(z0, 4);
-		singleMove(x, y, z, feedrate);
-	}*/
 
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#printTo(double, double, double)
@@ -454,25 +439,6 @@ public class GCodeRepRap extends GenericRepRap {
 	 */
 	public void dispose() {
 		// TODO: fix this to be more flexible
-		
-//		gcode.startingEpilogue();
-//		
-//		try
-//		{
-//			// Fan off
-//			getExtruder().setCooler(false);
-//			moveToFinish();
-//			// Extruder off
-//			getExtruder().setExtrusion(0, false);
-//
-//			// heater off
-//			getExtruder().heatOff();
-//		} catch(Exception e){
-//			//oops
-//		}
-//		//write/close our file/serial port
-//		gcode.reverseLayers();
-//		gcode.finish();
 
 		super.dispose();
 	}
@@ -485,9 +451,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 */
 	public void moveToFinish(LayerRules lc)
 	{
-		//currentFeedrate = -100; // Force it to set the feedrate
-		//singleMove(getX(), getY(), getZ() + 1, getFastFeedrateZ(), lc.getReversing());
-		//singleMove(getFinishX(), getFinishY(), getZ(), getExtruder().getFastXYFeedrate(), lc.getReversing());
+
 	}
 
 
@@ -553,13 +517,10 @@ public class GCodeRepRap extends GenericRepRap {
 		try
 		{
 			// Fan off
-			//getExtruder().setCooler(false);
 			Point2D p = lc.getLastPoint(topLayer);
 			currentX = round(p.x(),2);
 			currentY = round(p.y(),2);
-			//System.out.println("final XY: " + currentX + ", " + currentY);
 			currentZ = round(lc.getLayerZ(topLayer),1);
-			//gcode.queue("; Moving to finish:");
 			moveToFinish(lc);
 			
 			if(Debug.d())
@@ -567,33 +528,13 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.copyFile(Preferences.getEpiloguePath());
 			if(Debug.d())
 				gcode.queue("; ------");
-			/*
-			// Extruder off
-			//getExtruder().setExtrusion(0, false);
-			String s = "M0";
-			if(Debug.d())
-				s += " ; shut RepRap down";
-			gcode.queue(s);
-			// heater off
-			//getExtruder().heatOff();
-			*/
+
 		} catch(Exception e){
 			//oops
 		}
 		//write/close our file/serial port
-		//gcode.reverseLayers(layerRules);
 		gcode.finish(lc);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.reprap.Printer#printStartDelay(long)
-//	 */
-//	public void printStartDelay(long msDelay) {
-//		// This would extrude for the given interval to ensure polymer flow.
-//		getExtruder().startExtruding();
-//		
-//		delay(msDelay);
-//	}
 
 	public void home() throws Exception 
 	{
@@ -601,16 +542,6 @@ public class GCodeRepRap extends GenericRepRap {
 		if(Debug.d())
 			s += " ; go home";
 		gcode.queue(s);
-//		// Assume the extruder is off...
-//		try
-//		{
-//			homeToZeroX();
-//			homeToZeroY();
-//			homeToZeroZ();
-//		} catch (Exception e)
-//		{
-//			
-//		}
 
 		extruders[extruder].zeroExtrudedLength(true);
 		super.home();
@@ -690,22 +621,6 @@ public class GCodeRepRap extends GenericRepRap {
 			s += " ; delay";
 		gcode.queue(s);
 	}
-	
-//	/**
-//	 * Pick out a coordinate from the returned string
-//	 * @param s
-//	 * @param coord
-//	 * @return
-//	 */
-//	private double getReturnedCoordinate(String s, String coord)
-//	{
-//		int i = s.indexOf(coord);
-//		if(i < 0)
-//			return 0;
-//		String ss = s.substring(i + 1);
-//		int j = ss.indexOf(" ");
-//		return Double.parseDouble(ss.substring(0, j - 1));
-//	}
 	
 	/**
 	 * Are we paused?
@@ -858,15 +773,6 @@ public class GCodeRepRap extends GenericRepRap {
 	 * @see org.reprap.Printer#homeToZeroX()
 	 */
 	public void homeToZeroX() throws Exception {
-
-		
-//		// Assume extruder is off...
-//		try
-//		{
-//			singleMove(-250, currentY, currentZ, getExtruder().getFastXYFeedrate());
-//		} catch (Exception e)
-//		{}
-//		gcode.queue("G92 X0 ;set x 0");
 		String s = "G28 X0";
 		if(Debug.d())
 			s += " ; set x 0";
@@ -881,12 +787,6 @@ public class GCodeRepRap extends GenericRepRap {
 
 		// Assume extruder is off...
 		
-//		try
-//		{
-//			singleMove(currentX, -250, currentZ, getExtruder().getFastXYFeedrate());
-//		} catch (Exception e)
-//		{}
-//		gcode.queue("G92 Y0 ;set y 0");
 		String s = "G28 Y0";
 		if(Debug.d())
 			s += " ; set y 0";
@@ -923,14 +823,6 @@ public class GCodeRepRap extends GenericRepRap {
 	 * @see org.reprap.Printer#homeToZeroY()
 	 */
 	public void homeToZeroZ() throws Exception {
-
-		// Assume extruder is off...
-//		try
-//		{
-//			singleMove(currentX, currentY, -250, getMaxFeedrateZ());
-//		} catch (Exception e)
-//		{}
-//		gcode.queue("G92 Z0 ;set z 0");
 		String s = "G28 Z0";
 		if(Debug.d())
 			s += " ; set z 0";
@@ -979,8 +871,6 @@ public class GCodeRepRap extends GenericRepRap {
 	 */
 	public void waitWhileBufferNotEmpty()
 	{
-//		while(!gcode.bufferEmpty())
-//			gcode.sleep(97);
 	}
 	
 	public void slowBuffer()
@@ -1049,11 +939,6 @@ public class GCodeRepRap extends GenericRepRap {
 	{
 		currentZ = round(z, 4);
 	}
-	
-//	private double yPurge(Extruder e, int physicalExtruder, int pass)
-//	{
-//		return layerRules.getPurgePoint().y() - (physicalExtruder*3 + pass)*e.getExtrusionSize();
-//	}
 	
 	public void selectExtruder(int materialIndex, boolean really, boolean update, Point2D next) throws Exception
 	{
@@ -1139,9 +1024,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Set the bed temperature. This value is given
 	 * in centigrade, i.e. 100 equals 100 centigrade. 
 	 * @param temperature The temperature of the extruder in centigrade
-	 * @param wait - wait till it gets there (or not).
 	 * @throws Exception 
-	 * @throws Exception
 	 */
 	public void setBedTemperature(double temperature) throws Exception
 	{

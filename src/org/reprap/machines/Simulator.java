@@ -45,8 +45,6 @@ public class Simulator extends GenericRepRap {
 	 */
 	public void terminate(LayerRules lr) throws Exception
 	{
-		//Debug.e("Generic terminate: " + getFinishX() + " " + getFinishY());
-		//moveTo(getFinishX(), getFinishY(), getZ(), getExtruder().getFastXYFeedrate(), true, true);
 		getExtruder().setMotor(false);
 		getExtruder().setValve(false);
 		getExtruder().setTemperature(0, false);
@@ -61,8 +59,6 @@ public class Simulator extends GenericRepRap {
 
 	public void printTo(double x, double y, double z, double feedRate, boolean stopExtruder, boolean closeValve) 
 	{
-		//if (previewer != null)
-		//	previewer.addSegment(currentX, currentY, currentZ, x, y, z);
 		if (isCancelled())
 			return;
 
@@ -143,7 +139,6 @@ public class Simulator extends GenericRepRap {
 	public String loadGCodeFileForMaking()
 	{
 		Debug.e("Simulator: attempt to load GCode file.");
-		//super.loadGCodeFileForMaking();
 		return null;
 	}
 	/**

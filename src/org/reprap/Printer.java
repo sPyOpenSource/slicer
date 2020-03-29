@@ -32,7 +32,7 @@ public interface Printer {
 	 * Range betwen [0..???]
 	 * @param z absolute z position in millimters relative to the home position.
 	 * Range between [0..???]
-     * @param feedrate
+                      * @param feedrate
 	 * @param startUp ?
 	 * @param endUp ?
 	 * @throws RepRapException
@@ -60,7 +60,6 @@ public interface Printer {
 	 * Range betwen [0..???]
 	 * @param z absolute z position in millimters relative to the home position.
 	 * Range between [0..???]
-	 * @param lastOne True if extruder should be turned off at end of this segment.
 	 * @throws RepRapException
 	 * @throws IOException 
 	 * @throws Exception 

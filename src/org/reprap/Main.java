@@ -53,7 +53,7 @@ public class Main {
     
     private static final int localNodeNumber = 0;
 	
-	public static RrDeleteOnExit ftd = null;
+    public static RrDeleteOnExit ftd = null;
     
     private static boolean repRapAttached = false;
     
@@ -466,7 +466,6 @@ public class Main {
     {
     	builder.mouseToWorld();
     }
-
     
 	private String getResourceMessage(Producer rProducer) {
 		double moved = Math.round(rProducer.getTotalDistanceMoved() * 10.0) / 10.0;
@@ -490,8 +489,6 @@ public class Main {
 	
 	public static void main(String[] args) 
 	{
-            //System.load("/home/spy/Source/host/executable/system-dependent/linux/lib-x86_64/libjogl.so");
-
 		Thread.currentThread().setName("Main");
 		javax.swing.SwingUtilities.invokeLater(() -> {
                     try {

@@ -707,8 +707,6 @@ public class GCodeReaderAndWriter
 						goAgain = true;
 					} else if (resp.endsWith("\\")) // lines ending in a single backslash are considered "continued" to the next line, like "C"
 					{
-					//	Debug.d("GCodeWriter.waitForResponse(): " + resp);
-					//	resp = ""; don't clear the previuos response...
 						goAgain = true; // but do "go again"
 					} else if (resp.startsWith("rs")) // Re-send request?
 					{

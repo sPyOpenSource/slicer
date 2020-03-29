@@ -36,6 +36,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     int outOf = -1;
     private static BotConsoleFrame bcf = null;
     private static int exPanelNumber;
+    PrintTabFrame printTabFrame1 = new org.reprap.gui.botConsole.PrintTabFrame(false);
     
     /** Creates new form BotConsoleFrame */
     public BotConsoleFrame()
@@ -81,6 +82,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
         };
 
         pollThread.start(); 
+        jTabbedPane1.add(printTabFrame1);
     }
     
     public void handleException(Exception e)
@@ -227,7 +229,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             bcf = new BotConsoleFrame();
             bcf.setVisible(true);
-            //bcf.printTabFrame1.setConsoleFrame(bcf);
+            bcf.printTabFrame1.setConsoleFrame(bcf);
         });
      }
     
@@ -244,7 +246,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     
     public static PrintTabFrame getPrintTabFrame()
     {
-    	return null;//bcf.printTabFrame1;
+    	return bcf.printTabFrame1;
     }
     
     public static XYZTabPanel getXYZTabPanel()
