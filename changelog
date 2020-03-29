@@ -1,14 +1,16 @@
-v1.1 XW 29-03-2020
+v1.1.0 XW 29-03-2020
 working version
 
-reprap-host (1.0.0.20090213) intrepid; urgency=low
+v1.0.0 12-02-2009 
+reprap-host intrepid; urgency=low
 
   * Packaged as part of build script which builds zip files and
   * includes some .jar files which should be included as dependencies
 
  -- Reece Arnott <rarnott@business.otago.ac.nz>  Fri, 13 Feb 2009 13:30:00 +0000
 
-reprap-host (0.8.2.20071214) hardy; urgency=low
+v0.8.2 14-12-2007
+reprap-host hardy; urgency=low
 
   * New approach to library dependencies, using classpath and
   * (therefore) not running from inside a .jar archive.
@@ -16,13 +18,15 @@ reprap-host (0.8.2.20071214) hardy; urgency=low
 
  -- Jonathan Marsden <jmarsden@fastmail.fm>  Sat, 15 Dec 2007 06:46:00 +0000
 
-reprap-host (0.8.2.20071213) hardy; urgency=low
+v0.8.2 13-12-2007 
+reprap-host hardy; urgency=low
 
   * Relaxed sun-java6-jre dependency (no version number test).
 
  -- Jonathan Marsden <jmarsden@fastmail.fm>  Thu, 13 Dec 2007 16:44:00 +0000
 
-reprap-host (0.8.2.20071212) hardy; urgency=low
+v0.8.2 12-12-2007
+reprap-host hardy; urgency=low
 
   * Initial attempt at .deb packaging.
 
