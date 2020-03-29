@@ -3,7 +3,7 @@
  */
 package org.reprap.utilities;
 
-import org.reprap.utilities.Timer;
+import java.io.IOException;
 import org.reprap.Preferences;
 
 /**
@@ -30,18 +30,12 @@ public class Debug {
 		try {
 			// Try to load debug setting from properties file
 			db.debug = Preferences.loadGlobalBool("Debug");
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			// Fall back to non-debug mode if no setting is available
 			db.debug = false;
 		}
 		
-//		try {
-//			// Try to load debug setting from properties file
-//			db.commsDebug = Preferences.loadGlobalBool("CommsDebug");
-//		} catch (Exception ex) {
-			// Fall back to non-debug mode if no setting is available
-			db.commsDebug = false;
-//		}			
+		db.commsDebug = false;
 	}
 	
 	static public boolean d()

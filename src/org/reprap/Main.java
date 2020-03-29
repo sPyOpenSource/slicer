@@ -206,7 +206,6 @@ public class Main {
 
         segmentPause = new JCheckBoxMenuItem("Pause before segment");
 
-
         layerPause = new JCheckBoxMenuItem("Pause before layer");
 
         // Create the main window area

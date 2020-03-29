@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -42,7 +44,9 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     private boolean slicing = false;
     private final boolean sdCard = false;
     private Thread printerFilePlay;
-    /** Creates new form PrintTabFrame */
+    
+    /** Creates new form PrintTabFrame
+     * @param pref */
     public PrintTabFrame(boolean pref) {
         initComponents();
     	String machine = "simulator";
@@ -57,10 +61,12 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     }
     
     /**
-     * Keep the user amused.  If fractionDone is negative, the function
-     * queries the layer statistics.  If it is 0 or positive, the function uses
-     * it.
+     * Keep the user amused.If fractionDone is negative, the function
+ queries the layer statistics.If it is 0 or positive, the function uses
+ it.
      * @param fractionDone
+     * @param layer
+     * @param layers
      */
     public void updateProgress(double fractionDone, int layer, int layers)
     {
@@ -135,9 +141,7 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     {
     	parentBotConsoleFrame = b;
     }
-void printButtonActionPerformed(java.awt.event.ActionEvent evt){
-    
-}
+
 void pauseButtonActionPerformed(java.awt.event.ActionEvent evt){
     
 }
@@ -461,7 +465,7 @@ private boolean worthSaving()
 	return true;
 }
 
-private void sliceButtonActionPerformed(java.awt.event.ActionEvent evt) 
+private void printButtonActionPerformed(java.awt.event.ActionEvent evt) 
 {//GEN-FIRST:event_printButtonActionPerformed
 	if(slicing)
 		return;
@@ -616,7 +620,7 @@ private void selectorRadioButtonMousePressed(java.awt.event.MouseEvent evt) {//G
 		org.reprap.Preferences.saveGlobal();
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
-		e.printStackTrace();
+		Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, e);
 	}
 	printer.refreshPreferences();
 	if(!closeMessage)
@@ -808,7 +812,7 @@ private void help(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferences
         URI url = new URI("http://reprap.org/wiki/RepRapPro_Slicer");
         Desktop.getDesktop().browse(url);//***AB
      } catch(IOException | URISyntaxException e) {
-         e.printStackTrace();
+         Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, e);
      }
 }//GEN-LAST:event_preferences
 
