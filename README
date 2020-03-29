@@ -1,7 +1,5 @@
 This the the RepRapPro Ltd Fork of the RepRap Java Host Software, which forms RepRapPro's multi-colour/multi-material slicer code.
 
- http://reprappro.com
-
 This is a beta-release of this software: it is working, but may still contain bugs.
 
 Licence: GPL
@@ -118,9 +116,7 @@ These offsets will be in the file prologue.gcode in the directory .reprap.old/Me
 Experiment with the source code
 ===============================
 
-Download a copy of the Eclipse Java Development Environment:
-
-	http://www.eclipse.org/downloads/
+Download a copy of the NetBean Java Development Environment:
 
 Rename
 
