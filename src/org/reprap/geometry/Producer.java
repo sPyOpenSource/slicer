@@ -38,7 +38,7 @@ public class Producer {
 	protected AllSTLsToBuild allSTLs;
 	
 	/**
-	 * @param preview
+	 * @param pr
 	 * @param builder
 	 * @throws Exception
 	 */
@@ -113,7 +113,7 @@ public class Producer {
 			try
 			{
 				Thread.sleep(200);
-			} catch (Exception ex) {}
+			} catch (InterruptedException ex) {}
 		}
 	}
 	
@@ -230,21 +230,20 @@ public class Producer {
 		
 		int lastExtruder = -1;
 		int totalPhysicalExtruders = 0;
-		for(int extruder = 0; extruder < reprap.getExtruders().length; extruder++)
-		{
-			int thisExtruder = reprap.getExtruders()[extruder].getPhysicalExtruderNumber();
-			if(thisExtruder > lastExtruder)
-			{
-				totalPhysicalExtruders++;
-				if(thisExtruder - lastExtruder != 1)
-				{
-					Debug.e("Producer.produceAdditiveTopDown(): Physical extruders out of sequence: " + 
-							lastExtruder + " then " + thisExtruder);
-					Debug.e("(Extruder addresses should be monotonically increasing starting at 0.)");
-				}
-				lastExtruder = thisExtruder;				
-			}
-		}
+            for (Extruder extruder : reprap.getExtruders()) {
+                int thisExtruder = extruder.getPhysicalExtruderNumber();
+                if(thisExtruder > lastExtruder)
+                {
+                    totalPhysicalExtruders++;
+                    if(thisExtruder - lastExtruder != 1)
+                    {
+                        Debug.e("Producer.produceAdditiveTopDown(): Physical extruders out of sequence: " +
+                                lastExtruder + " then " + thisExtruder);
+                        Debug.e("(Extruder addresses should be monotonically increasing starting at 0.)");
+                    }
+                    lastExtruder = thisExtruder;
+                }
+            }
 		
 		PolygonList allPolygons[] = new PolygonList[totalPhysicalExtruders];
 		PolygonList tempBorderPolygons[] = new PolygonList[totalPhysicalExtruders];

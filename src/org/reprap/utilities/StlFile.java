@@ -170,10 +170,10 @@ public class StlFile implements Loader
     		}
     		else
     		{ // Store the object Name
-    			this.setObjectName(new String(parser.sval));
+    			this.setObjectName(parser.sval);
     			if(DEBUG==1)
     			{
-    				System.out.println("Object Name:" + this.getObjectName().toString());
+    				System.out.println("Object Name:" + this.getObjectName());
     			}
     			this.readEOL(parser);
     		}
@@ -793,6 +793,7 @@ public class StlFile implements Loader
 
   /////////////////////// Accessors and Modifiers ///////////////////////////
 
+  @Override
   public URL getBaseUrl()
   {
     return baseUrl;
@@ -803,6 +804,7 @@ public class StlFile implements Loader
    *
    * @param url The new url
    */
+  @Override
   public void setBaseUrl(URL url)
   {
     baseUrl = url;

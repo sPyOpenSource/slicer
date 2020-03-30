@@ -20,6 +20,8 @@ import javax.swing.Box;
 import java.awt.Button;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.reprap.utilities.Debug;
 
@@ -169,7 +171,7 @@ public class RepRapPreferences extends JFrame {
 		}catch (IOException ex)
 		{
 			Debug.e("Preferences window: Can't load the globals!");
-			ex.printStackTrace();
+			 Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		// Next we need to know how many extruders we've got.
@@ -179,7 +181,7 @@ public class RepRapPreferences extends JFrame {
 		} catch (IOException | NumberFormatException ex)
 		{
 			Debug.e("Preferences window: Can't load the extruder count!");
-			ex.printStackTrace();
+			Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		// Now build a set of arrays for each extruder in turn.
@@ -199,7 +201,7 @@ public class RepRapPreferences extends JFrame {
 		}catch (IOException ex)
 		{
 			Debug.e("Preferences window: Can't load extruder(s)!");
-			ex.printStackTrace();
+			Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		// Paint the lot on the screen...
@@ -450,7 +452,7 @@ public class RepRapPreferences extends JFrame {
 				jPanelExtruder.setSize(600, 700);
 			}	
 		} catch (HeadlessException | IOException e) {
-			e.printStackTrace();
+			Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, e);
 		}
 
 		// Wrap it all up
@@ -520,7 +522,7 @@ public class RepRapPreferences extends JFrame {
 				
 			} catch (IOException ex)
 			{
-				ex.printStackTrace();
+				Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 		return result;

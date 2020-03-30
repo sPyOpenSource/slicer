@@ -1,17 +1,13 @@
 package org.reprap.utilities;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 
 public class RepRapUtils 
 {
@@ -84,7 +80,7 @@ public class RepRapUtils
 	
     /**
      * Count the number of lines in a file
-     * @param filename
+     * @param f
      * @return
      * @throws IOException
      */
@@ -92,14 +88,15 @@ public class RepRapUtils
     {
     	// Thanks to Johan Nordstrom
     	FileInputStream fstream = new FileInputStream(f);
-		DataInputStream in = new DataInputStream(fstream);
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
-		int i = 0;
-		while (( br.readLine()) != null)
-		{
-			i++;  
-		}
-		in.close();
+        int i;
+            try (DataInputStream in = new DataInputStream(fstream)) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                i = 0;
+                while (( br.readLine()) != null)
+                {
+                    i++;
+                }
+            }
 		return i;
     	/*
         InputStream is = new BufferedInputStream(new FileInputStream(f));

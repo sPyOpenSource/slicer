@@ -139,8 +139,7 @@ public class LayerProducer {
 	
 	/**
 	 * Set up a normal layer
-	 * @param boolGrdSliceols
-	 * @param ls
+	 * @param ap[]
 	 * @param lc
 	 * @param simPlot
 	 * @throws Exception
@@ -239,7 +238,7 @@ public class LayerProducer {
 			try
 			{
 				Thread.sleep(200);
-			} catch (Exception ex) {}
+			} catch (InterruptedException ex) {}
 		}
 		
 		if(shortLine(first, stopExtruder, closeValve))
@@ -302,7 +301,7 @@ public class LayerProducer {
 			try
 			{
 				Thread.sleep(200);
-			} catch (Exception ex) {}
+			} catch (InterruptedException ex) {}
 		}
 		
 		double z = layerConditions.getMachineZ();
@@ -450,7 +449,7 @@ public class LayerProducer {
 		printer.printStartDelay(firstOneInLayer);
 		
 		boolean extrudeOff = false;
-		boolean valveOff = false;
+		boolean valveOff;
 		boolean oldexoff;
 		
 		//double oldFeedFactor = att.getExtruder().getExtrudeRatio();
@@ -513,19 +512,18 @@ public class LayerProducer {
 	public void plot() throws Exception
 	{
 		boolean firstOneInLayer = true;
-		boolean firstOneThisMaterial = true;
+		boolean firstOneThisMaterial;
 		
-		for(int i = 0; i < allPolygons.length; i++)
-		{
-			firstOneThisMaterial = true;
-			PolygonList pl = allPolygons[i];
-			for(int j = 0; j < pl.size(); j++)
-			{
-				plot(pl.polygon(j), firstOneInLayer, firstOneThisMaterial);
-				firstOneInLayer = false;
-				firstOneThisMaterial = false;
-			}
-		}
+            for (PolygonList allPolygon : allPolygons) {
+                firstOneThisMaterial = true;
+                PolygonList pl = allPolygon;
+                for(int j = 0; j < pl.size(); j++)
+                {
+                    plot(pl.polygon(j), firstOneInLayer, firstOneThisMaterial);
+                    firstOneInLayer = false;
+                    firstOneThisMaterial = false;
+                }
+            }
 	}		
 	
 }

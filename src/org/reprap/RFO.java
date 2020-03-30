@@ -71,7 +71,7 @@ public class RFO
 			try
 			{
 				fileStream = new FileOutputStream(LegendFile);
-			} catch (Exception e)
+			} catch (FileNotFoundException e)
 			{
 				Debug.e("XMLOut(): " + e);
 			}
@@ -371,7 +371,7 @@ public class RFO
 	/**
 	 * The name of the RFO file.
 	 */
-	private String fileName;
+	private final String fileName;
 	
 	/**
 	 * The unique file names;
@@ -381,7 +381,7 @@ public class RFO
 	/**
 	 * The directory in which it is.
 	 */
-	private String path;
+	private final String path;
 	
 	/**
 	 * The temporary directory
@@ -396,7 +396,7 @@ public class RFO
 	/**
 	 * The unique temporary directory name
 	 */
-	private String uniqueName;
+	private final String uniqueName;
 	
 	/**
 	 * The collection of objects being written out or read in.
@@ -481,7 +481,7 @@ public class RFO
 			inChannel.transferTo(0, inChannel.size(), outChannel);
 			inChannel.close();
 			outChannel.close();			
-		} catch (Exception e)
+		} catch (IOException e)
 		{
 			Debug.e("RFO.copyFile(): " + e);
 		}
@@ -512,16 +512,17 @@ public class RFO
 	
 	/**
 	 * 
-	 * Copy each unique STL file to a directory.  Files used more
-	 * than once are only copied once.
+	 * Copy each unique STL file to a directory.Files used more
+ than once are only copied once.
 	 *
 	 * @param astltb
 	 * @param rfod
+     * @return 
 	 */
 	public static List<String> copySTLs(AllSTLsToBuild astltb, String rfod)
 	{
 		int u = 0;
-		List<String> uniqueNames = new ArrayList<String>();
+		List<String> uniqueNames = new ArrayList<>();
 		for(int i = 0; i < astltb.size(); i++)
 		{
 			for(int subMod1 = 0; subMod1 < astltb.get(i).size(); subMod1++)

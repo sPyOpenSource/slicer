@@ -14,7 +14,7 @@ public class RrDeleteOnExit
 	
 	public RrDeleteOnExit()
 	{
-		toDelete = new ArrayList<File>();
+		toDelete = new ArrayList<>();
 	}
 	
 	public void add(File f)
@@ -33,6 +33,7 @@ public class RrDeleteOnExit
 		toDelete = null;
 	}
 	
+        @Override
 	protected void finalize() throws Throwable
 	{
 		Debug.d("RrDeleteOnExit.finalise()");

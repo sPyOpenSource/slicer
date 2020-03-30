@@ -2,6 +2,8 @@ package org.reprap.gui;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -65,11 +67,9 @@ public class ContinuationMesage extends javax.swing.JDialog {
 				getContentPane().add(cancelButton);
 				cancelButton.setText("Cancel");
 				cancelButton.setBounds(35, 98, 105, 28);
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						cancelButtonActionPerformed(evt);
-					}
-				});
+				cancelButton.addActionListener((ActionEvent evt) -> {
+                                    cancelButtonActionPerformed(evt);
+                                });
 			}
 			{
 				getContentPane().setLayout(null);
@@ -78,7 +78,7 @@ public class ContinuationMesage extends javax.swing.JDialog {
 			this.setSize(316, 158);
 			this.getRootPane().setDefaultButton(okButton);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getLogger(ContinuationMesage.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 	

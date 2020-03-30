@@ -90,7 +90,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -405,7 +404,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	private MouseObject mouse = null;
 	private PickCanvas pickCanvas = null; // The thing picked by a mouse click
 	private STLObject lastPicked = null; // The last thing picked
-	private AllSTLsToBuild stls;
+	private final AllSTLsToBuild stls;
 	private boolean reordering;
 	private RrGraphics graphics;
 
@@ -424,19 +423,21 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 	
 	// Set bg light grey
+        @Override
 	protected Background createBackground() {
 		Background back = new Background(bgColour);
 		back.setApplicationBounds(createApplicationBounds());
 		return back;
 	}
 
+        @Override
 	protected BranchGroup createViewBranchGroup(TransformGroup[] tgArray,
 			ViewPlatform vp) {
 		BranchGroup vpBranchGroup = new BranchGroup();
 
 		if (tgArray != null && tgArray.length > 0) {
 			Group parentGroup = vpBranchGroup;
-			TransformGroup curTg = null;
+			TransformGroup curTg;
 
                     for (TransformGroup tgArray1 : tgArray) {
                         curTg = tgArray1;
@@ -453,6 +454,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
 	// Set up the RepRap working volume
 
+        @Override
 	protected BranchGroup createSceneBranchGroup() throws Exception {
 		sceneBranchGroup = new BranchGroup();
 
@@ -495,11 +497,12 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
 	// Action on mouse click
 
+        @Override
 	public void mouseClicked(MouseEvent e) {
 		pickCanvas.setShapeLocation(e);
 
 		PickResult pickResult = pickCanvas.pickClosest();
-		STLObject picked = null;
+		STLObject picked;
 
 		if (pickResult != null) // Got anything?
 		{
@@ -541,15 +544,19 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
 	// Find the stl object in the scene with the given name
 
+        @Override
 	public void mouseEntered(MouseEvent e) {
 	}
 
+        @Override
 	public void mouseExited(MouseEvent e) {
 	}
 
+        @Override
 	public void mousePressed(MouseEvent e) {
 	}
 
+        @Override
 	public void mouseReleased(MouseEvent e) {
 	}
 
@@ -668,6 +675,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			initialise();
 	}
 
+        @Override
 	protected void addCanvas3D(Canvas3D c3d) {
 		setLayout(new BorderLayout());
 		add(c3d, BorderLayout.CENTER);

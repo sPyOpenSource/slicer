@@ -16,8 +16,8 @@ public class PreferencesValue {
 	
 	public class BooleanChoice extends JPanel {
 		private boolean userchoice;
-		private JRadioButton trueButton, falseButton;
-		private ButtonGroup bgroup;
+		private final JRadioButton trueButton, falseButton;
+		private final ButtonGroup bgroup;
 		private JTextField valueTextField;
 		
 		public BooleanChoice(Boolean boolvalue)
@@ -50,10 +50,7 @@ public class PreferencesValue {
 		public String getText()
 		{
 			
-			if(bgroup.isSelected( (DefaultButtonModel)trueButton.getModel() ))
-				this.userchoice = true;
-			else
-				this.userchoice = false;
+                    this.userchoice = bgroup.isSelected( (DefaultButtonModel)trueButton.getModel() );
 			
 			if(this.userchoice)
 				return "true";
@@ -116,9 +113,7 @@ public class PreferencesValue {
 	private boolean getBoolFromString(String strVal)
 	{
 
-		if (strVal.compareToIgnoreCase("true") == 0) return true;
-		
-		return false;
+		return strVal.compareToIgnoreCase("true") == 0;
 	}
 	
 	public void makeBoolean()

@@ -17,6 +17,8 @@ import java.util.Properties;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.Material;
 import javax.vecmath.Color3f;
@@ -193,7 +195,7 @@ public class Preferences {
 		} catch (IOException e) 
 		{
 			Debug.e("Can't read configuration file: " + mf.toString());
-			e.printStackTrace();
+			Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, e);
 		}
 		return result;
 	}
@@ -249,6 +251,7 @@ public class Preferences {
 		} catch (IOException e)
 		{
 			Debug.e("Can't write to file: " + getMachineFilePath());
+                        Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 	
@@ -591,7 +594,7 @@ public class Preferences {
 			unselectedColour = new Color3f((float)0.3, (float)0.3, (float)0.3);
 		} catch (Exception ex)
 		{
-			ex.printStackTrace();
+			Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		Appearance unselectedApp = new Appearance();
 		unselectedApp.setMaterial(new 

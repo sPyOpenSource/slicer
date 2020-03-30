@@ -334,19 +334,19 @@ public interface Printer {
 	
 	/**
 	 * Just finished a layer. Do whatever needs to be done then.
-	 * @param layerNumber
+	 * @param lc
 	 */
 	public void finishedLayer(LayerRules lc) throws Exception;
 	
 	/**
 	 * Do whatever needs to be done between one layer and the next
-	 * @param layerNumber
+	 * @param lc
 	 */
 	public void betweenLayers(LayerRules lc) throws Exception;
 	
 	/**
 	 * Just about to start the next layer
-	 * @param layerNumber
+	 * @param lc
 	 */
 	public void startingLayer(LayerRules lc) throws Exception;
 	

@@ -2,10 +2,13 @@
 package org.reprap.geometry;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.reprap.Printer;
 import org.reprap.Extruder;
@@ -26,32 +29,32 @@ public class LayerRules
 	/**
 	 * The coordinates of the first point plotted in a layer
 	 */
-	private Point2D[] firstPoint;
+	private final Point2D[] firstPoint;
 	
 	/**
 	 * The extruder first used in a layer
 	 */	
-	private int[] firstExtruder;
+	private final int[] firstExtruder;
 	
 	/**
 	 * The coordinates of the last point plotted in a layer
 	 */
-	private Point2D[] lastPoint;
+	private final Point2D[] lastPoint;
 	
 	/**
 	 * The extruder last used in a layer
 	 */	
-	private int[] lastExtruder;
+	private final int[] lastExtruder;
 	
 	/**
 	 * Record extruder usage in each layer for planning
 	 */
-	private boolean[][] extruderUsedThisLayer;
+	private final boolean[][] extruderUsedThisLayer;
 	
 	/**
 	 * The heights of the layers
 	 */
-	private double[] layerZ;
+	private final double[] layerZ;
 	
 	/**
 	 * The name of the first file of output
@@ -66,7 +69,7 @@ public class LayerRules
 	/**
 	 * The names of all the files for all the layers
 	 */
-	private String [] layerFileNames;
+	private final String [] layerFileNames;
 	
 	/**
 	 * Are we reversing the layer orders?
@@ -106,22 +109,22 @@ public class LayerRules
 	/**
 	 * The top of the model in model coordinates
 	 */
-	private double modelZMax;
+	private final double modelZMax;
 	
 	/**
 	 * The highest the machine should go this build
 	 */
-	private double machineZMax;
+	private final double machineZMax;
 	
 	/**
 	 * The number of the last model layer (first = 0)
 	 */
-	private int modelLayerMax;
+	private final int modelLayerMax;
 	
 	/**
 	 * The number of the last machine layer (first = 0)
 	 */
-	private int machineLayerMax;
+	private final int machineLayerMax;
 	
 	/**
 	 * Putting down foundations?
@@ -181,10 +184,7 @@ public class LayerRules
 	/**
 	 * 
 	 * @param p
-	 * @param modZMax
-	 * @param macZMax
-	 * @param modLMax
-	 * @param macLMax
+	 * @param astls
 	 * @param found
 	 */
 	public LayerRules(Printer p, AllSTLsToBuild astls, boolean found)
@@ -614,7 +614,6 @@ public class LayerRules
 	/**
 	 * Move the machine up/down, but leave the model's layer where it is.
 	 *
-	 * @param e
 	 */
 	public void stepMachine()
 	{
@@ -660,7 +659,6 @@ public class LayerRules
 	
 	/**
 	 * Move both the model and the machine up/down a layer
-	 * @param e
 	 */
 	public void step()
 	{		
@@ -687,7 +685,7 @@ public class LayerRules
 	
 	private void copyFile(PrintStream ps, String ip)
 	{
-		File f = null;
+		File f;
 		try 
 		{
 			f = new File(ip);
@@ -700,10 +698,9 @@ public class LayerRules
 			}
 			ps.flush();
 			fr.close();
-		} catch (Exception e) 
+		} catch (IOException e) 
 		{  
 			Debug.e("Error copying file: " + e.toString());
-			e.printStackTrace();
 		}
 	}
 	
@@ -720,12 +717,12 @@ public class LayerRules
 		
 		String fileName = getPrinter().getOutputFilename();
 		
-		PrintStream fileOutStream = null;
+		PrintStream fileOutStream;
 		try
 		{
 			FileOutputStream fileStream = new FileOutputStream(fileName);
 			fileOutStream = new PrintStream(fileStream);
-		} catch (Exception e)
+		} catch (FileNotFoundException e)
 		{
 			Debug.e("Can't write to file " + fileName);
 			return;
@@ -760,7 +757,7 @@ public class LayerRules
 			getPrinter().terminate(this);
 		} catch (Exception e)
 		{
-			e.printStackTrace();
+			Logger.getLogger(LayerRules.class.getName()).log(Level.SEVERE, null, e);
 		}
 		fileOutStream.close();
 		reversing = false;

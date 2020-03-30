@@ -177,7 +177,7 @@ public class RrGraphics
 	/**
 	 * Constructor for just a box - add stuff later
 	 * @param b
-	 * @param pb
+	 * @param t
 	 */
 	public RrGraphics(Rectangle b, String t) 
 	{
@@ -189,8 +189,7 @@ public class RrGraphics
 	
 	/**
 	 * Constructor for nothing - add stuff later
-	 * @param b
-	 * @param pb
+	 * @param t
 	 */
 	public RrGraphics(String t) 
 	{
@@ -521,6 +520,7 @@ public class RrGraphics
 	
 	class myKB implements KeyListener
 	{
+                @Override
 		public void keyTyped(KeyEvent k)
 		{
 			switch(k.getKeyChar())
@@ -539,10 +539,12 @@ public class RrGraphics
 			jframe.repaint();
 		}
 		
+                @Override
 		public void keyPressed(KeyEvent k)
 		{	
 		}
 		
+                @Override
 		public void keyReleased(KeyEvent k)
 		{	
 		}
@@ -563,15 +565,23 @@ public class RrGraphics
 			return new Rectangle(Point2D.sub(cen, off), Point2D.add(cen, off));
 		}
 		
+                @Override
 		public void mousePressed(MouseEvent e) {
 		}
+                
+                @Override
 	    public void mouseReleased(MouseEvent e) {
 	    }
+            
+                @Override
 	    public void mouseEntered(MouseEvent e) {
 	    }
+            
+                @Override
 	    public void mouseExited(MouseEvent e) {
 	    }
 	    
+                @Override
 	    public void mouseClicked(MouseEvent e) 
 	    {
 			int ix = e.getX() - 5;  // Why needed??
@@ -607,6 +617,7 @@ public class RrGraphics
 			super();
 		}
 		// This method is called whenever the contents needs to be painted
+                @Override
 		public void paint(Graphics g) 
 		{
 			// Retrieve the graphics context; this object is used to paint shapes

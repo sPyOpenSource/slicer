@@ -2,6 +2,8 @@ package org.reprap.gui;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 
 import javax.swing.JFrame;
@@ -73,7 +75,7 @@ public class StatusMessage extends javax.swing.JDialog {
 			}
 			this.setSize(288, 137);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getLogger(StatusMessage.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 
