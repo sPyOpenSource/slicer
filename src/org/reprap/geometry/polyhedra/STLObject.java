@@ -56,34 +56,34 @@ This version: 14 April 2006
 
 package org.reprap.geometry.polyhedra;
 
-import com.sun.j3d.loaders.IncorrectFormatException;
-import com.sun.j3d.loaders.ParsingErrorException;
+import org.jogamp.java3d.loaders.IncorrectFormatException;
+import org.jogamp.java3d.loaders.ParsingErrorException;
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.Enumeration;
 import java.util.ArrayList;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BoundingBox;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.GeometryArray;
-import javax.media.j3d.Group;
-import javax.media.j3d.Node;
-import javax.media.j3d.SceneGraphObject;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.vecmath.AxisAngle4d;
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
-import javax.vecmath.Tuple3d;
-import javax.vecmath.Vector3d;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.BoundingBox;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.GeometryArray;
+import org.jogamp.java3d.Group;
+import org.jogamp.java3d.Node;
+import org.jogamp.java3d.SceneGraphObject;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.vecmath.AxisAngle4d;
+import org.jogamp.vecmath.Matrix3d;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Tuple3d;
+import org.jogamp.vecmath.Vector3d;
 
-import com.sun.j3d.loaders.Scene;
-import com.sun.j3d.utils.picking.PickTool;
+import org.jogamp.java3d.loaders.Scene;
+import org.jogamp.java3d.utils.picking.PickTool;
 import java.io.FileNotFoundException;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -335,8 +335,8 @@ public class STLObject
     
     private void updateBox(BoundingBox bb)
     {
-        javax.vecmath.Point3d pNew = new javax.vecmath.Point3d();
-        javax.vecmath.Point3d pOld = new javax.vecmath.Point3d();
+        org.jogamp.vecmath.Point3d pNew = new org.jogamp.vecmath.Point3d();
+        org.jogamp.vecmath.Point3d pOld = new org.jogamp.vecmath.Point3d();
         bb.getLower(pNew);
         bbox.getLower(pOld);
         if(pNew.x < pOld.x)
@@ -482,8 +482,8 @@ public class STLObject
     	
     	if(child != null && bbox != null)
     	{
-            javax.vecmath.Point3d p0 = new javax.vecmath.Point3d();
-            javax.vecmath.Point3d p1 = new javax.vecmath.Point3d();
+            org.jogamp.vecmath.Point3d p0 = new org.jogamp.vecmath.Point3d();
+            org.jogamp.vecmath.Point3d p1 = new org.jogamp.vecmath.Point3d();
             bbox.getLower(p0);
             bbox.getUpper(p1);
             
@@ -570,10 +570,10 @@ public class STLObject
                 Group g = (Group) sg;
                 
                 // recurse on child nodes
-                java.util.Enumeration<?> enumKids = g.getAllChildren( );
+                Iterator<Node> enumKids = g.getAllChildren( );
                 
-                while(enumKids.hasMoreElements( ))
-                    recursiveSetUserData( enumKids.nextElement( ), me );
+                while(enumKids.hasNext( ))
+                    recursiveSetUserData( enumKids.next( ), me );
             } else if ( sg instanceof Shape3D ) 
             {
                 ((Shape3D)sg).setUserData(me);
@@ -597,10 +597,10 @@ public class STLObject
                 Group g = (Group) sg;
                 
                 // recurse on child nodes
-                java.util.Enumeration<?> enumKids = g.getAllChildren( );
+                Iterator<Node> enumKids = g.getAllChildren( );
                 
-                while(enumKids.hasMoreElements( ))
-                    recursiveSetOffset( enumKids.nextElement( ), p );
+                while(enumKids.hasNext( ))
+                    recursiveSetOffset( enumKids.next( ), p );
             } else if (sg instanceof Shape3D) 
             {
                     s3dOffset((Shape3D)sg, p);
@@ -688,10 +688,10 @@ public class STLObject
                 Group g = (Group) sg;
                 
                 // recurse on child nodes
-                java.util.Enumeration<?> enumKids = g.getAllChildren( );
+                Iterator<Node> enumKids = g.getAllChildren( );
                 
-                while(enumKids.hasMoreElements( ))
-                    recursiveSetScale( enumKids.nextElement( ), x, y, z, zOnly );
+                while(enumKids.hasNext( ))
+                    recursiveSetScale( enumKids.next( ), x, y, z, zOnly );
             } else if ( sg instanceof Shape3D ) 
             {
                     s3dScale((Shape3D)sg, x, y, z, zOnly);
@@ -787,11 +787,11 @@ public class STLObject
             Group g = (Group) gp;
             
             // recurse on child nodes
-            java.util.Enumeration<?> enumKids = g.getAllChildren( );
+            Iterator<Node> enumKids = g.getAllChildren( );
             
-            while(enumKids.hasMoreElements( )) 
+            while(enumKids.hasNext( )) 
             {
-                Object child = enumKids.nextElement( );
+                Object child = enumKids.next( );
                 if(child instanceof Shape3D) 
                 {
                     Shape3D lf = (Shape3D) child;
@@ -821,11 +821,11 @@ public class STLObject
             Group g = (Group) gp;
             
             // recurse on child nodes
-            java.util.Enumeration<?> enumKids = g.getAllChildren( );
+            Iterator<Node> enumKids = g.getAllChildren( );
             
-            while(enumKids.hasMoreElements( )) 
+            while(enumKids.hasNext( )) 
             {
-                Object child = enumKids.nextElement( );
+                Object child = enumKids.next( );
                 if(child instanceof Shape3D) 
                 {
                     Shape3D lf = (Shape3D) child;
@@ -847,11 +847,11 @@ public class STLObject
      */
     public void restoreAppearance()
     {
-    	java.util.Enumeration<?> enumKids = stl.getAllChildren( );
+    	    Iterator<Node> enumKids = stl.getAllChildren( );
         
-        while(enumKids.hasMoreElements( ))
+        while(enumKids.hasNext( ))
         {
-        	Object b = enumKids.nextElement();
+        	Object b = enumKids.next();
         	if(b instanceof BranchGroup)
         	{
         		Attributes att = (Attributes)((BranchGroup)b).getUserData();
@@ -1012,12 +1012,10 @@ public class STLObject
 
         // Rescale the object
  
-        Enumeration<?> things;
-
-        things = stl.getAllChildren();
-        while(things.hasMoreElements()) 
+        Iterator<Node> things = stl.getAllChildren();
+        while(things.hasNext()) 
         {
-        	Object value = things.nextElement();
+        	Object value = things.next();
         	recursiveSetScale(value, x, y, z, zOnly);
         }
 

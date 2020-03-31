@@ -57,7 +57,7 @@
 
 package org.reprap.geometry.polyhedra;
 
-import javax.vecmath.Matrix4d;
+import org.jogamp.vecmath.Matrix4d;
 
 /**
  * Class for (x, y, z) points and vectors

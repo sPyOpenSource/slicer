@@ -8,32 +8,34 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.net.URL;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.AudioDevice;
-import javax.media.j3d.Background;
-import javax.media.j3d.BoundingSphere;
-import javax.media.j3d.Bounds;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Canvas3D;
-import javax.media.j3d.GraphicsConfigTemplate3D;
-import javax.media.j3d.Material;
-import javax.media.j3d.PhysicalBody;
-import javax.media.j3d.PhysicalEnvironment;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.View;
-import javax.media.j3d.ViewPlatform;
-import javax.media.j3d.VirtualUniverse;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.AudioDevice;
+import org.jogamp.java3d.Background;
+import org.jogamp.java3d.BoundingSphere;
+import org.jogamp.java3d.Bounds;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Canvas3D;
+import org.jogamp.java3d.GraphicsConfigTemplate3D;
+import org.jogamp.java3d.Material;
+import org.jogamp.java3d.PhysicalBody;
+import org.jogamp.java3d.PhysicalEnvironment;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.View;
+import org.jogamp.java3d.ViewPlatform;
+import org.jogamp.java3d.VirtualUniverse;
 import javax.swing.JPanel;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Vector3d;
 
 import org.reprap.Preferences;
 
-import com.sun.j3d.audioengines.javasound.JavaSoundMixer;
+import org.jogamp.java3d.audioengines.javasound.JavaSoundMixer;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Iterator;
+import org.jogamp.java3d.Locale;
 
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
@@ -255,11 +257,11 @@ abstract public class Panel3D extends JPanel {
 		return c3d;
 	}
 
-	public javax.media.j3d.Locale getFirstLocale() {
-		java.util.Enumeration<?> en = universe.getAllLocales();
+	public org.jogamp.java3d.Locale getFirstLocale() {
+		Iterator<Locale> en = universe.getAllLocales();
 
-		if (en.hasMoreElements() != false)
-			return (javax.media.j3d.Locale) en.nextElement();
+		if (en.hasNext() != false)
+			return (org.jogamp.java3d.Locale) en.next();
 
 		return null;
 	}
@@ -278,7 +280,7 @@ abstract public class Panel3D extends JPanel {
 	public void initJava3d() throws Exception {
 		universe = createVirtualUniverse();
 
-		javax.media.j3d.Locale locale = createLocale(universe);
+		org.jogamp.java3d.Locale locale = createLocale(universe);
 
 		BranchGroup sceneBranchGroup = createSceneBranchGroup();
 
@@ -338,13 +340,13 @@ abstract public class Panel3D extends JPanel {
 		return new VirtualUniverse();
 	}
 
-	protected void addViewBranchGroup(javax.media.j3d.Locale locale,
+	protected void addViewBranchGroup(org.jogamp.java3d.Locale locale,
 			BranchGroup bg) {
 		locale.addBranchGraph(bg);
 	}
 
-	protected javax.media.j3d.Locale createLocale(VirtualUniverse u) {
-		return new javax.media.j3d.Locale(u);
+	protected org.jogamp.java3d.Locale createLocale(VirtualUniverse u) {
+		return new org.jogamp.java3d.Locale(u);
 	}
 
 	public TransformGroup[] getViewTransformGroupArray() {

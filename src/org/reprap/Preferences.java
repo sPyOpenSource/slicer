@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.Material;
-import javax.vecmath.Color3f;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.Material;
+import org.jogamp.vecmath.Color3f;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RepRapUtils;
 

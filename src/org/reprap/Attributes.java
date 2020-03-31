@@ -1,7 +1,7 @@
 package org.reprap;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BranchGroup;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.BranchGroup;
 
 import org.reprap.devices.GenericExtruder;
 import org.reprap.geometry.polyhedra.STLObject;

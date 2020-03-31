@@ -1,8 +1,8 @@
 package org.reprap.geometry.polyhedra;
 
-import javax.vecmath.AxisAngle4d;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Vector3d;
+import org.jogamp.vecmath.AxisAngle4d;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Vector3d;
 
 public class Primitives 
 {

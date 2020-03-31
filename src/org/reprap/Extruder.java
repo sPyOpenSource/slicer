@@ -2,7 +2,7 @@ package org.reprap;
 
 import java.io.IOException;
 import org.reprap.devices.ExtruderState;
-import javax.media.j3d.Appearance;
+import org.jogamp.java3d.Appearance;
 
 public interface Extruder
 {

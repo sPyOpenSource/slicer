@@ -55,7 +55,7 @@
 
 package org.reprap.geometry.polyhedra;
 
-import javax.vecmath.Matrix4d;
+import org.jogamp.vecmath.Matrix4d;
 
 import org.reprap.geometry.polygons.Interval;
 

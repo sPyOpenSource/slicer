@@ -52,7 +52,7 @@ package org.reprap.geometry.polyhedra;
 
 import java.util.ArrayList;
 
-import javax.vecmath.Matrix4d;
+import org.jogamp.vecmath.Matrix4d;
 
 import org.reprap.CSGOp;
 import org.reprap.utilities.Debug;

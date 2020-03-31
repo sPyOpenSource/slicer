@@ -2,13 +2,13 @@ package org.reprap.utilities;
 
 //package stl_loader;
 
-import com.sun.j3d.loaders.Loader;
-import com.sun.j3d.loaders.Scene;
-import com.sun.j3d.loaders.SceneBase;
-import com.sun.j3d.loaders.IncorrectFormatException;
-import com.sun.j3d.loaders.ParsingErrorException;
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
+import org.jogamp.java3d.loaders.Loader;
+import org.jogamp.java3d.loaders.Scene;
+import org.jogamp.java3d.loaders.SceneBase;
+import org.jogamp.java3d.loaders.IncorrectFormatException;
+import org.jogamp.java3d.loaders.ParsingErrorException;
+import org.jogamp.java3d.utils.geometry.GeometryInfo;
+import org.jogamp.java3d.utils.geometry.NormalGenerator;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -24,11 +24,11 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Vector3f;
 
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Shape3D;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Shape3D;
 
 // New from JDK 1.4 for endian related problems
 import java.nio.ByteOrder;

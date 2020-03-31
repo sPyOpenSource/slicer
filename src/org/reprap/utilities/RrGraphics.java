@@ -78,11 +78,11 @@ import org.reprap.geometry.polygons.Polygon;
 import org.reprap.geometry.polygons.PolygonList;
 import org.reprap.gui.StatusMessage;
 import org.reprap.Attributes;
-import javax.media.j3d.Appearance;
+import org.jogamp.java3d.Appearance;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.vecmath.Color3f;
-import javax.media.j3d.Material;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.java3d.Material;
 
 /**
  * Class to plot images of geometrical structures for debugging.
@@ -440,7 +440,7 @@ Logger.getLogger(RrGraphics.class.getName()).log(Level.SEVERE, null, e);
 		Material mt = ap.getMaterial();
 		Color3f col = new Color3f();
 		mt.getDiffuseColor(col);
-		g2d.setColor(col.get());		
+		//g2d.setColor(col.get());		
 	}
 	
 	/**

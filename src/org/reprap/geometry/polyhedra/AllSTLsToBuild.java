@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import org.reprap.geometry.LayerRules;
 import org.reprap.geometry.polygons.BooleanGrid;
 import org.reprap.geometry.polygons.BooleanGridList;
@@ -23,19 +24,20 @@ import org.reprap.RFO;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.GeometryArray;
-import javax.media.j3d.Group;
-import javax.media.j3d.Material;
-import javax.media.j3d.SceneGraphObject;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Transform3D;
-import javax.vecmath.Color3f;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
-import javax.vecmath.Tuple3d;
-import javax.vecmath.Vector3d;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.GeometryArray;
+import org.jogamp.java3d.Group;
+import org.jogamp.java3d.Material;
+import org.jogamp.java3d.Node;
+import org.jogamp.java3d.SceneGraphObject;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Tuple3d;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * This class holds a list of STLObjects that represents everything that is to be built.
@@ -522,11 +524,11 @@ public class AllSTLsToBuild
 			
 			BranchGroup bg = stl.getSTL();
 			
-			java.util.Enumeration<?> enumKids = bg.getAllChildren();
+			Iterator<Node> enumKids = bg.getAllChildren();
 
-			while(enumKids.hasMoreElements())
+			while(enumKids.hasNext())
 			{
-				Object ob = enumKids.nextElement();
+				Object ob = enumKids.next();
 
 				if(ob instanceof BranchGroup)
 				{
@@ -621,14 +623,14 @@ public class AllSTLsToBuild
             if(sg instanceof Group) 
             {
                 Group g = (Group)sg;
-                java.util.Enumeration<?> enumKids = g.getAllChildren( );
-                while(enumKids.hasMoreElements())
+                Iterator<Node> enumKids = g.getAllChildren( );
+                while(enumKids.hasNext())
                 {
                 	if(b == null)
-                		b = BBox(enumKids.nextElement(), trans);
+                		b = BBox(enumKids.next(), trans);
                 	else
                 	{
-                		s = BBox(enumKids.nextElement(), trans);
+                		s = BBox(enumKids.next(), trans);
                 		if(s != null)
                 			b.expand(s);
                 	}
@@ -1699,9 +1701,9 @@ public class AllSTLsToBuild
             if(sg instanceof Group) 
             {
                 Group g = (Group)sg;
-                java.util.Enumeration<?> enumKids = g.getAllChildren( );
-                while(enumKids.hasMoreElements())
-                    recursiveSetEdges(enumKids.nextElement(), trans, z, att, edges);
+                Iterator<Node> enumKids = g.getAllChildren( );
+                while(enumKids.hasNext())
+                    recursiveSetEdges(enumKids.next(), trans, z, att, edges);
             } else if (sg instanceof Shape3D) 
             {
                 addAllEdges((Shape3D)sg, trans, z, att, edges);
