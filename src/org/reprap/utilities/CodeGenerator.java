@@ -965,8 +965,9 @@ public class CodeGenerator
 				System.out.println("\t\tr = RrCSG.nothing();");
 			else
 				System.out.println("\t\t" + g.toJava());
-		} else
+		} else {
 			System.out.println("\t\t// No equivalence." + "\n");
+                }
 		System.out.println("\t\tbreak;\n");
 	}
 	

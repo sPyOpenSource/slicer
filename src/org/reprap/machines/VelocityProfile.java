@@ -37,10 +37,9 @@ public class VelocityProfile
 			Debug.d("VelocityProfile - sm/s: " + f);
 			s1 = Math.max(Math.min(s, s1), 0);
 		} 
-		if(v <= maxSpeed)
+		if(v <= maxSpeed){
 			flat = 1;
-		else
-		{
+                } else {
 			s2 = s - 0.5*(maxSpeed*maxSpeed - vEnd*vEnd)/acceleration;
 			f = s2/s;
 			if(f < 0 || f > 1)

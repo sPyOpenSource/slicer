@@ -157,32 +157,39 @@ public class Simulator extends GenericRepRap {
 	
 	/**
 	 * Set an output file
+     * @param fileRoot
 	 * @return
 	 */
+        @Override
 	public String setGCodeFileForOutput(String fileRoot)
 	{
 		Debug.e("Simulator: cannot generate GCode file.");
 		return null;		
 	}
 	
+        @Override
 	public Thread filePlay()
 	{
 		return null;
 	}
 	
+        @Override
 	public void stabilise()
 	{}
 	
+        @Override
 	public double getBedTemperature()
 	{
 		return bedTemperatureTarget;
 	}
 	
+        @Override
 	public void forceOutputFile(PrintStream fos)
 	{
 		
 	}
 	
+        @Override
 	public String getOutputFilename() { return "RepRapSimulatorOutput"; }
 
 	@Override

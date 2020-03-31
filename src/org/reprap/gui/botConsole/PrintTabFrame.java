@@ -70,8 +70,9 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
      */
     public void updateProgress(double fractionDone, int layer, int layers)
     {
-    	if(layer >= 0)
+    	if(layer >= 0){
     		currentLayerOutOfN.setText("" + layer + "/" + layers);
+        }
     	
     	if(layers < 0)
     	{
@@ -81,25 +82,28 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     	if(layer < 0)
     	{
     		layer = org.reprap.Main.gui.getLayer();
-    		if(layer >= 0)
+    		if(layer >= 0){
         		currentLayerOutOfN.setText("" + layer + "/" + layers);
+                }
     	}
     	
     	if(fractionDone < 0)
     	{
     		// Only bother if the layer has just changed
 
-    		if(layer == oldLayer)
+    		if(layer == oldLayer){
     			return;
+                }
     		
     		boolean topDown = layer < oldLayer;
 
     		oldLayer = layer;
 
-    		if(topDown)
+    		if(topDown){
     			fractionDone = (double)(layers - layer)/(double)layers;
-    		else
+                } else {
     			fractionDone = (double)layer/(double)layers;
+                }
     	}
  
     	progressBar.setMinimum(0);
@@ -107,7 +111,7 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     	progressBar.setValue((int)(100*fractionDone));
     	
     	GregorianCalendar cal = new GregorianCalendar();
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("EE HH:mm:ss Z");
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("EE HH:mm");
     	Date d = cal.getTime();
     	long e = d.getTime();
     	if(startTime < 0)
@@ -120,16 +124,18 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     	int h = (int)(f/60000)/60;
     	int m = (int)(f/60000)%60;
     	
-    	if(m > 9)
+    	if(m > 9){
     		expectedBuildTime.setText("" + h + ":" + m);
-    	else
+        } else {
     		expectedBuildTime.setText("" + h + ":0" + m);
+        }
     	expectedFinishTime.setText(dateFormat.format(new Date(startTime + f)));
     	
     	if(printerFilePlay != null)
     	{
-    		if(!printerFilePlay.isAlive())
+    		if(!printerFilePlay.isAlive()){
     			printDone();
+                }
     	}
     }
     
@@ -462,13 +468,14 @@ public void printDone()
 
 private boolean worthSaving()
 {
-	return true;
+	return false;
 }
 
 private void printButtonActionPerformed(java.awt.event.ActionEvent evt) 
 {//GEN-FIRST:event_printButtonActionPerformed
-	if(slicing)
+	if(slicing){
 		return;
+        }
 	
 	if(worthSaving())
 	{
@@ -497,8 +504,9 @@ private void printButtonActionPerformed(java.awt.event.ActionEvent evt)
     org.reprap.Main.gui.mouseToWorld();
     
     	int sp = -1;
-    	if(loadedFiles != null)
+    	if(loadedFiles != null){
     		sp = loadedFiles.length();
+        }
     	if(sp <= 0)
     	{
     		JOptionPane.showMessageDialog(null, "There are no STLs/RFOs loaded to slice to file.");
@@ -521,8 +529,9 @@ private void printButtonActionPerformed(java.awt.event.ActionEvent evt)
 
 private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
 {
-	if(!SLoadOK)
+	if(!SLoadOK){
 		return;
+        }
 	Extruder pcbp = printer.getExtruder("PCB-pen");
 	if(pcbp == null)
 	{
@@ -547,8 +556,9 @@ private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
 		drill = ".tdr";
 	}
 	String fileRoot = "";
-	if(sp > 0)
+	if(sp > 0){
 		fileRoot = inputGerber.getAbsolutePath().substring(0, sp);
+        }
 	drill = fileRoot+drill;
 	File inputDrill = new File(drill);
 	if(inputDrill == null)
@@ -565,7 +575,6 @@ private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
                      p.writeGCodes();
 	parentBotConsoleFrame.resumePolling();
 }
-
 
 //private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
 //}//GEN-LAST:event_pauseButtonActionPerformed
@@ -623,16 +632,18 @@ private void selectorRadioButtonMousePressed(java.awt.event.MouseEvent evt) {//G
 		Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, e);
 	}
 	printer.refreshPreferences();
-	if(!closeMessage)
+	if(!closeMessage){
 		return;
+        }
 	JOptionPane.showMessageDialog(null, "As you have changed the type of RepRap machine you are using,\nyou will have to exit this program and run it again.");
 
 }//GEN-LAST:event_selectorRadioButtonMousePressed
 
 
 private void loadSTL(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSTL
-	if(!SLoadOK)
+	if(!SLoadOK){
 		return;
+        }
 	if(gcodeLoaded)
 	{
 		int response = JOptionPane.showOptionDialog(
@@ -645,8 +656,9 @@ private void loadSTL(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSTL
                 , new String[] {"OK", "Cancel"}                    // Button text as above.
                 , ""    // Default button's label
               );
-		if(response == 1)
+		if(response == 1){
 			return;
+                }
 		loadedFiles = "";
 	}
 	String fn = printer.addSTLFileForMaking();
@@ -656,23 +668,25 @@ private void loadSTL(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSTL
 		return;
 	}
 	
-	if(loadedFilesLong)
+	if(loadedFilesLong){
 		return;
+        }
 	if(loadedFiles.length() > 50)
 	{
 		loadedFiles += "...";
 		loadedFilesLong = true;
-	} else
+	} else {
 		loadedFiles += fn + " ";
-	
+                     }
 	fileNameBox.setText(loadedFiles);
 	stlLoaded = true;
 	gcodeLoaded = false;
 }//GEN-LAST:event_loadSTL
 
 private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGCode
-	if(!GLoadOK)
+	if(!GLoadOK){
 		return;
+        }
 	if(seenSNAP)
 	{
 		JOptionPane.showMessageDialog(null, "Sorry.  Sending G Codes to SNAP RepRap machines is not implemented.");
@@ -697,8 +711,9 @@ private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGC
                 , new String[] {"OK", "Cancel"}                    // Button text as above.
                 , ""    // Default button's label
               );
-		if(response == 1)
+		if(response == 1){
 			return;
+                }
 		org.reprap.Main.gui.deleteAllSTLs();
 		loadedFiles = "";
 	}
@@ -714,8 +729,9 @@ private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGC
                 , new String[] {"OK", "Cancel"}                    // Button text as above.
                 , ""    // Default button's label
               );
-		if(response == 1)
+		if(response == 1){
 			return;
+                }
 		loadedFiles = "";
 	}
 	
@@ -734,18 +750,19 @@ private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGC
 					files,
 					files[0]);
 
-			if(loadedFiles != null)
-				if (loadedFiles.length() <= 0) 
+			if(loadedFiles != null){
+				if (loadedFiles.length() <= 0) {
 					loadedFiles = null;
-		} else
-		{
+                                }
+                        }
+		} else {
 			JOptionPane.showMessageDialog(null, "There are no SD files available.");
 			loadedFiles = null;
 		}
 		parentBotConsoleFrame.resumePolling();
-	} else
+	} else {
 		loadedFiles = printer.loadGCodeFileForMaking();
-
+        }
 	if(loadedFiles == null)
 	{
 		JOptionPane.showMessageDialog(null, "No GCode was loaded.");
@@ -758,8 +775,9 @@ private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGC
 }//GEN-LAST:event_LoadGCode
 
 private void loadRFO(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadRFO
-		if(!SLoadOK)
+		if(!SLoadOK){
 			return;
+                }
 		if(gcodeLoaded)
 		{
 			int response = JOptionPane.showOptionDialog(
@@ -772,8 +790,9 @@ private void loadRFO(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadRFO
 					, new String[] {"OK", "Cancel"}                    // Button text as above.
 					, ""    // Default button's label
 			);
-			if(response == 1)
+			if(response == 1){
 				return;
+                        }
 			loadedFiles = "";
 		}
 
@@ -784,15 +803,16 @@ private void loadRFO(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadRFO
 			return;
 		}
 
-		if(loadedFilesLong)
+		if(loadedFilesLong){
 			return;
+                }
 		if(loadedFiles.length() > 50)
 		{
 			loadedFiles += "...";
 			loadedFilesLong = true;
-		} else
+		} else {
 			loadedFiles += fn + " ";
-
+                }
 		fileNameBox.setText(loadedFiles);
 		stlLoaded = true;
 		gcodeLoaded = false;
@@ -817,8 +837,9 @@ private void help(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferences
 }//GEN-LAST:event_preferences
 
 private void saveRFO(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveRFO
-	if(!SLoadOK)
+	if(!SLoadOK){
 		return;
+        }
 	if(loadedFiles.contentEquals(""))
 	{
 		JOptionPane.showMessageDialog(null, "There's nothing to save...");
@@ -833,8 +854,9 @@ private void saveRFO(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveRFO
 }//GEN-LAST:event_saveRFO
 
 private void saveSCAD(java.awt.event.ActionEvent evt) {                          
-	if(!SLoadOK)
+	if(!SLoadOK){
 		return;
+        }
 	if(loadedFiles.contentEquals(""))
 	{
 		JOptionPane.showMessageDialog(null, "There's nothing to save...");

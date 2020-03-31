@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -145,6 +147,9 @@ public class PCB {
 
 	/**
 	 * @param itp
+     * @param id
+     * @param og
+     * @param pp
 	 */
 	public PCB(File itp, File id, File og, Extruder pp) 
 	{
@@ -189,7 +194,7 @@ public class PCB {
 			gcode.queue("G1 F" + xyf + "; XY feedrate");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 	
@@ -204,7 +209,7 @@ public class PCB {
 			gcode.queue("G1 F" + xyf + "; XY feedrate");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 	
@@ -233,7 +238,7 @@ public class PCB {
 		} catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 	
@@ -245,7 +250,7 @@ public class PCB {
 		} catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 	
@@ -270,7 +275,7 @@ public class PCB {
 		y = org.reprap.machines.GCodeRepRap.round(p.point(0).y(), 1);
 		gcode.queue("G1 X" + x + " Y" + y + "; draw back to polygon start");
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 			return;
 		}
 		raisePen();
@@ -281,7 +286,7 @@ public class PCB {
 		try {
 			gcode = new GCodeReaderAndWriter(new PrintStream(outputGCodes));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 			return;
 		}
 		PCBHeader();
@@ -341,7 +346,7 @@ public class PCB {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 	
@@ -364,8 +369,7 @@ public class PCB {
 			formatX = line.substring(6, 8);
 			formatY = line.substring(9, 11);
 			Debug.d("Format X: " + formatX + " Format Y: " + formatY);
-		}
-		else
+		} else {
 			if(line.startsWith("%ADD"))
 			{
 				String apertureNum, apertureType, apertureSize;
@@ -405,7 +409,7 @@ public class PCB {
                             break;
                     }
 
-			} else
+			} else {
 				if(line.startsWith("T") && drill && line.length() > 3)
 				{
 					if(line.charAt(3) == 'C')
@@ -427,40 +431,34 @@ public class PCB {
 						gerberGcode.addCircleAperture(Integer.parseInt(apertureNum), s);
 						Debug.d("Size: " + s + " mm");
 					}
-				}
-				else
+				} else {
 					if(line.startsWith("G90"))
 					{
 						gerberGcode.enableAbsolute();
 						Debug.d("Absolute coordinates");
-					}
-					else
+					} else {
 						if(line.startsWith("G91"))
 						{
 							gerberGcode.enableRelative();
 							Debug.d("Relative coordinates");
-						}
-						else
+						} else {
 							if(line.startsWith("G70") || (drill && line.startsWith("M72")))
 							{
 								scale = 25.4;
 								Debug.d("Inches");
-							}
-							else
+							} else {
 								if(line.startsWith("G71")|| (drill && line.startsWith("M71")))
 								{
 									scale = 1;
 									Debug.d("Metric");
-								}
-								else
+								} else {
 									if(line.startsWith("G54"))
 									{
 										if(drill)
 										{
 											gerberGcode.selectAperture(-1);
 											Debug.d("Drill centre selected.");
-										} else
-										{
+										} else {
 											int aperture;
 
 											aperture = Integer.valueOf(line.substring(4, line.length()-1).trim());
@@ -468,8 +466,7 @@ public class PCB {
 											Debug.d("Apature: " + aperture + " selected.");
 										}
 
-									}
-									else
+									} else {
 										if(line.startsWith("X"))
 										{
 											double x, y;
@@ -483,8 +480,7 @@ public class PCB {
 													splitline[0] = "0" + splitline[0];
 												while(splitline[1].length() < 6)
 													splitline[1] = "0" + splitline[1];
-											} else
-											{
+											} else {
 												splitline[0] = line.substring(1, line.indexOf("Y"));
 												splitline[1] = line.substring(line.indexOf("Y")+1, line.indexOf("D"));
 												d = Integer.valueOf(line.substring(line.indexOf("D")+1, line.indexOf("D")+3));
@@ -514,16 +510,14 @@ public class PCB {
                         default:
                             break;
                     }
-										}
-										else
+										} else {
 											if(line.startsWith("D") || (line.startsWith("T") && drill && !drillDef))
 											{
 												if(drill)
 												{
 													gerberGcode.selectAperture(-1);
 													Debug.d("Drill centre selected.");
-												} else
-												{
+												} else {
 													int aperture;
 
 													aperture = Integer.valueOf(line.substring(1, 3));
@@ -532,6 +526,15 @@ public class PCB {
 													Debug.d("Apature: " + aperture + " selected.");
 												}
 											}
+                                                                                }
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                }
 		return result;
 	}
 }

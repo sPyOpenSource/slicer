@@ -4,6 +4,8 @@
 package org.reprap.utilities;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.reprap.Preferences;
 
 /**
@@ -69,7 +71,7 @@ public class Debug {
 		System.err.flush();
 		if(!db.debug) return;
 		Exception e = new Exception();
-		e.printStackTrace();
+		Logger.getLogger(Debug.class.getName()).log(Level.SEVERE, null, e);
 	}
 	
 	/**

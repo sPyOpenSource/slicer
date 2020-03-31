@@ -66,6 +66,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.reprap.geometry.polygons.BooleanGrid;
 import org.reprap.geometry.polygons.Point2D;
@@ -289,7 +291,7 @@ public class RrGraphics
 					loop = !statusWindow.isCancelled();
 				} catch (InterruptedException e) 
 				{
-
+Logger.getLogger(RrGraphics.class.getName()).log(Level.SEVERE, null, e);
 				}
 			}
 			jframe.dispose();
@@ -486,8 +488,9 @@ public class RrGraphics
 			for(int y = 0; y < frameHeight; y++)
 			{
 				boolean v = b.get(iTransform(x, y));
-				if(v)
+				if(v){
 					g2d.drawRect(x, y, 1, 1);  // Is this really the most efficient way?
+                                }
 			}
 	}
 	
@@ -507,12 +510,14 @@ public class RrGraphics
 		if(p_list != null)
 		{
 			int leng = p_list.size();
-			for(int i = 0; i < leng; i++)
+			for(int i = 0; i < leng; i++){
 				plot(p_list.polygon(i));
+                        }
 			if(plot_box)
 			{
-				for(int i = 0; i < leng; i++)
+				for(int i = 0; i < leng; i++){
 					plot(p_list.polygon(i).getBox());
+                                }
 			} 
 		}
 		jframe.setTitle(title + ", layer: " + layerNumber);

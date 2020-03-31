@@ -61,7 +61,6 @@ import com.sun.j3d.loaders.ParsingErrorException;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.ArrayList;
 
 import javax.media.j3d.Appearance;
@@ -84,6 +83,9 @@ import javax.vecmath.Vector3d;
 import com.sun.j3d.loaders.Scene;
 import com.sun.j3d.utils.picking.PickTool;
 import java.io.FileNotFoundException;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.reprap.utilities.StlFile;
 import org.reprap.Attributes;
@@ -325,7 +327,7 @@ public class STLObject
         {
             Debug.e("loadSingelSTL(): Exception loading STL file from: " 
                     + location);
-            e.printStackTrace();
+            Logger.getLogger(STLObject.class.getName()).log(Level.SEVERE, null, e);
         }
         
         return new Contents(location, bgResult, csgResult, att, volume);

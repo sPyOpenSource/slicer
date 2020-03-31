@@ -25,12 +25,13 @@ public class MachineFactory {
 	{
 		String machine = org.reprap.Preferences.RepRapMachine();
 
-		if (machine.compareToIgnoreCase("GCodeRepRap") == 0)
+		if (machine.compareToIgnoreCase("GCodeRepRap") == 0){
 		  	return new GCodeRepRap();
-		else if (machine.compareToIgnoreCase("simulator") == 0)
+                } else if (machine.compareToIgnoreCase("simulator") == 0) {
 		    return new Simulator();		
-		else
+                } else {
 			throw new RepRapException("Invalid RepRap machine in properties file: " + machine);
 	}
+        }
 	
 }
