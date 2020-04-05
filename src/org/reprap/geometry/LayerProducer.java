@@ -5,17 +5,13 @@
  */
 package org.reprap.geometry;
 
-//import java.io.IOException;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.reprap.Printer;
 import org.reprap.Attributes;
 import org.reprap.Preferences;
-//import org.reprap.ReprapException;
-//import org.reprap.devices.pseudo.LinePrinter;
 import org.reprap.geometry.polygons.Point2D;
-//import org.reprap.geometry.polygons.RrCSGPolygonList;
 import org.reprap.geometry.polygons.Polygon;
-//import org.reprap.geometry.polygons.PolygonAttributes;
 import org.reprap.geometry.polygons.PolygonList;
 import org.reprap.geometry.polygons.Rectangle;
 import org.reprap.utilities.Debug;
@@ -75,12 +71,6 @@ class segmentSpeeds
 		p2 = Point2D.add(p1, Point2D.mul(a, amod - 2*fastLength));
 		p3 = Point2D.add(p2, Point2D.mul(a, fastLength));
 	}
-	
-//	int speed(int currentSpeed, double angFac)
-//	{
-//		double fac = (1 - 0.5*(1 + ca)*angFac);
-//		return LinePrinter.speedFix(currentSpeed, fac);
-//	}
 }
 
 /**
@@ -160,8 +150,9 @@ public class LayerProducer {
 				if(Preferences.loadGlobalBool("Shield"))
 					rec.expand(Point2D.add(rec.sw(), new Point2D(-7, -7))); // TODO: Yuk - this should be a parameter
 				simulationPlot.init(rec, false, "" + lc.getModelLayer() + " (z=" + lc.getModelZ() + ")");
-			} else
+			} else {
 				simulationPlot.cleanPolygons("" + lc.getModelLayer() + " (z=" + lc.getModelZ() + ")");
+                        }
 		}
 	}
 	
@@ -212,12 +203,10 @@ public class LayerProducer {
 			return false;
 		}
 
-		//printer.setFeedrate(printer.getExtruder().getShortLineFeedrate());
 // TODO: FIX THIS
 //		printer.setSpeed(LinePrinter.speedFix(printer.getExtruder().getXYSpeed(), 
 //				printer.getExtruder().getShortSpeed()));
 		printer.printTo(p.x(), p.y(), layerConditions.getMachineZ(), printer.getExtruder().getShortLineFeedrate(), stopExtruder, closeValve);
-		//printer.setFeedrate(currentFeedrate);
 		return true;	
 	}
 	
@@ -238,7 +227,9 @@ public class LayerProducer {
 			try
 			{
 				Thread.sleep(200);
-			} catch (InterruptedException ex) {}
+			} catch (InterruptedException ex) {
+                            Logger.getLogger(LayerProducer.class.getName()).log(Level.SEVERE, null, ex);
+                        }
 		}
 		
 		if(shortLine(first, stopExtruder, closeValve))
@@ -264,15 +255,12 @@ public class LayerProducer {
 				//printer.setFeedrate(printer.getExtruder().getAngleFeedrate());
 				printer.printTo(ss.p2.x(), ss.p2.y(), z, printer.getExtruder().getAngleFeedrate(), false, false);
 			}
-
-			//printer.setSpeed(ss.speed(currentSpeed, printer.getExtruder().getAngleSpeedFactor()));
 			
-			//printer.setFeedrate(printer.getExtruder().getAngleFeedrate());
 			printer.printTo(ss.p3.x(), ss.p3.y(), z, printer.getExtruder().getAngleFeedrate(), stopExtruder, closeValve);
-			//pos = ss.p3;
 		// Leave speed set for the start of the next line.
-		} else
+		} else {
 			printer.printTo(first.x(), first.y(), z, currentFeedrate, stopExtruder, closeValve);
+                }
 	}
 	
 	private void singleMove(Point2D p)
@@ -301,15 +289,15 @@ public class LayerProducer {
 			try
 			{
 				Thread.sleep(200);
-			} catch (InterruptedException ex) {}
+			} catch (InterruptedException ex) {
+                            Logger.getLogger(LayerProducer.class.getName()).log(Level.SEVERE, null, ex);
+                        }
 		}
 		
 		double z = layerConditions.getMachineZ();
 		
-		//if(startUp)
 		if(fast)
 		{
-			//printer.setFeedrate(printer.getFastFeedrateXY());
 			printer.moveTo(first.x(), first.y(), z, printer.getExtruder().getFastXYFeedrate(), startUp, endUp);
 			return;
 		}
@@ -326,7 +314,6 @@ public class LayerProducer {
 
 			if(ss.plotMiddle)
 			{
-				//printer.setFeedrate(currentFeedrate);
 				printer.moveTo(ss.p2.x(), ss.p2.y(), z, currentFeedrate, startUp, startUp);
 			}
 
@@ -335,10 +322,10 @@ public class LayerProducer {
 			
 			//printer.setFeedrate(printer.getExtruder().getAngleFeedrate());
 			printer.moveTo(ss.p3.x(), ss.p3.y(), z, printer.getExtruder().getAngleFeedrate(), startUp, endUp);
-			//pos = ss.p3;
 			// Leave speed set for the start of the next movement.
-		} else
+		} else {
 			printer.moveTo(first.x(), first.y(), z, currentFeedrate, startUp, endUp);
+                }
 	}
 
 
@@ -350,24 +337,22 @@ public class LayerProducer {
 	private void plot(Polygon p, boolean firstOneInLayer, boolean firstOneThisMaterial) throws Exception
 	{
 		Attributes att = p.getAttributes();
-		//PolygonAttributes pAtt = p.getPolygonAttribute();
 		Printer printer = layerConditions.getPrinter();
 		double outlineFeedrate = att.getExtruder().getOutlineFeedrate();
 		double infillFeedrate = att.getExtruder().getInfillFeedrate();
 		
-		boolean acc = att.getExtruder().getMaxAcceleration() > 0; 
+		boolean acc = att.getExtruder().getMaxAcceleration() > 0;
 	
 		if(p.size() <= 1)
 		{
-			//startNearHere = null;
 			return;
 		}
 
 		// If the length of the plot is <0.05mm, don't bother with it.
 		// This will not spot an attempt to plot 10,000 points in 1mm.
-		double plotDist=0;
-		Point2D lastPoint=p.point(0);
-		for (int i=1; i<p.size(); i++)
+		double plotDist = 0;
+		Point2D lastPoint = p.point(0);
+		for (int i = 1; i < p.size(); i++)
 		{
 			Point2D n=p.point(i);
 			plotDist+=Point2D.d(lastPoint, n);
@@ -375,7 +360,6 @@ public class LayerProducer {
 		}
 		if (plotDist<Preferences.machineResolution()*0.5) {
 			Debug.d("Rejected line with "+p.size()+" points, length: "+plotDist);
-			//startNearHere = null;
 			return;
 		}
 		
@@ -393,7 +377,6 @@ public class LayerProducer {
 		}
 		printer.selectExtruder(att, p.point(0));
 		
-		
 		if (printer.isCancelled()) return;
 		
 		// If getMinLiftedZ() is negative, never lift the head
@@ -403,12 +386,14 @@ public class LayerProducer {
 		
 		if(acc)
 		{
-			if(Preferences.loadGlobalBool("RepRapAccelerations"))
+			if(Preferences.loadGlobalBool("RepRapAccelerations")) {
 				p.setSpeeds(printer.getFastXYFeedrate(), att.getExtruder().getSlowXYFeedrate(), p.isClosed()?outlineFeedrate:infillFeedrate, 
 					att.getExtruder().getMaxAcceleration());
-			else
+			
+                        } else {
 				p.setSpeeds(printer.getFastXYFeedrate(), att.getExtruder().getFastXYFeedrate(), p.isClosed()?outlineFeedrate:infillFeedrate, 
 						att.getExtruder().getMaxAcceleration());
+                        }
 		}
 		
 		double extrudeBackLength = att.getExtruder().getExtrusionOverRun();
@@ -423,22 +408,19 @@ public class LayerProducer {
 		if(liftZ > 0)
 			printer.singleMove(printer.getX(), printer.getY(), currentZ + liftZ, printer.getFastFeedrateZ(), true);
 	
-		//currentFeedrate = att.getExtruder().getFastXYFeedrate();
 		currentFeedrate = printer.getFastXYFeedrate();
 		singleMove(p.point(0));
 		
 		if(liftZ > 0)
 			printer.singleMove(printer.getX(), printer.getY(), currentZ, printer.getFastFeedrateZ(), true);
 		
-		if(acc | (!Preferences.loadGlobalBool("RepRapAccelerations")))
+		if(acc | (!Preferences.loadGlobalBool("RepRapAccelerations"))) {
 			currentFeedrate = p.speed(0);
-		else
-		{
+                } else {
 			if(p.isClosed())
 			{
 				currentFeedrate = outlineFeedrate;			
-			} else
-			{
+			} else {
 				currentFeedrate = infillFeedrate;			
 			}
 		}
@@ -451,12 +433,7 @@ public class LayerProducer {
 		boolean extrudeOff = false;
 		boolean valveOff;
 		boolean oldexoff;
-		
-		//double oldFeedFactor = att.getExtruder().getExtrudeRatio();
-		
-		//if(pAtt != null)
-		//.getExtruder().setExtrudeRatio(oldFeedFactor*pAtt.getBridgeThin());
-		
+				
 		for(int i = 1; i < p.size(); i++)
 		{
 			Point2D next = p.point((i+1)%p.size());
@@ -469,8 +446,9 @@ public class LayerProducer {
 				return;
 			}
 
-			if(acc)
+			if(acc) {
 				currentFeedrate = p.speed(i);
+                        }
 			//Debug.g(printer.getExtruder().getMaterial());
 			oldexoff = extrudeOff;
 			extrudeOff = (i > p.extrudeEnd() && extrudeBackLength > 0) || i == p.size()-1;
@@ -481,9 +459,7 @@ public class LayerProducer {
 		}
 
 		// Restore sanity
-		
-		//att.getExtruder().setExtrudeRatio(oldFeedFactor);
-		
+				
 		if(p.isClosed())
 			move(p.point(0), p.point(0), false, false, true);
 			
@@ -501,7 +477,6 @@ public class LayerProducer {
 			pgl.add(p);
 			simulationPlot.add(pgl);
 		}
-		
 	}
 			
 	/**
@@ -516,14 +491,12 @@ public class LayerProducer {
 		
             for (PolygonList allPolygon : allPolygons) {
                 firstOneThisMaterial = true;
-                PolygonList pl = allPolygon;
-                for(int j = 0; j < pl.size(); j++)
+                for(int j = 0; j < allPolygon.size(); j++)
                 {
-                    plot(pl.polygon(j), firstOneInLayer, firstOneThisMaterial);
+                    plot(allPolygon.polygon(j), firstOneInLayer, firstOneThisMaterial);
                     firstOneInLayer = false;
                     firstOneThisMaterial = false;
                 }
             }
-	}		
-	
+	}
 }

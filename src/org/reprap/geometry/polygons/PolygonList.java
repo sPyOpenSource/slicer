@@ -179,14 +179,6 @@ class chPair
 	}
 	
 	/**
-	 * Destroy just me
-	 */
-//	protected void finalize() throws Throwable
-//	{
-//		super.finalize();
-//	}
-	
-	/**
 	 * @param p
 	 * @param v
 	 */
@@ -247,16 +239,6 @@ class treeList
 	}
 	
 	/**
-	 * Destroy just me
-	 */
-//	protected void finalize() throws Throwable
-//	{
-//		children = null;
-//		parent = null;	
-//		super.finalize();
-//	}
-	
-	/**
 	 * Constructor builds from a polygon index
 	 * @param i
 	 */
@@ -274,7 +256,7 @@ class treeList
 	public void addChild(treeList t)
 	{
 		if(children == null)
-			children = new ArrayList<treeList>();
+			children = new ArrayList<>();
 		children.add(t);
 	}
 	
@@ -455,37 +437,12 @@ public class PolygonList
 	 */
 	private boolean beingDestroyed = false;
 	
-//	/**
-//	 * Destroy me and all that I point to
-//	 */
-//	public void destroy() 
-//	{
-//		if(beingDestroyed) // Prevent infinite loop
-//			return;
-//		beingDestroyed = true;
-//		if(polygons != null)
-//		{
-//			for(int i = 0; i < size(); i++)
-//			{
-//				polygons.get(i).destroy();
-//				polygons.set(i,null);
-//			}
-//			polygons = null;
-//		}
-//		if(box != null)
-//			box.destroy();
-//		box = null;
-//		beingDestroyed = false;
-//	}
-	
-
-	
 	/**
 	 * Empty constructor
 	 */
 	public PolygonList()
 	{
-		polygons = new ArrayList<Polygon>();
+		polygons = new ArrayList<>();
 		box = new Rectangle();
 	}
 	
@@ -537,7 +494,7 @@ public class PolygonList
 	 */
 	public PolygonList(PolygonList lst)
 	{
-		polygons = new ArrayList<Polygon>();
+		polygons = new ArrayList<>();
 		box = new Rectangle(lst.box);
 		for(int i = 0; i < lst.size(); i++)
 			polygons.add(new Polygon(lst.polygon(i)));
@@ -617,16 +574,6 @@ public class PolygonList
 		return result;
 	}
 	
-//	/**
-//	 * Set whether we loop back on ourself.
-//	 * @param c
-//	 */
-//	public void setClosed(boolean c)
-//	{
-//		for(int i = 0; i < size(); i++)
-//			polygon(i).setClosed(c);		
-//	}
-	
 	/**
 	 * Create a new polygon list with a random start vertex for each 
 	 * polygon in the list
@@ -666,7 +613,6 @@ public class PolygonList
 	
 	/**
 	 * Turn into SVG xml
-	 * @param opf
 	 */
 	public String svg()
 	{
@@ -711,75 +657,6 @@ public class PolygonList
 		
 		return r;
 	}
-
-	
-	
-
-//	private void addDXFPolyLines(List plines, Attributes a)
-//	{
-//		for(int pg = 0; pg < plines.size(); pg++)
-//		{
-//			DXFPolyline dxfp = (DXFPolyline) plines.get(pg);
-//			Polygon p = new Polygon(a, true);
-//			for (int i = 0; i < dxfp.getVertexCount(); i++) 
-//			{
-//				DXFVertex vertex = dxfp.getVertex(i);
-//				Point2D pt = new Point2D(vertex.getX(), vertex.getY());
-//				p.add(pt);
-//			}
-//			add(p);
-//		}
-//	}
-//	
-//	public static Polygon ArcToPolygon(double xCen, double yCen, double r, double a0, double a1, Attributes a)
-//	{
-//		return null;
-//	}
-//	
-//	private void addDXFCircles(List pcircs, Attributes a)
-//	{
-//		for(int pg = 0; pg < pcircs.size(); pg++)
-//		{
-//			DXFCircle dxfc = (DXFCircle) pcircs.get(pg);
-//			Polygon p = ArcToPolygon(dxfc.getCenterPoint().getX(), dxfc.getCenterPoint().getY(), dxfc.getRadius(), 0, 2*Math.PI, a);
-//			add(p);
-//		}
-//	}
-//	
-//	/**
-//	 * Read a DXF file layer and return it as a polygon list.
-//	 * @return
-//	 */
-//	public PolygonList readDXF(InputStream in, String layerid, Attributes a)
-//	{
-//		Parser parser = ParserBuilder.createDefaultParser();
-//		PolygonList result = new PolygonList();
-//
-//		try 
-//		{
-//			//parse
-//			parser.parse(in, DXFParser.DEFAULT_ENCODING);
-//			//get the documnet and the layer
-//			DXFDocument doc = parser.getDocument();
-//			DXFLayer layer = doc.getDXFLayer(layerid);
-//			//get all polylines from the layer
-//			List plist = layer.getDXFEntities(DXFConstants.ENTITY_TYPE_POLYLINE);
-//			//work with the first polyline
-//			result.addDXFPolyLines(plist, a);
-//			plist = layer.getDXFEntities(DXFConstants.ENTITY_TYPE_CIRCLE);
-//			result.addDXFCircles(plist, a);
-//		} catch (ParseException e) 
-//		{
-//			Debug.e("PolygonList.readDXF() error: " + e);
-//			result = new PolygonList();
-//		}
-//		
-//		
-//		
-//		return result;
-//	}
-	
-
 	
 	/**
 	 * Re-order and (if need be) reverse the order of the polygons
@@ -1365,8 +1242,6 @@ public class PolygonList
 	/**
 	 * Offset (some of) the points in the polygons to allow for the fact that extruded
 	 * circles otherwise don't come out right.  See http://reprap.org/bin/view/Main/ArcCompensation.
-	 *
-	 * @param es
 	 */	
 	public PolygonList arcCompensate()
 	{
@@ -1497,10 +1372,7 @@ public class PolygonList
 		// Walk the tree turning it into a single CSG expression
 		
 		CSG2D expression = universe.buildCSG(csgPols);
-		
-		//RrCSGPolygon res = new RrCSGPolygon(expression, box.scale(1.1), polygon(0).getAttributes());
-		//res.divide(0.0001, 0);
-		//RrGraphics g2 = new RrGraphics(res, true);
+
 		return expression;		
 	}
 	
@@ -1519,15 +1391,13 @@ public class PolygonList
 			return polygon(0).toCSG(tolerance);
 		}
 		
-		List<CSG2D> csgPols = new ArrayList<CSG2D>();
+		List<CSG2D> csgPols = new ArrayList<>();
 		
 		for(int i = 0; i < size(); i++)
 			csgPols.add(polygon(i).toCSG(tolerance));
 		
 		CSG2D polygons = resolveInsides(csgPols);
-		//expression = expression.simplify(tolerance);
 		
 		return polygons;
-	}
-		
+	}	
 }

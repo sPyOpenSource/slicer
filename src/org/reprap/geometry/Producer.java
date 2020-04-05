@@ -1,5 +1,7 @@
 package org.reprap.geometry;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBoxMenuItem;
 import org.reprap.Preferences;
 import org.reprap.Printer;
@@ -19,9 +21,7 @@ import org.reprap.utilities.RrGraphics;
 public class Producer {
 	
 	private boolean paused = false;
-	
-	//private LayerProducer layer = null;
-	
+		
 	protected LayerRules layerRules = null;
 	
 	private RrGraphics simulationPlot = null;
@@ -31,10 +31,7 @@ public class Producer {
 	 * The list of objects to be built
 	 */
 	protected RepRapBuild bld;
-	
-//	protected boolean interLayerCooling;
 
-	//protected STLSlice stlc;
 	protected AllSTLsToBuild allSTLs;
 	
 	/**
@@ -90,15 +87,11 @@ public class Producer {
 	public void pause()
 	{
 		paused = true;
-//		if(layer != null)
-//			layer.pause();
 	}
 	
 	public void resume()
 	{
 		paused = false;
-//		if(layer != null)
-//			layer.resume();
 	}
 	
 	/**
@@ -113,7 +106,9 @@ public class Producer {
 			try
 			{
 				Thread.sleep(200);
-			} catch (InterruptedException ex) {}
+			} catch (InterruptedException ex) {
+                            Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
+                        }
 		}
 	}
 	
@@ -137,7 +132,6 @@ public class Producer {
 				produceAdditiveTopDown();
 			else
 				Debug.e("Producer.produce(): bottom-up builds no longer supported.");
-				//produceAdditiveGroundUp(gp);
 		}
 	}
 
@@ -154,35 +148,7 @@ public class Producer {
 		LayerProducer lp = new LayerProducer(h, layerRules, simulationPlot);
 		lp.plot();
 		reprap.getExtruder().stopExtruding();
-		//reprap.setFeedrate(reprap.getFastFeedrateXY());
 	}
-	
-//	private void layFoundationGroundUp(RrRectangle gp) throws Exception
-//	{
-//		if(layerRules.getFoundationLayers() <= 0)
-//			return;
-//		
-//		Printer reprap = layerRules.getPrinter();
-//
-//		while(layerRules.getMachineLayer() < layerRules.getFoundationLayers()) 
-//		{
-//			
-//			if (reprap.isCancelled())
-//				break;
-//			waitWhilePaused();
-//			
-//			Debug.d("Commencing foundation layer at " + layerRules.getMachineZ());
-//
-//			reprap.startingLayer(layerRules);
-//			// Change Z height
-//			//reprap.singleMove(reprap.getX(), reprap.getY(), layerRules.getMachineZ(), reprap.getFastFeedrateZ());
-//			fillFoundationRectangle(reprap, gp);
-//			reprap.finishedLayer(layerRules);
-//			reprap.betweenLayers(layerRules);
-//			layerRules.stepMachine(reprap.getExtruder());
-//		}
-//		layerRules.setLayingSupport(false);
-//	}
 	
 	private void layFoundationTopDown(Rectangle gp) throws Exception
 	{
@@ -225,9 +191,7 @@ public class Producer {
 		Printer reprap = layerRules.getPrinter();
 		
 		layerRules.setLayingSupport(false);
-		
-		//BooleanGridList slice, previousSlice;
-		
+				
 		int lastExtruder = -1;
 		int totalPhysicalExtruders = 0;
             for (Extruder extruder : reprap.getExtruders()) {
@@ -275,14 +239,12 @@ public class Producer {
 			for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++)
 				allPolygons[physicalExtruder] = new PolygonList();
 			
-			//boolean shield = true;
 			Point2D startNearHere = new Point2D(0, 0);
 			for(int stl = 0; stl < allSTLs.size(); stl++)
 			{
 					PolygonList fills = allSTLs.computeInfill(stl);
-					PolygonList borders = allSTLs.computeOutlines(stl, fills); //, shield);
+					PolygonList borders = allSTLs.computeOutlines(stl, fills); 
 					fills = fills.cullShorts();
-					//shield = false;
 					PolygonList support = allSTLs.computeSupport(stl);
 					
 					for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++)
@@ -408,5 +370,4 @@ public class Producer {
 	public double getTotalElapsedTime() {
 		return layerRules.getPrinter().getTotalElapsedTime();
 	}
-	
 }

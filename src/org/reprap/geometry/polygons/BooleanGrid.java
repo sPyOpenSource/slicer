@@ -497,12 +497,6 @@ public class BooleanGrid
 	{
 		private List<iPolygon> polygons = null;
 		
-//		protected void finalize() throws Throwable
-//		{
-//			polygons = null;
-//			super.finalize();
-//		}
-		
 		public iPolygonList()
 		{
 			polygons = new ArrayList<>();
@@ -707,7 +701,6 @@ public class BooleanGrid
 	private static final double pixSize = Preferences.machineResolution()*0.6;
 	private static final double realResolution = pixSize*1.5;
 	private static final double rSwell = 2.0; // mm by which to swell rectangles to give margins round stuff
-	//private static final int searchDepth = 3;
 	
 	/**
 	 * How simple does a CSG expression have to be to not be worth pruning further?

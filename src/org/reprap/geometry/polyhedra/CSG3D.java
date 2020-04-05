@@ -671,7 +671,6 @@ public class CSG3D
 	public double value(Point3D p)
 	{
 		double result = 1;
-//		RrCSG c = leaf(p);
 		switch(op)
 		{
 		case LEAF:

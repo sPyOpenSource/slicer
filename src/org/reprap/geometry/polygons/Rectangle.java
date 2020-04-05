@@ -108,33 +108,12 @@ public class Rectangle
 	}
 	
 	/**
-	 * Destroy just me
-	 */
-//	protected void finalize() throws Throwable
-//	{
-//		x = null;
-//		y = null;
-//		super.finalize();
-//	}
-	
-	/**
 	 * Default is empty
 	 */ 
 	public Rectangle()
 	{
 		empty = true;
 	}
-	
-//	/**
-//	 * For when we need one that has just something in
-//	 * @param a
-//	 */
-//	public RrRectangle(double a)
-//	{
-//		x = new RrInterval(0, a);
-//		y = new RrInterval(0, a);
-//		empty = false;
-//	}
 	
 	/**
 	 * Copy constructor
@@ -148,8 +127,8 @@ public class Rectangle
 	
 	/**
 	 * Make from any diagonal corners
-	 * @param sw
-	 * @param ne
+	 * @param a
+	 * @param b
 	 */
 	public Rectangle(Point2D a, Point2D b)
 	{
@@ -160,8 +139,8 @@ public class Rectangle
 	
 	/**
 	 * Make from X and Y intervals
-	 * @param sw
-	 * @param ne
+	 * @param xi
+	 * @param yi
 	 */
 	public Rectangle(Interval xi, Interval yi)
 	{

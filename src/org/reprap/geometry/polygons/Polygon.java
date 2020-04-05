@@ -72,6 +72,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.reprap.Attributes;
 import org.reprap.Preferences;
@@ -188,7 +190,6 @@ public class Polygon
 	 */
 	public Point2D point(int i)
 	{
-		//return new Rr2Point(points.get(i));
 		return points.get(i);
 	}
 	
@@ -309,9 +310,9 @@ public class Polygon
 			add(new Point2D(p.point(i)));
 		if(p.speeds != null)
 		{
-			speeds = new ArrayList<Double>();
+			speeds = new ArrayList<>();
 			for(int i = 0; i < p.size(); i++)
-				speeds.add(new Double(p.speed(i)));
+				speeds.add(p.speed(i));
 		}
 		closed = p.closed;
 		extrudeEnd = p.extrudeEnd;
@@ -323,7 +324,6 @@ public class Polygon
 	/**
 	 * Add a new point to the polygon
 	 * @param p
-	 * @param f
 	 */
 	public void add(Point2D p)
 	{
@@ -420,19 +420,19 @@ public class Polygon
 	
 	/**
 	 * Add a speed to the polygon
-	 * @param p
-	 * @param f
+	 * @param i
+	 * @param s
 	 */
 	public void setSpeed(int i, double s)
 	{
 		// Lazy initialization
 		if(speeds == null)
 		{
-			speeds = new ArrayList<Double>();
+			speeds = new ArrayList<>();
 			for(int j = 0; j < size(); j++)
 				speeds.add(new Double(0));
 		}
-		speeds.set(i, new Double(s));
+		speeds.set(i, s);
 	}
 	
 	/**
@@ -507,7 +507,7 @@ public class Polygon
 		}
 		for(int i = 0; i < p.size(); i++)
 		{
-			speeds.add(new Double(p.speed(i)));
+			speeds.add(p.speed(i));
 		}
 		updateExtrudeValveEnd();
 	}
@@ -569,7 +569,6 @@ public class Polygon
 	/**
 	 * Output the polygon in SVG XML format
 	 * This ignores any speeds
-	 * @param opf
 	 */
 	public String svg()
 	{
@@ -743,7 +742,6 @@ public class Polygon
 	
 	/**
 	 * Find the index of the polygon point that is at the start of the polygon's longest edge.
-	 * @param ln
 	 * @return
 	 */
 	public int longestEdgeStart()
@@ -811,7 +809,7 @@ public class Polygon
 	/**
 	 * Backtrack a given distance, inserting a new point there and set extrudeEnd to it.
 	 * If extrudeEnd is already set, backtrack from that.
-	 * @param distance to backtrack
+	 * @param d to backtrack
 	 * @return index of the inserted point
 	 */
 	public void backStepExtrude(double d)
@@ -861,12 +859,12 @@ public class Polygon
 				{
 					points.add(j, p);
 					if(speeds != null)
-						speeds.add(j, new Double(s)); 
+						speeds.add(j, s); 
 				} else
 				{
 					points.add(p);
 					if(speeds != null)						
-						speeds.add(new Double(s)); 
+						speeds.add(s); 
 				}
 				extrudeEnd = j;
 				return;
@@ -880,8 +878,7 @@ public class Polygon
 	/**
 	 * Backtrack a given distance, inserting a new point there and set valveEnd to it.
 	 * If valveEnd is already set, backtrack from that.
-	 * @param distance to backtrack
-	 * @return index of the inserted point
+	 * @param d to backtrack
 	 */
 	public void backStepValve(double d)
 	{
@@ -930,12 +927,12 @@ public class Polygon
 				{
 					points.add(j, p);
 					if(speeds != null)
-						speeds.add(j, new Double(s)); 
+						speeds.add(j, s); 
 				} else
 				{
 					points.add(p);
 					if(speeds != null)						
-						speeds.add(new Double(s)); 
+						speeds.add(s); 
 				}
 				valveEnd = j;
 				return;
@@ -1062,47 +1059,6 @@ public class Polygon
 		// is needed here...
 	}
 	
-	/**
-	 * Remove solitary edges that are shorter than tiny from the
-	 * polygon if they are preceeded and followed by gap material.
-	 * @param tiny
-	 * @return filtered polygon object
-	 */
-	
-//	public RrPolygon filterShort(double tiny)
-//	{
-//		RrPolygon r = new RrPolygon(att);
-//		int oldEdgeFlag = flag(size()-1);
-//		int i, ii;
-//		
-//		for(i = 1; i <= size(); i++)
-//		{
-//			ii = i%size();
-//			if(oldEdgeFlag == LayerProducer.gapMaterial() && flag(ii) == LayerProducer.gapMaterial())
-//			{
-//				double d = Rr2Point.sub(point(ii), point(i - 1)).mod();
-//				if(d > tiny)
-//					r.add(point(i - 1), flag(i - 1));
-//				//else
-//					//System.out.println("Tiny edge removed.");
-//			} else
-//				r.add(point(i - 1), flag(i - 1));
-//			oldEdgeFlag = flag(i - 1);
-//		}
-//		
-//		// Anything left?
-//		
-//		for(i = 0; i < r.size(); i++)
-//		{
-//			if(r.flag(i) != LayerProducer.gapMaterial())
-//				return r;
-//		}
-//		
-//		// Nothing left
-//		
-//		return new RrPolygon(att);
-//	}
-	
 	// ****************************************************************************
 	
 	/**
@@ -1111,7 +1067,6 @@ public class Polygon
 	 * If the extruder for the polygon's arc compensation factor is 0, return the polygon unmodified.
 	 * 
 	 * This ignores speeds
-	 * @param es
 	 */
 	public Polygon arcCompensate()
 	{
@@ -1160,7 +1115,7 @@ public class Polygon
 					offsetPoint = Point2D.sub(current, c.centre());
 					offsetPoint = Point2D.add(current, Point2D.mul(offsetPoint.norm(), offset));
 					result.add(offsetPoint);
-				} catch (Exception ex)
+				} catch (ParallelException ex)
 				{
 					result.add(current);
 				}
@@ -1225,18 +1180,10 @@ public class Polygon
 	 * 
 	 * @param minSpeed
 	 * @param maxSpeed
-	 * @param maxAcceleration
+	 * @param acceleration
 	 */
 	public void setSpeeds(double airSpeed, double minSpeed, double maxSpeed, double acceleration)
 	{
-		//if(isClosed())System.out.println(toString());
-		//RrPolygon pg = simplify(Preferences.gridRes());
-
-		//points = pg.points;
-		//box = pg.box;
-		//if(isClosed())System.out.println(toString());
-		
-
 		// If not doing RepRap style accelerations, just move in air to the
 		// first point and then go round as fast as possible.
 		try 
@@ -1253,7 +1200,7 @@ public class Polygon
 		} catch (IOException e) 
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(Polygon.class.getName()).log(Level.SEVERE, null, e);
 			return;
 		}
 
@@ -1401,7 +1348,7 @@ public class Polygon
 	 */
 	private Point2D listPoint(int i, List<Integer> a)
 	{
-		return point((a.get(i)).intValue());
+		return point((a.get(i)));
 	}
 
 		
@@ -1521,16 +1468,16 @@ public class Polygon
 		if(points.size() < 3)
 		{
 			Debug.e("convexHull(): attempt to compute hull for " + points.size() + " points!");
-			return new ArrayList<Integer>();
+			return new ArrayList<>();
 		}
 		
-		List<Integer> inConsideration = new ArrayList<Integer>(points);
+		List<Integer> inConsideration = new ArrayList<>(points);
 		
 		int i;
 
 		// The top-most and bottom-most points must be on the hull
 		
-		List<Integer> result = new ArrayList<Integer>();
+		List<Integer> result = new ArrayList<>();
 		int t = topPoint(inConsideration);
 		int b = bottomPoint(inConsideration);
 		result.add(inConsideration.get(t));
@@ -1613,9 +1560,9 @@ public class Polygon
 	 */
 	private List<Integer> allPoints()
 	{
-		List<Integer> points = new ArrayList<Integer>();
+		List<Integer> points = new ArrayList<>();
 		for(int i = 0; i < size(); i++)
-				points.add(new Integer(i));
+				points.add(i);
 		return points;
 	}
 	
@@ -1626,7 +1573,7 @@ public class Polygon
 	private void flagSet(int f, List<Integer> a, int[] flags)
 	{
 			for(int i = 0; i < a.size(); i++)
-				flags[(a.get(i)).intValue()] = f;
+				flags[(a.get(i))] = f;
 	}	
 	
 	/**
@@ -1639,12 +1586,12 @@ public class Polygon
 	{
 		int flag, oldi;
 		oldi = a.size() - 1;
-		int oldFlag = flags[((Integer)a.get(oldi)).intValue()];
+		int oldFlag = flags[(a.get(oldi))];
 
 		int ptr = -1;
 		for(int i = 0; i < a.size(); i++)
 		{
-			flag = flags[((Integer)a.get(i)).intValue()];
+			flag = flags[(a.get(i))];
 
 			if(flag < level && oldFlag >= level) 
 			{
@@ -1658,12 +1605,12 @@ public class Polygon
 		if(ptr < 0)
 			return null;
 		
-		List<Integer> result = new ArrayList<Integer>();
+		List<Integer> result = new ArrayList<>();
 		result.add(a.get(ptr));
 		ptr++;
 		if(ptr > a.size() - 1)
 			ptr = 0;
-		while(flags[((Integer)a.get(ptr)).intValue()] < level)
+		while(flags[(a.get(ptr))] < level)
 		{
 			result.add(a.get(ptr));
 			ptr++;
@@ -1719,8 +1666,8 @@ public class Polygon
 		
 		for(i = start; i < a.size(); i++)
 		{
-			oldFlag = flags[((Integer)a.get(oldi)).intValue()]; //listFlag(oldi, a);
-			flag = flags[((Integer)a.get(i)).intValue()]; //listFlag(i, a);
+			oldFlag = flags[(a.get(oldi))]; //listFlag(oldi, a);
+			flag = flags[(a.get(i))]; //listFlag(i, a);
 
 			if(oldFlag == level && flag == level)
 			{
@@ -1767,12 +1714,6 @@ public class Polygon
 		List<Integer> all = copy.allPoints();
 		int [] flags = new int[copy.size()];
 		CSG2D expression = copy.toCSGRecursive(all, 0, true, flags);
-
-		//RrRectangle b = copy.box.scale(1.1);
-		//expression = expression.simplify(tolerance);
-		//if(att == null)
-		//	Debug.e("toCSG(): null attribute!");
-		//RrCSGPolygon result = new RrCSGPolygon(expression, b, att);
 		
 		return expression;
 	}

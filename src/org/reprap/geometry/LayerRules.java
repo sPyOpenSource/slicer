@@ -312,11 +312,6 @@ public class LayerRules
 		return Math.abs(middle.y() - purge.y()) > Math.abs(middle.x() - purge.x());
 	}
 	
-//	public void setPurgePoint(Point2D p)
-//	{
-//		purge = new Point2D(p);
-//	}
-	
 	public Point2D getPurgeEnd(boolean low, int pass)
 	{
 		double a = purgeL*0.5;
@@ -567,12 +562,8 @@ public class LayerRules
 		
 		if(getMachineLayer() < getFoundationLayers())
 		{
-//			if(getMachineLayer() == getFoundationLayers() - 2)
-//				angle = e.getEvenHatchDirection();
-//			else
 				angle = e.getOddHatchDirection();
-		} else
-		{
+		} else {
 			if(mylayer%2 == 0)
 				angle = e.getEvenHatchDirection();
 			else
@@ -621,28 +612,11 @@ public class LayerRules
 		
 		if(topDown)
 		{
-			//machineZ -= (sZ + addToStep);
 			machineLayer--;
 			machineZ = zStep*machineLayer + addToStep;
-//			ld = getFoundationLayers() - getMachineLayer();
-//			if(ld == 2)
-//				addToStep = zStep*(1 - e.getSeparationFraction());
-//			else if(ld == 1)
-//				addToStep = -zStep*(1 - e.getSeparationFraction());
-//			else
-//				addToStep = 0;
-		} else
-		{
-			//machineZ += (sZ + addToStep);
+		} else {
 			machineLayer++;
 			machineZ = zStep*machineLayer + addToStep;
-//			ld = getFoundationLayers() - getMachineLayer();
-//			if(ld == 2)
-//				addToStep = -zStep*(1 - e.getSeparationFraction());
-//			else if(ld == 1)
-//				addToStep = zStep*(1 - e.getSeparationFraction());
-//			else
-//				addToStep = 0;
 		}
 	}
 	
@@ -662,13 +636,9 @@ public class LayerRules
 	 */
 	public void step()
 	{		
-		if(topDown)
-		{
-			//modelZ -= (sZ + addToStep);
+		if(topDown) {
 			modelLayer--;
-		} else
-		{
-			//modelZ += (sZ + addToStep);
+		} else {
 			modelLayer++;
 		}
 		modelZ = modelLayer*zStep + addToStep;
@@ -761,11 +731,7 @@ public class LayerRules
 		}
 		fileOutStream.close();
 		reversing = false;
-		//copyFile(fileOutStream, getEpilogueFileName());
 
 		//System.out.println("layerRules.reverseLayers(): exception at layer: " + i + " " + e.toString());
-
 	}
-
-	
 }

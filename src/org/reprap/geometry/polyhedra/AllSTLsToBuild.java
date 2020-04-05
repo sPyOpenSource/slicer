@@ -273,7 +273,6 @@ public class AllSTLsToBuild
 	/**
 	 * The XYZ box around everything
 	 */
-	//private RrRectangle XYbox;
 	private BoundingBox XYZbox;
 	
 	/**
@@ -507,9 +506,6 @@ public class AllSTLsToBuild
 	 */
 	public void setBoxes()
 	{
-		//if(XYZbox != null) // Already done?
-		//	return;
-		
 		rectangles = new ArrayList<>();
                 stls.forEach((_item) -> {
                     rectangles.add(null);
@@ -820,7 +816,6 @@ public class AllSTLsToBuild
 		}
 		PolygonList result = new PolygonList();
 		Polygon next = getNextPolygon(edges);
-		//edgePlot(edges);
 		while(next != null)
 		{
 			if(next.size() >= 3)
@@ -958,16 +953,6 @@ public class AllSTLsToBuild
 		return -1;
 	}
 	
-//	private void nameAtt(BooleanGridList bgl, String name)
-//	{
-//		for(int i = 0; i < bgl.size(); i++)
-//		{
-//			Attributes a = bgl.get(i).attribute();
-//			Debug.e(name + " has material: " + a.getMaterial());
-//		}
-//	}
-	
-
 	/**
 	 * Compute the bridge infill for unsupported polygons for a slice.  This is very heuristic...
 	 * 
@@ -1330,8 +1315,7 @@ public class AllSTLsToBuild
 			t3d1.mul(t3d2);
 			s.setTransform(t3d1);
 			s.translate(new Vector3d(yOff, -xOff, zOff));
-		} else
-		{
+		} else {
 			xOff -= 0.5*shieldSize.x;
 			yOff -= shieldSize.y;
 			s.translate(new Vector3d(xOff, yOff, zOff));
@@ -1347,10 +1331,6 @@ public class AllSTLsToBuild
 		}
 		
 		org.reprap.Main.gui.getBuilder().anotherSTL(s, att, 0);
-		
-
-		
-		//layerRules.setPurgePoint(new Point2D(0.5*(buildPlan.se().x() + buildPlan.sw().x() - layerRules.getPurgeLength()), yOff + 0.5*shieldSize.y + 1.5))
 	}
 	
 	/**
@@ -1463,9 +1443,6 @@ public class AllSTLsToBuild
 		Transform3D trans = stlObject.getTransform();
 		Matrix4d m4 = new Matrix4d();
 		trans.get(m4);
-
-		//BranchGroup bg = stlObject.getSTL();
-
 		
 		for(int i = 0; i < stlObject.getCount(); i++)
 		{
@@ -1481,7 +1458,6 @@ public class AllSTLsToBuild
 			if(csg != null)
 				csgs[attr.getExtruder().getID()].add(csg.transform(m4));
 			else
-				//recursiveSetEdges(attr.getPart(), trans, z, attr, edges);
 				recursiveSetEdges(bg1, trans, z, attr, edges);
 
 
@@ -1551,32 +1527,6 @@ public class AllSTLsToBuild
 	{
 		Point3d odd = null, even1 = null, even2 = null;
 		int pat = 0;
-
-//		boolean mainlyAbove = (p.z + q.z + r.z)/3.0 > z;
-//		double zd = z - p.z;
-//		if(Math.abs(zd) < Preferences.tiny())
-//		{
-//			if(mainlyAbove && p.z >= z)
-//				p.z = z - Preferences.tiny();
-//			if(!mainlyAbove && p.z <= z)
-//				p.z = z + Preferences.tiny();			
-//		}
-//		zd = z - q.z;
-//		if(Math.abs(zd) < Preferences.tiny())
-//		{
-//			if(mainlyAbove && q.z >= z)
-//				q.z = z - Preferences.tiny();
-//			if(!mainlyAbove && q.z <= z)
-//				q.z = z + Preferences.tiny();			
-//		}
-//		zd = z - r.z;
-//		if(Math.abs(zd) < Preferences.tiny())
-//		{
-//			if(mainlyAbove && r.z >= z)
-//				r.z = z - Preferences.tiny();
-//			if(!mainlyAbove && r.z <= z)
-//				r.z = z + Preferences.tiny();			
-//		}
 		
 		if(p.z < z)
 			pat = pat | 1;
@@ -1635,13 +1585,9 @@ public class AllSTLsToBuild
 		even2.sub((Tuple3d)odd);
 		double t = (z - odd.z)/even1.z;	
 		Point2D e1 = new Point2D(odd.x + t*even1.x, odd.y + t*even1.y);	
-		//Point3d e3_1 = new Point3d(e1.x(), e1.y(), z);
-		//e1 = new Rr2Point(toGrid(e1.x()), toGrid(e1.y()));
 		e1 = new Point2D(e1.x(), e1.y());
 		t = (z - odd.z)/even2.z;
 		Point2D e2 = new Point2D(odd.x + t*even2.x, odd.y + t*even2.y);
-		//Point3d e3_2 = new Point3d(e2.x(), e2.y(), z);
-		//e2 = new Rr2Point(toGrid(e2.x()), toGrid(e2.y()));
 		e2 = new Point2D(e2.x(), e2.y());
 		
 		// Too short?

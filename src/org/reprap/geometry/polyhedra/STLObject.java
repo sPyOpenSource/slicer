@@ -253,7 +253,6 @@ public class STLObject
     	BranchGroup bgResult = null;
     	CSG3D csgResult = null;
     	
-    	//STLLoader loader = new STLLoader();
     	StlFile loader = new StlFile();
     	
         Scene scene;
@@ -509,24 +508,16 @@ public class STLObject
             // Recursively apply that.  N.B. we do not apply a transform to the
             // loaded object; we actually shift all its points to put it in this
             // standard place.
-            
-            //setOffset(offset);
-            
+                        
             result.centreToOrigin = offset;
             
             //System.out.println("centreToOrigin = " + offset.toString());
 
             // Now shift us to have bottom left at origin using our transform.
             
-            //Transform3D temp_t = new Transform3D();
-            //temp_t.set(scale(size, 0.5));
             result.bottomLeftShift = scale(extent, 0.5);
-            //System.out.println("half-size = " + result.bottomLeftShift.toString());
-            //trans.setTransform(temp_t);
-            
-            //restoreAppearance();
-            
-        } else{
+            //System.out.println("half-size = " + result.bottomLeftShift.toString());            
+        } else {
             Debug.e("applyOffset(): no bounding box or child.");
         }
     	return result;
@@ -1111,7 +1102,7 @@ public class STLObject
     
     private double s3dVolume(Shape3D shape)
     {
-    	double total = 0;
+        double total = 0;
         GeometryArray g = (GeometryArray)shape.getGeometry();
         Point3d a = new Point3d();
         Point3d b = new Point3d();

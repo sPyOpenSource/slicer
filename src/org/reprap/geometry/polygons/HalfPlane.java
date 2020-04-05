@@ -75,11 +75,6 @@ public class HalfPlane
 	private Line p = null;
 	
 	/**
-	 * List of intersections with others
-	 */
-	//private List<lineIntersection> crossings = null;
-	
-	/**
 	 * Flag to prevent cyclic graphs going round forever
 	 */
 	private boolean beingDestroyed = false;
@@ -94,7 +89,6 @@ public class HalfPlane
 		p.norm();
 		normal = new Point2D(-p.direction().y(), p.direction().x());
 		offset = -Point2D.mul(l.origin(), normal());
-		//crossings = new ArrayList<lineIntersection>();
 	}
 	
 	/**
