@@ -274,7 +274,9 @@ public class Main {
 			printer.stopMotor();
 			printer.stopValve();
 			printer.pause();
-		} catch (Exception ex) {}
+		} catch (Exception ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
 	}
 	
 	/**

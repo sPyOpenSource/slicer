@@ -155,7 +155,7 @@ public class Polygon
 	{
 		if(a == null)
 			Debug.e("RrPolygon(): null attributes!");
-		points = new ArrayList<Point2D>();
+		points = new ArrayList<>();
 		speeds = null;
 		att = a;
 		box = new Rectangle();
@@ -164,7 +164,6 @@ public class Polygon
 		valveEnd = -1;
 		extrudeEndDistance2 = 0;
 		valveEndDistance2 = 0;
-		//pa = null;
 	}
 	
 	/**
@@ -205,7 +204,7 @@ public class Polygon
 			Debug.e("Rr2Point.speed(int i): speeds null!");
 			return 0;
 		}
-		return speeds.get(i).doubleValue();
+		return speeds.get(i);
 	}
 
 	
@@ -213,6 +212,7 @@ public class Polygon
 	 * As a string
 	 * @return string representation of polygon
 	 */
+        @Override
 	public String toString()
 	{
 		String result = " Polygon -  vertices: ";
@@ -254,7 +254,6 @@ public class Polygon
 				extrudeEndDistance2 =  0;
 				return;
 			}
-			double d2 = 0;
 			System.out.println("Updating e...");
 		}
 		if(valveEnd >= 0)
@@ -569,6 +568,7 @@ public class Polygon
 	/**
 	 * Output the polygon in SVG XML format
 	 * This ignores any speeds
+     * @return 
 	 */
 	public String svg()
 	{
@@ -613,6 +613,7 @@ public class Polygon
 	}
 	
 	/**
+     * @param i
 	 * @return same polygon, but starting at vertex i
 	 */
 	public Polygon newStart(int i)
@@ -642,6 +643,7 @@ public class Polygon
 	}
 	
 	/**
+     * @param lc
 	 * @return same polygon starting at point incremented from last polygon
 	 */
 	public Polygon incrementedStart(LayerRules lc)
@@ -712,8 +714,9 @@ public class Polygon
 			add(myPoint, ro);
 			updateExtrudeValveEnd();
 			return true;
-		} else
+		} else {
 			return false;
+                }
 	}
 	
 	/**
@@ -802,15 +805,13 @@ public class Polygon
 			return result/size();
 		}
 		
-		return
-			result/(size() - 1);	
+		return result / (size() - 1);	
 	}
 	
 	/**
 	 * Backtrack a given distance, inserting a new point there and set extrudeEnd to it.
 	 * If extrudeEnd is already set, backtrack from that.
 	 * @param d to backtrack
-	 * @return index of the inserted point
 	 */
 	public void backStepExtrude(double d)
 	{
@@ -825,8 +826,7 @@ public class Polygon
 			start = extrudeEnd;
 			extrudeEndDistance2 = Math.sqrt(extrudeEndDistance2) + d;
 			extrudeEndDistance2 *= extrudeEndDistance2;
-		} else
-		{
+		} else {
 			start = size() - 1;
 			extrudeEndDistance2 = d*d;
 		}
@@ -860,8 +860,7 @@ public class Polygon
 					points.add(j, p);
 					if(speeds != null)
 						speeds.add(j, s); 
-				} else
-				{
+				} else {
 					points.add(p);
 					if(speeds != null)						
 						speeds.add(s); 
@@ -893,8 +892,7 @@ public class Polygon
 			start = valveEnd;
 			valveEndDistance2 = Math.sqrt(valveEndDistance2) + d;
 			valveEndDistance2 *= valveEndDistance2;
-		} else
-		{
+		} else {
 			start = size() - 1;
 			valveEndDistance2 = d*d;
 		}
@@ -928,8 +926,7 @@ public class Polygon
 					points.add(j, p);
 					if(speeds != null)
 						speeds.add(j, s); 
-				} else
-				{
+				} else {
 					points.add(p);
 					if(speeds != null)						
 						speeds.add(s); 
@@ -951,10 +948,9 @@ public class Polygon
 	{
 		Point2D last, p;
 		int start = size() - 1;
-		if(isClosed())
+		if(isClosed()) {
 			last = point(0);
-		else
-		{
+                } else {
 			last = point(start);
 			start--;
 		}
@@ -1115,18 +1111,17 @@ public class Polygon
 					offsetPoint = Point2D.sub(current, c.centre());
 					offsetPoint = Point2D.add(current, Point2D.mul(offsetPoint.norm(), offset));
 					result.add(offsetPoint);
-				} catch (ParallelException ex)
-				{
+				} catch (ParallelException ex) {
 					result.add(current);
 				}
-			} else
+			} else {
 				result.add(current);
+                        }
 			
 			d1 = d2;
 			previous = current;
 			current = next;
 		}
-		
 		
 		return result;
 	}
@@ -1197,9 +1192,7 @@ public class Polygon
 				}
 				return;
 			}
-		} catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
+		} catch (IOException e)  {
 			Logger.getLogger(Polygon.class.getName()).log(Level.SEVERE, null, e);
 			return;
 		}
@@ -1240,12 +1233,10 @@ public class Polygon
 			if(vCorner <= aRange.low())
 			{
 				backTrack(i, vCorner, aRange.low(), minSpeed, acceleration, fixup);
-			} else if(vCorner < aRange.high())
-			{
+			} else if(vCorner < aRange.high()) {
 				setSpeed(i, vCorner);
 				fixup[i] = true;				
-			} else
-			{
+			} else {
 				setSpeed(i, aRange.high());
 				fixup[i] = false;
 			}
@@ -1414,8 +1405,9 @@ public class Polygon
 				a.set(0, a.get(1));
 				a.set(1, k);
 			}
-		} else
+		} else {
 			Debug.e("clockWise(): not called for a triangle!");
+                }
 	}
 	
 	
@@ -1486,8 +1478,7 @@ public class Polygon
 		{
 			inConsideration.remove(t);
 			inConsideration.remove(b);
-		} else
-		{
+		} else {
 			inConsideration.remove(b);
 			inConsideration.remove(t);			
 		}
@@ -1528,8 +1519,7 @@ public class Polygon
 			{
 				result.add(after, inConsideration.get(corner));
 				inConsideration.remove(corner);
-			} else if(inConsideration.size() > 0)
-			{
+			} else if(inConsideration.size() > 0) {
 				Debug.e("convexHull(): points left, but none included!");
 				return result;
 			}
@@ -1574,7 +1564,7 @@ public class Polygon
 	{
 			for(int i = 0; i < a.size(); i++)
 				flags[(a.get(i))] = f;
-	}	
+	}
 	
 	/**
 	 * Get the next whole section to consider from list a
@@ -1658,8 +1648,7 @@ public class Polygon
 		{
 			oldi = a.size() - 1;
 			start = 0;
-		} else
-		{
+		} else {
 			oldi = 0;
 			start = 1;
 		}

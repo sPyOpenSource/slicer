@@ -124,10 +124,9 @@ public class Producer {
 	
 	public void produce() throws Exception
 	{		
-		if(Preferences.Subtractive())
+		if(Preferences.Subtractive()){
 			produceSubtractive();
-		else
-		{
+                } else {
 			if(layerRules.getTopDown())
 				produceAdditiveTopDown();
 			else
@@ -252,46 +251,43 @@ public class Producer {
 						tempBorderPolygons[physicalExtruder] = new PolygonList();
 						tempFillPolygons[physicalExtruder] = new PolygonList();
 					}
-					for(int pol = 0; pol < borders.size(); pol++)
+					borders.forEach((p) ->
 					{
-						Polygon p = borders.polygon(pol);
 						tempBorderPolygons[p.getAttributes().getExtruder().getPhysicalExtruderNumber()].add(p);
-					}
-					for(int pol = 0; pol < fills.size(); pol++)
+					});
+					fills.forEach((p) ->
 					{
-						Polygon p = fills.polygon(pol);
 						tempFillPolygons[p.getAttributes().getExtruder().getPhysicalExtruderNumber()].add(p);
-					}
-					for(int pol = 0; pol < support.size(); pol++)
+					});
+					support.forEach((p) ->
 					{
-						Polygon p = support.polygon(pol);
 						tempFillPolygons[p.getAttributes().getExtruder().getPhysicalExtruderNumber()].add(p);
-					}
+					});
 					
 					for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++)
 					{
 						if(tempBorderPolygons[physicalExtruder].size() > 0)
 						{
-							double linkUp = tempBorderPolygons[physicalExtruder].polygon(0).getAttributes().getExtruder().getExtrusionSize();
+							double linkUp = tempBorderPolygons[physicalExtruder].get(0).getAttributes().getExtruder().getExtrusionSize();
 							linkUp = (4*linkUp*linkUp);
 							tempBorderPolygons[physicalExtruder].radicalReOrder(linkUp);
 							tempBorderPolygons[physicalExtruder] = tempBorderPolygons[physicalExtruder].nearEnds(startNearHere, false, -1);
 							if(tempBorderPolygons[physicalExtruder].size() > 0)
 							{
-								Polygon last = tempBorderPolygons[physicalExtruder].polygon(tempBorderPolygons[physicalExtruder].size() - 1);
+								Polygon last = tempBorderPolygons[physicalExtruder].get(tempBorderPolygons[physicalExtruder].size() - 1);
 								startNearHere = last.point(last.size() - 1);
 							}
 							allPolygons[physicalExtruder].add(tempBorderPolygons[physicalExtruder]);
 						}
 						if(tempFillPolygons[physicalExtruder].size() > 0)
 						{
-							double linkUp = tempFillPolygons[physicalExtruder].polygon(0).getAttributes().getExtruder().getExtrusionSize();
+							double linkUp = tempFillPolygons[physicalExtruder].get(0).getAttributes().getExtruder().getExtrusionSize();
 							linkUp = (4*linkUp*linkUp);
 							tempFillPolygons[physicalExtruder].radicalReOrder(linkUp);
 							tempFillPolygons[physicalExtruder] = tempFillPolygons[physicalExtruder].nearEnds(startNearHere, false, -1);
 							if(tempFillPolygons[physicalExtruder].size() > 0)
 							{
-								Polygon last = tempFillPolygons[physicalExtruder].polygon(tempFillPolygons[physicalExtruder].size() - 1);
+								Polygon last = tempFillPolygons[physicalExtruder].get(tempFillPolygons[physicalExtruder].size() - 1);
 								startNearHere = last.point(last.size() - 1);
 							}
 							allPolygons[physicalExtruder].add(tempFillPolygons[physicalExtruder]);

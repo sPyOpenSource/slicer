@@ -29,8 +29,8 @@ import org.reprap.pcb.PCB;
  * @author  ensab
  */
 public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
-	private static final long serialVersionUID = 1L;
-	private BotConsoleFrame parentBotConsoleFrame = null;
+    private static final long serialVersionUID = 1L;
+    private BotConsoleFrame parentBotConsoleFrame = null;
     private final Printer printer;
     private final boolean paused = false;
     private final boolean seenSNAP = false;
@@ -445,7 +445,7 @@ public void printLive(boolean p)
 		sliceButton.setText("Printing...");
 	else
 		sliceButton.setText("Slicing...");
-	sliceButton.setBackground(Color.gray);    */	
+	sliceButton.setBackground(Color.gray);    */
 }
 
 private void restoreSliceButton()
@@ -453,7 +453,7 @@ private void restoreSliceButton()
 	slicing = false;
 	//sliceButton.setText("Slice");
 	//sliceButton.setBackground(new java.awt.Color(51, 204, 0)); 
-	printerFilePlay = null;	
+	printerFilePlay = null;
 }
 
 public void printDone()
@@ -628,7 +628,6 @@ private void selectorRadioButtonMousePressed(java.awt.event.MouseEvent evt) {//G
 	try {
 		org.reprap.Preferences.saveGlobal();
 	} catch (IOException e) {
-		// TODO Auto-generated catch block
 		Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, e);
 	}
 	printer.refreshPreferences();
@@ -887,13 +886,11 @@ private void enableSLoad()
 	loadSTL.setBackground(new java.awt.Color(0, 204, 255));
 	loadRFO.setBackground(new java.awt.Color(0, 204, 255));
 	saveRFO.setBackground(new java.awt.Color(0, 204, 255));
-	//saveSCAD.setBackground(new java.awt.Color(0, 204, 255));
 	try
 	{	
 		org.reprap.Preferences.setRepRapMachine("GCodeRepRap");
 		org.reprap.Preferences.setGCodeUseSerial(false);
-	} catch (Exception e)
-	{
+	} catch (Exception e) {
 		JOptionPane.showMessageDialog(null, e.toString());
 	}	
 }

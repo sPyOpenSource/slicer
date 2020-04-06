@@ -356,10 +356,11 @@ Logger.getLogger(RrGraphics.class.getName()).log(Level.SEVERE, null, e);
 			return;
 		if(pl.size() <= 0)
 			return;
-		if(p_list == null)
-			p_list = new PolygonList(pl);
-		else
+		if(p_list == null) {
+                        p_list = PolygonList.clone(pl);
+                } else {
 			p_list.add(pl);
+                }
 		jframe.repaint();
 	}
 	
@@ -511,12 +512,12 @@ Logger.getLogger(RrGraphics.class.getName()).log(Level.SEVERE, null, e);
 		{
 			int leng = p_list.size();
 			for(int i = 0; i < leng; i++){
-				plot(p_list.polygon(i));
+				plot(p_list.get(i));
                         }
 			if(plot_box)
 			{
 				for(int i = 0; i < leng; i++){
-					plot(p_list.polygon(i).getBox());
+					plot(p_list.get(i).getBox());
                                 }
 			} 
 		}

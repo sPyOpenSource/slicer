@@ -1047,7 +1047,7 @@ public class AllSTLsToBuild
 					PolygonList bridgeOutline = bridge.allPerimiters(bridge.attribute());
 					for(int pol = 0; pol < bridgeOutline.size(); pol++)
 					{
-						Polygon polygon = bridgeOutline.polygon(pol);
+						Polygon polygon = bridgeOutline.get(pol);
 
 						for(int vertex1 = 0; vertex1 < polygon.size(); vertex1++)
 						{
@@ -1496,7 +1496,7 @@ public class AllSTLsToBuild
 						// much smaller than the whole.  This allows booleans on slices to be computed much more
 						// quickly as each is in the same rectangle so the bit patterns match exactly.  But it does use more memory.
 
-						result.add(new BooleanGrid(csgp, rectangles.get(stlIndex), pgl.polygon(0).getAttributes()));
+						result.add(new BooleanGrid(csgp, rectangles.get(stlIndex), pgl.get(0).getAttributes()));
 					}
 				}
 			}

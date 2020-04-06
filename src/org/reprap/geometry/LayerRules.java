@@ -406,10 +406,10 @@ public class LayerRules
 		}
 		if(bottom < 0)
 			return;
-		firstPoint[machineLayer] = pl[bottom].polygon(0).point(0);
-		firstExtruder[machineLayer] = pl[bottom].polygon(0).getAttributes().getExtruder().getID();
-		lastPoint[machineLayer] = pl[top].polygon(pl[top].size()-1).point(pl[top].polygon(pl[top].size()-1).size() - 1);
-		lastExtruder[machineLayer] = pl[top].polygon(pl[top].size()-1).getAttributes().getExtruder().getID();
+		firstPoint[machineLayer] = pl[bottom].get(0).point(0);
+		firstExtruder[machineLayer] = pl[bottom].get(0).getAttributes().getExtruder().getID();
+		lastPoint[machineLayer] = pl[top].get(pl[top].size()-1).point(pl[top].get(pl[top].size()-1).size() - 1);
+		lastExtruder[machineLayer] = pl[top].get(pl[top].size()-1).getAttributes().getExtruder().getID();
 	}
 	
 	public int realTopLayer()

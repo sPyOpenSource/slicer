@@ -493,7 +493,7 @@ public class LayerProducer {
                 firstOneThisMaterial = true;
                 for(int j = 0; j < allPolygon.size(); j++)
                 {
-                    plot(allPolygon.polygon(j), firstOneInLayer, firstOneThisMaterial);
+                    plot(allPolygon.get(j), firstOneInLayer, firstOneThisMaterial);
                     firstOneInLayer = false;
                     firstOneThisMaterial = false;
                 }

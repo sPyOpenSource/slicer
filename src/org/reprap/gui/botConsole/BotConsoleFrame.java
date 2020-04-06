@@ -36,7 +36,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     int outOf = -1;
     private static BotConsoleFrame bcf = null;
     private static int exPanelNumber;
-    PrintTabFrame printTabFrame = new org.reprap.gui.botConsole.PrintTabFrame(false);
+    PrintTabFrame printTabFrame = new PrintTabFrame(false);
     
     /** Creates new form BotConsoleFrame */
     public BotConsoleFrame()

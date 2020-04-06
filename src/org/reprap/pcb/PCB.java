@@ -291,7 +291,7 @@ public class PCB {
 		}
 		PCBHeader();
 		for(int i = 0; i < penPaths.size(); i++)
-			polygonPlot(penPaths.polygon(i));
+			polygonPlot(penPaths.get(i));
 		PCBFooter();
 	}
 	
