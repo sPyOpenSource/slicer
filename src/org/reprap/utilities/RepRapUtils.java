@@ -98,22 +98,6 @@ public class RepRapUtils
                 }
             }
 		return i;
-    	/*
-        InputStream is = new BufferedInputStream(new FileInputStream(f));
-        try {
-            byte[] c = new byte[1024];
-            int count = 0;
-            int readChars = 0;
-            while ((readChars = is.read(c)) != -1) {
-                for (int i = 0; i < readChars; ++i) {
-                    if (c[i] == System.getProperty("line.separator").charAt(0))
-                        ++count;
-                }
-            }
-            return count;
-        } finally {
-            is.close();
-        }*/
     }
 
 }

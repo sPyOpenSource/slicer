@@ -94,8 +94,7 @@ public class FilterGenerator {
 			try
 			{
 				resp = br.readLine();
-			} catch (IOException e)
-			{
+			} catch (IOException e) {
 				System.out.println(e);
 			}
 			action[i] = resp.startsWith("y");

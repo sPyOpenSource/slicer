@@ -128,11 +128,6 @@ public class RrGraphics
 	/**
 	 * 
 	 */
-	//private RrCSGPolygon csg_p = null;
-	
-	/**
-	 * 
-	 */
 	private BooleanGrid bg = null;
 	
 	/**
@@ -219,8 +214,7 @@ public class RrGraphics
 		{
 			frameWidth = frame;
 			frameHeight = (int)(0.5 + (frameWidth*height)/width);
-		} else
-		{
+		} else {
 			frameHeight = frame;
 			frameWidth = (int)(0.5 + (frameHeight*width)/height);
 		}
@@ -272,7 +266,6 @@ public class RrGraphics
 		if(waitTillDone)
 		{
 			StatusMessage statusWindow = new StatusMessage(new JFrame());
-			//statusWindow.setButton("Continue");
 			statusWindow.setMessage("Left mouse - magnify\n" +
 					"Middle mouse - evaluate\n" +
 					"Right mouse - full image\n" +
