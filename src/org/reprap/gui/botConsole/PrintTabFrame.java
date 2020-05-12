@@ -375,13 +375,14 @@ void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
                                 .add(7, 7, 7)
                                 .add(currentLayerOutOfN)))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
                                 .add(hoursMinutesLabel1)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(fileNameBox, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 430, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(29, Short.MAX_VALUE))
+                                .add(fileNameBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 394, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(0, 0, Short.MAX_VALUE))
+                            .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -432,7 +433,7 @@ void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
                         .add(progressLabel)
                         .add(currentLayerOutOfN))
                     .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -507,20 +508,17 @@ private void printButtonActionPerformed(java.awt.event.ActionEvent evt)
     	if(loadedFiles != null){
     		sp = loadedFiles.length();
         }
-    	if(sp <= 0)
-    	{
+    	if(sp <= 0) {
     		JOptionPane.showMessageDialog(null, "There are no STLs/RFOs loaded to slice to file.");
     		restoreSliceButton();
     		return;
     	}
     	sp = Math.max(loadedFiles.indexOf(".stl"), Math.max(loadedFiles.indexOf(".STL"), Math.max(loadedFiles.indexOf(".rfo"), loadedFiles.indexOf(".RFO"))));
-    	if(sp <= 0)
-       	{
+    	if(sp <= 0) {
     		JOptionPane.showMessageDialog(null, "The loaded file is not an STL or an RFO file.");
-    	}   		
+    	}
     	printer.setTopDown(true);	
-    	if(printer.setGCodeFileForOutput(loadedFiles.substring(0, sp)) == null)
-    	{
+    	if(printer.setGCodeFileForOutput(loadedFiles.substring(0, sp)) == null) {
     		restoreSliceButton();
     		return;
     	}

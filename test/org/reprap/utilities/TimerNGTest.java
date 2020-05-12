@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 
 /**
  *
- * @author spy
+ * @author X. Wang
  */
 public class TimerNGTest {
     /**
@@ -22,7 +22,7 @@ public class TimerNGTest {
     public void testStamp() {
         System.out.println("stamp");
         double expResult = 2;
-        String now = Timer.stamp();
+        Timer.stamp();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {

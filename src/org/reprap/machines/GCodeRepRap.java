@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -173,7 +175,6 @@ public class GCodeRepRap extends GenericRepRap {
 		if(dz == 0.0)
 			return;
 		
-		String code;
 		double extrudeLength;
 		
 		String s = "G1 Z" + z;
@@ -211,6 +212,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#moveTo(double, double, double, boolean, boolean)
 	 */
+        @Override
 	public void moveTo(double x, double y, double z, double feedrate, boolean startUp, boolean endUp) throws Exception
 	{
 		if (isCancelled())
@@ -341,8 +343,7 @@ public class GCodeRepRap extends GenericRepRap {
 			} 
 		}catch (Exception e1) 
 		{
-			// TODO Auto-generated catch block
-				e1.printStackTrace();
+			 Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e1);
 		}
 		
 		try
@@ -424,6 +425,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#printTo(double, double, double)
 	 */
+        @Override
 	public void printTo(double x, double y, double z, double feedrate, boolean stopExtruder, boolean closeValve) throws Exception
 	{
 		moveTo(x, y, z, feedrate, false, false);
@@ -437,6 +439,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#dispose()
 	 */
+        @Override
 	public void dispose() {
 		// TODO: fix this to be more flexible
 
@@ -744,7 +747,7 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.queue(s);
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.printSDFile() has thrown:");
-			e.printStackTrace();
+			 Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 			return false;
 		}
 		return true;
@@ -803,8 +806,7 @@ public class GCodeRepRap extends GenericRepRap {
 		{
 			homeToZeroX();
 			homeToZeroY();
-		} else
-		{
+		} else {
 			currentX = 0;
 			currentY = 0;
 		}

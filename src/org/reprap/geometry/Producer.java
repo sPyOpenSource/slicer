@@ -195,11 +195,9 @@ public class Producer {
 		int totalPhysicalExtruders = 0;
             for (Extruder extruder : reprap.getExtruders()) {
                 int thisExtruder = extruder.getPhysicalExtruderNumber();
-                if(thisExtruder > lastExtruder)
-                {
+                if(thisExtruder > lastExtruder) {
                     totalPhysicalExtruders++;
-                    if(thisExtruder - lastExtruder != 1)
-                    {
+                    if(thisExtruder - lastExtruder != 1) {
                         Debug.e("Producer.produceAdditiveTopDown(): Physical extruders out of sequence: " +
                                 lastExtruder + " then " + thisExtruder);
                         Debug.e("(Extruder addresses should be monotonically increasing starting at 0.)");
@@ -215,8 +213,7 @@ public class Producer {
 		boolean firstTimeRound = true;
 		
 		
-		while(layerRules.getModelLayer() > 0 ) 
-		{
+		while(layerRules.getModelLayer() > 0 ) {
 			if(layerRules.getModelLayer() == 0)
 				reprap.setSeparating(true);
 			else
@@ -239,15 +236,13 @@ public class Producer {
 				allPolygons[physicalExtruder] = new PolygonList();
 			
 			Point2D startNearHere = new Point2D(0, 0);
-			for(int stl = 0; stl < allSTLs.size(); stl++)
-			{
+			for(int stl = 0; stl < allSTLs.size(); stl++) {
 					PolygonList fills = allSTLs.computeInfill(stl);
 					PolygonList borders = allSTLs.computeOutlines(stl, fills); 
 					fills = fills.cullShorts();
 					PolygonList support = allSTLs.computeSupport(stl);
 					
-					for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++)
-					{
+					for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++) {
 						tempBorderPolygons[physicalExtruder] = new PolygonList();
 						tempFillPolygons[physicalExtruder] = new PolygonList();
 					}
@@ -264,29 +259,24 @@ public class Producer {
 						tempFillPolygons[p.getAttributes().getExtruder().getPhysicalExtruderNumber()].add(p);
 					});
 					
-					for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++)
-					{
-						if(tempBorderPolygons[physicalExtruder].size() > 0)
-						{
+					for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++) {
+						if(tempBorderPolygons[physicalExtruder].size() > 0) {
 							double linkUp = tempBorderPolygons[physicalExtruder].get(0).getAttributes().getExtruder().getExtrusionSize();
 							linkUp = (4*linkUp*linkUp);
 							tempBorderPolygons[physicalExtruder].radicalReOrder(linkUp);
 							tempBorderPolygons[physicalExtruder] = tempBorderPolygons[physicalExtruder].nearEnds(startNearHere, false, -1);
-							if(tempBorderPolygons[physicalExtruder].size() > 0)
-							{
+							if(tempBorderPolygons[physicalExtruder].size() > 0) {
 								Polygon last = tempBorderPolygons[physicalExtruder].get(tempBorderPolygons[physicalExtruder].size() - 1);
 								startNearHere = last.point(last.size() - 1);
 							}
 							allPolygons[physicalExtruder].add(tempBorderPolygons[physicalExtruder]);
 						}
-						if(tempFillPolygons[physicalExtruder].size() > 0)
-						{
+						if(tempFillPolygons[physicalExtruder].size() > 0) {
 							double linkUp = tempFillPolygons[physicalExtruder].get(0).getAttributes().getExtruder().getExtrusionSize();
 							linkUp = (4*linkUp*linkUp);
 							tempFillPolygons[physicalExtruder].radicalReOrder(linkUp);
 							tempFillPolygons[physicalExtruder] = tempFillPolygons[physicalExtruder].nearEnds(startNearHere, false, -1);
-							if(tempFillPolygons[physicalExtruder].size() > 0)
-							{
+							if(tempFillPolygons[physicalExtruder].size() > 0) {
 								Polygon last = tempFillPolygons[physicalExtruder].get(tempFillPolygons[physicalExtruder].size() - 1);
 								startNearHere = last.point(last.size() - 1);
 							}
@@ -303,8 +293,7 @@ public class Producer {
 			reprap.finishedLayer(layerRules);
 			reprap.betweenLayers(layerRules);
 			
-			if(firstTimeRound)
-			{
+			if(firstTimeRound) {
 				reprap.setTop(reprap.getX(), reprap.getY(), reprap.getZ());
 				firstTimeRound = false;
 			}

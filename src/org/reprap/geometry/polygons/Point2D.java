@@ -170,7 +170,7 @@ public class Point2D
 	 */
 	public static Point2D mul(Point2D b, double factor)
 	{
-		return new Point2D(b.x*factor, b.y*factor);
+		return new Point2D(b.x * factor, b.y * factor);
 	}
 	
 	/**
@@ -191,7 +191,7 @@ public class Point2D
 	 */
 	public static Point2D div(Point2D b, double factor)
 	{
-		return mul(b, 1/factor);
+		return mul(b, 1 / factor);
 	}
 	
 	/**
@@ -202,7 +202,7 @@ public class Point2D
 	 */
 	public static double mul(Point2D a, Point2D b)
 	{
-		return a.x*b.x + a.y*b.y;
+		return a.x * b.x + a.y * b.y;
 	}
 	
 	
@@ -234,7 +234,7 @@ public class Point2D
 	 */
 	public static double op(Point2D a, Point2D b)
 	{
-		return a.x*b.y - a.y*b.x;
+		return a.x * b.y - a.y * b.x;
 	}
 	
 	/**
@@ -250,8 +250,9 @@ public class Point2D
 				g = Double.POSITIVE_INFINITY;
 			else
 				g = Double.NEGATIVE_INFINITY;
-		} else
-			g = y/x;
+		} else {
+			g = y / x;
+                }
 		return g;
 	}
 	
@@ -291,5 +292,3 @@ public class Point2D
 		return dSquared(a, b) < tol_2;
 	}
 }
-
-

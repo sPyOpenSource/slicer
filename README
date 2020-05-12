@@ -1,4 +1,4 @@
-This the the RepRapPro Ltd Fork of the RepRap Java Host Software, which forms RepRapPro's multi-colour/multi-material slicer code.
+This the the a Fork of the RepRap Java Host Software, which forms RepRapPro's multi-colour/multi-material slicer code.
 
 This is a beta-release of this software: it is working, but may still contain bugs.
 
@@ -27,7 +27,7 @@ If you are running 64-bit Linux you will also have to install the Java 3D JNI li
 
 Once you have Java, to install this software download it as a .zip file.  To do that click on the little cloud and down-arrow above and to the left on its Github page:
 
-	https://github.com/reprappro/host
+	https://github.com/sPyOpenSource/slicer
 
 which is this page if you are reading this README file on Github. You will get a file called host-master.zip.
 
@@ -56,7 +56,7 @@ For details of how to use this software, see:
 
 
 Upgrades
-======== 
+========
 
 As described here:
 
@@ -103,6 +103,5 @@ and the slicer should run.
 You can then edit the source code and do what you like with it...
 
 
-Adrian Bowyer
-RepRapPro Ltd
-4 February 2013
+X. Wang
+12 May 2020

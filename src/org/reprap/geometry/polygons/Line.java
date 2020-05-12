@@ -244,10 +244,10 @@ public class Line
 		double finv = 1.0/(fsq + gsq);
 		Point2D j0 = Point2D.sub(p, origin);
 		double fg = direction.x()*direction.y();
-		double dx = gsq*j0.x() - fg*j0.y();
-		double dy = fsq*j0.y() - fg*j0.x();
-		double d2 = (dx*dx + dy*dy)*finv*finv;
-		double t = Point2D.mul(direction, j0)*finv;
+		double dx = gsq * j0.x() - fg * j0.y();
+		double dy = fsq * j0.y() - fg * j0.x();
+		double d2 = (dx * dx + dy * dy) * finv * finv;
+		double t = Point2D.mul(direction, j0) * finv;
 		return new Point2D(d2, t);
 	}
 	

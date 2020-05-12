@@ -1008,11 +1008,9 @@ public class CodeGenerator
 	
 	private static void allCases4(Variable [] variables)
 	{	
-		for(int exp = 0; exp < 16; exp++)
-		{
-			for(int j = 0; j < 3; j++){
-				for(int k = j+1; k < 4; k++)
-				{
+		for(int exp = 0; exp < 16; exp++) {
+			for(int j = 0; j < 3; j++) {
+				for(int k = j+1; k < 4; k++) {
 					oneCase4(variables, exp, j, k, false, true);
 					oneCase4(variables, exp, j, k, true, true);
 				}

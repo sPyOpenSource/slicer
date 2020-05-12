@@ -246,18 +246,15 @@ public class Polygon
 	 */
 	private void updateExtrudeValveEnd()
 	{
-		if(extrudeEnd >= 0)
-		{
-			if(extrudeEndDistance2 <= 0)
-			{
+		if(extrudeEnd >= 0) {
+			if(extrudeEndDistance2 <= 0) {
 				extrudeEnd = -1;
 				extrudeEndDistance2 =  0;
 				return;
 			}
 			System.out.println("Updating e...");
 		}
-		if(valveEnd >= 0)
-		{
+		if(valveEnd >= 0) {
 			System.out.println("Updating v...");
 		}
 		// if speeds are set, interpolate
@@ -307,8 +304,7 @@ public class Polygon
 		this(p.att, p.closed);
 		for(int i = 0; i < p.size(); i++)
 			add(new Point2D(p.point(i)));
-		if(p.speeds != null)
-		{
+		if(p.speeds != null) {
 			speeds = new ArrayList<>();
 			for(int i = 0; i < p.size(); i++)
 				speeds.add(p.speed(i));
@@ -380,8 +376,7 @@ public class Polygon
 	 */
 	public void add(int i, Point2D p, double s)
 	{
-		if(speeds == null)
-		{
+		if(speeds == null) {
 			Debug.e("Rr2Point.add(): adding a point and a speed to a polygon without its speeds set.");
 			return;
 		}
@@ -425,8 +420,7 @@ public class Polygon
 	public void setSpeed(int i, double s)
 	{
 		// Lazy initialization
-		if(speeds == null)
-		{
+		if(speeds == null) {
 			speeds = new ArrayList<>();
 			for(int j = 0; j < size(); j++)
 				speeds.add(new Double(0));
@@ -437,6 +431,7 @@ public class Polygon
 	/**
 	 * Eet the last point to plot to
 	 * @param d
+         * @param d2
 	 */
 	public void setExtrudeEnd(int d, double d2)
 	{
@@ -493,19 +488,16 @@ public class Polygon
 			points.add(new Point2D(p.point(i)));
 
 		box.expand(p.box);
-		if(speeds == null)
-		{
+		if(speeds == null) {
 			if(p.speeds != null)
 				Debug.e("Rr2Point.add(): adding a polygon to another polygon but discarding it's speeds.");
 			return;
 		}
-		if(p.speeds == null)
-		{
+		if(p.speeds == null) {
 			Debug.e("Rr2Point.add(): adding a polygon to another polygon, but it has no needed speeds.");
 			return;
 		}
-		for(int i = 0; i < p.size(); i++)
-		{
+		for(int i = 0; i < p.size(); i++) {
 			speeds.add(p.speed(i));
 		}
 		updateExtrudeValveEnd();
@@ -522,13 +514,11 @@ public class Polygon
 	{
 		if(p.size() == 0)
 			return;
-		if(speeds != p.speeds)
-		{
+		if(speeds != p.speeds) {
 			Debug.e("Rr2Point.add(): attempt to add a polygon to another polygon when one has speeds and the other doesn't.");
 			return;
 		}	
-		for(int i = 0; i < p.size(); i++)
-		{
+		for(int i = 0; i < p.size(); i++) {
 			if(speeds != null)
 				add(k, new Point2D(p.point(i)), p.speed(i));
 			else
@@ -558,8 +548,7 @@ public class Polygon
 	{
 		box = new Rectangle();
 		int leng = size();
-		for(int i = 0; i < leng; i++)
-		{
+		for(int i = 0; i < leng; i++) {
 			box.expand(points.get(i)); 
 		}
 	}
@@ -588,14 +577,12 @@ public class Polygon
 	public Polygon negate()
 	{
 		Polygon result = new Polygon(att, closed);
-		for(int i = size() - 1; i >= 0; i--)
-		{
+		for(int i = size() - 1; i >= 0; i--) {
 			result.add(point(i)); 
 		}
 		if(speeds == null)
 			return result;
-		for(int i = size() - 1; i >= 0; i--)
-		{
+		for(int i = size() - 1; i >= 0; i--) {
 			result.setSpeed(i, speed(i)); 
 		}
 		result.setExtrudeEnd(extrudeEnd, extrudeEndDistance2);
@@ -621,14 +608,12 @@ public class Polygon
 		if(!isClosed())
 			Debug.e("RrPolygon.newStart(i): reordering an open polygon!");
 	
-		if(i < 0 || i >= size())
-		{
+		if(i < 0 || i >= size()) {
 			Debug.e("RrPolygon.newStart(i): dud index: " + i);
 			return this;
 		}
 		Polygon result = new Polygon(att, closed);
-		for(int j = 0; j < size(); j++)
-		{
+		for(int j = 0; j < size(); j++) {
 			result.add(point(i));
 			if(speeds != null)
 				result.setSpeed(j, speed(i));
@@ -663,11 +648,9 @@ public class Polygon
 	{
 		double d = Double.POSITIVE_INFINITY;
 		int result = -1;
-		for(int i = 0; i < size(); i++)
-		{
+		for(int i = 0; i < size(); i++) {
 			double d2 = Point2D.dSquared(point(i), p);
-			if(d2 < d)
-			{
+			if(d2 < d) {
 				d = d2;
 				result = i;
 			}
@@ -696,19 +679,16 @@ public class Polygon
 		double d = Double.POSITIVE_INFINITY;
 		int myPoint = -1;
 		int itsPoint = -1;
-		for(int i = 0; i < size(); i++)
-		{
+		for(int i = 0; i < size(); i++) {
 			int j = p.nearestVertex(point(i));
 			double d2 = Point2D.dSquared(point(i), p.point(j));
-			if(d2 < d)
-			{
+			if(d2 < d) {
 				d = d2;
 				myPoint = i;
 				itsPoint = j;
 			}
 		}
-		if(itsPoint >= 0 && d < linkUp*linkUp)
-		{
+		if(itsPoint >= 0 && d < linkUp*linkUp) {
 			Polygon ro = p.newStart(itsPoint);
 			ro.add(0, point(myPoint));
 			add(myPoint, ro);
@@ -729,11 +709,9 @@ public class Polygon
 	{
 		double d = Double.NEGATIVE_INFINITY;
 		int result = -1;
-		for(int i = 0; i < size(); i++)
-		{
+		for(int i = 0; i < size(); i++) {
 			double d2 = ln.projection(point(i));
-			if(d2 > d)
-			{
+			if(d2 > d) {
 				d = d2;
 				result = i;
 			}
@@ -754,12 +732,10 @@ public class Polygon
 		int lim = size();
 		if(!closed)
 			lim--;
-		for(int i = 0; i < lim; i++)
-		{
+		for(int i = 0; i < lim; i++) {
 			int j = (i + 1)%size();
 			double d2 = Point2D.dSquared(point(i), point(j));
-			if(d2 > d)
-			{
+			if(d2 > d) {
 				d = d2;
 				result = i;
 			}
@@ -778,8 +754,7 @@ public class Polygon
 		double a = 0;
 		Point2D p, q;
 		int j;
-		for(int i = 1; i < size() - 1; i++)
-		{
+		for(int i = 1; i < size() - 1; i++) {
 			j = i + 1;
 			p = Point2D.sub(point(i), point(0));
 			q = Point2D.sub(point(j), point(0));
@@ -797,12 +772,11 @@ public class Polygon
 		double result = 0;
 		
 		for(int i = 1; i < size() - 1; i++)
-			result = result + Point2D.d(point(i), point(i+1));
+			result = result + Point2D.d(point(i), point(i + 1));
 		
-		if(closed)
-		{
-			result = result + Point2D.d(point(0), point(size()-1));
-			return result/size();
+		if(closed) {
+			result = result + Point2D.d(point(0), point(size() - 1));
+			return result / size();
 		}
 		
 		return result / (size() - 1);	
@@ -821,8 +795,7 @@ public class Polygon
 		Point2D p, q;
 		int start, last;
 		
-		if(extrudeEnd >= 0)
-		{
+		if(extrudeEnd >= 0) {
 			start = extrudeEnd;
 			extrudeEndDistance2 = Math.sqrt(extrudeEndDistance2) + d;
 			extrudeEndDistance2 *= extrudeEndDistance2;
@@ -840,23 +813,19 @@ public class Polygon
 			last = start + 1;
 		
 		double sum = 0;
-		for(int i = start; i >= 0; i--)
-		{
+		for(int i = start; i >= 0; i--) {
 			sum += Point2D.d(point(i), point(last));
-			if(sum > d)
-			{
+			if(sum > d) {
 				sum = sum - d;
 				q = Point2D.sub(point(last), point(i));
 				p = Point2D.add(point(i), Point2D.mul(sum/q.mod(), q));
 				double s = 0;
-				if(speeds != null)
-				{
+				if(speeds != null) {
 					s = speeds.get(last) - speeds.get(i);
 					s = speeds.get(i) + s*sum/q.mod();
 				}
 				int j = i + 1;
-				if(j < size())
-				{
+				if(j < size()) {
 					points.add(j, p);
 					if(speeds != null)
 						speeds.add(j, s); 
@@ -887,8 +856,7 @@ public class Polygon
 		Point2D p, q;
 		int start, last;
 		
-		if(valveEnd >= 0)
-		{
+		if(valveEnd >= 0) {
 			start = valveEnd;
 			valveEndDistance2 = Math.sqrt(valveEndDistance2) + d;
 			valveEndDistance2 *= valveEndDistance2;
@@ -906,23 +874,19 @@ public class Polygon
 			last = start + 1;
 		
 		double sum = 0;
-		for(int i = start; i >= 0; i--)
-		{
+		for(int i = start; i >= 0; i--) {
 			sum += Point2D.d(point(i), point(last));
-			if(sum > d)
-			{
+			if(sum > d) {
 				sum = sum - d;
 				q = Point2D.sub(point(last), point(i));
 				p = Point2D.add(point(i), Point2D.mul(sum/q.mod(), q));
 				double s = 0;
-				if(speeds != null)
-				{
+				if(speeds != null) {
 					s = speeds.get(last) - speeds.get(i);
 					s = speeds.get(i) + s*sum/q.mod();
 				}
 				int j = i + 1;
-				if(j < size())
-				{
+				if(j < size()) {
 					points.add(j, p);
 					if(speeds != null)
 						speeds.add(j, s); 
@@ -957,12 +921,10 @@ public class Polygon
 		double sum = 0;
 		double lastSum = 0;
 		int lasti = 0;
-		for(int i = start; i >= 0; i--)
-		{
+		for(int i = start; i >= 0; i--) {
 			p = point(i);
 			sum += Point2D.d(p, last);
-			if(sum > d)
-			{
+			if(sum > d) {
 				if(sum - d < d - lastSum)
 					return i;
 				else
@@ -983,17 +945,15 @@ public class Polygon
 	private int findAngleStart(int v1, double d2)
 	{
 		int leng = size();
-		Point2D p1 = point(v1%leng);
+		Point2D p1 = point(v1 % leng);
 		int v2 = v1;
-		for(int i = 0; i <= leng; i++)
-		{
+		for(int i = 0; i <= leng; i++) {
 			v2++;
-			Line line = new Line(p1, point(v2%leng));
-			for (int j = v1+1; j < v2; j++)
-			{
-				if (line.d_2(point(j%leng)).x() > d2)
+			Line line = new Line(p1, point(v2 % leng));
+			for (int j = v1 + 1; j < v2; j++) {
+				if (line.d_2(point(j % leng)).x() > d2)
 					return v2 - 1;
-			}	
+			}
 		}
 		Debug.d("RrPolygon.findAngleStart(): polygon is all one straight line!");
 		return -1;
@@ -1016,8 +976,7 @@ public class Polygon
 
 		int v1 = findAngleStart(0, d2);
 		// We get back -1 if the points are in a straight line.
-		if (v1<0)
-		{
+		if (v1<0) {
 			r.add(point(0));
 			r.add(point(leng-1));
 			return r;
@@ -1028,28 +987,24 @@ public class Polygon
 
 		r.add(point(v1%leng));
 		int v2 = v1;
-		while(true)
-		{
+		while(true) {
 			// We get back -1 if the points are in a straight line. 
 			v2 = findAngleStart(v2, d2);
-			if(v2<0)
-			{
+			if(v2<0) {
 				Debug.e("RrPolygon.simplify(): points were not in a straight line; now they are!");
 				return(r);
 			}
 			
-			if(v2 > leng || (!isClosed() && v2 == leng))
-			{
+			if(v2 > leng || (!isClosed() && v2 == leng)) {
 				return(r);
 			}
 			
-			if(v2 == leng && isClosed())
-			{
+			if(v2 == leng && isClosed()) {
 				r.points.add(0, point(0));
 				r.re_box();
 				return r;
 			}
-			r.add(point(v2%leng));
+			r.add(point(v2 % leng));
 		}
 		// The compiler is very clever to spot that no return
 		// is needed here...
