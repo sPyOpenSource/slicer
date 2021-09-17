@@ -22,7 +22,6 @@ If you haven't got Java, download the Java JDK:
 
 	http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-
 If you are running 64-bit Linux you will also have to install the Java 3D JNI library. For example, in the Ubuntu Software Centre, search for and install "libjava3d-jni".
 
 Once you have Java, to install this software download it as a .zip file.  To do that click on the little cloud and down-arrow above and to the left on its Github page:
@@ -82,17 +81,9 @@ Experiment with the source code
 
 Download a copy of the NetBean Java Development Environment:
 
-Rename
-
-	my_download/host-master
-
-to
-
-	my_download/host
-
 To run the software in the development environment open:
 
-	host->src->org.reprap
+	slicer->src->org.reprap
 
 right click on Main.java and select
 
