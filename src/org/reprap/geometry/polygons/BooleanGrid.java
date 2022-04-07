@@ -21,13 +21,13 @@
 
 package org.reprap.geometry.polygons;
 
-
-import java.io.IOException;
-import org.reprap.Attributes;
-import org.reprap.Preferences;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.BitSet;
+import java.io.IOException;
+
+import org.reprap.Attributes;
+import org.reprap.Preferences;
 import org.reprap.utilities.Debug;
 
 
@@ -134,7 +134,7 @@ public class BooleanGrid
 		 */
 		long magnitude2()
 		{
-			return x*x + y*y;
+			return x * x + y * y;
 		}
 		
 		/**
@@ -144,12 +144,13 @@ public class BooleanGrid
 		 */
 		long scalarProduct(iPoint a)
 		{
-			return x*a.x + y*a.y;
+			return x * a.x + y * a.y;
 		}
 		
 		/**
 		 * For printing
 		 */
+                @Override
 		public String toString()
 		{
 			return ": " + x + ", " + y + " :";
@@ -624,7 +625,7 @@ public class BooleanGrid
 			xPlus = e.x >= s.x;
 			yPlus = e.y >= s.y;
 
-			count = new iPoint(-steps/2, -steps/2);
+			count = new iPoint(-steps / 2, -steps / 2);
 			
 			p = new iPoint(s);
 			

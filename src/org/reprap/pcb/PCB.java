@@ -9,10 +9,11 @@ import java.io.PrintStream;
 import java.io.FileReader;
 import java.io.File;
 import java.io.IOException;
+
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,64 +32,67 @@ import org.reprap.geometry.polygons.*;
 import org.reprap.utilities.RrGraphics;
 import org.reprap.utilities.Debug;
 import org.reprap.comms.GCodeReaderAndWriter;
+import org.reprap.devices.GCodeExtruder;
+import org.reprap.machines.Simulator;
 
 class PCBOffsets extends JPanel {
-	private static final long serialVersionUID = 1L;
-	private static JDialog dialog;
-	private static JTextField xo;
-	private static JTextField yo;
-	private static double xoff = 10;
-	private static double yoff = 10;
-	
-	private PCBOffsets(Rectangle rec)
-	{
-		super(new BorderLayout());
-		JPanel radioPanel;
-		radioPanel = new JPanel(new GridLayout(0, 1));
-		radioPanel.setSize(300,200);
-		
-	    JLabel jLabel2 = new JLabel();
-	    radioPanel.add(jLabel2);
-	    jLabel2.setText(" PCB dimensions: " + org.reprap.machines.GCodeRepRap.round(rec.ne().x() - rec.sw().x(), 1) + 
-	    		"(X) x " + org.reprap.machines.GCodeRepRap.round(rec.ne().y() - rec.sw().y(), 1) + "(Y) mm");
-		jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
-	    JLabel jLabel3 = new JLabel();
-	    radioPanel.add(jLabel3);
-	    jLabel3.setText(" Offsets (X and Y) in mm:");
-		jLabel3.setHorizontalAlignment(SwingConstants.CENTER);			
-		xo = new JTextField("10");
-		radioPanel.add(xo);
-		xo.setHorizontalAlignment(SwingConstants.CENTER);
-		yo = new JTextField("10");
-		radioPanel.add(yo);
-		yo.setHorizontalAlignment(SwingConstants.CENTER);			
+    private static final long serialVersionUID = 1L;
+    private static JDialog dialog;
+    private static JTextField xo;
+    private static JTextField yo;
+    private static double xoff = 10;
+    private static double yoff = 10;
 
-		
-		try
-		{
-			
-			JButton okButton = new JButton();
-			radioPanel.add(okButton);
-			okButton.setText("OK");
-			okButton.addActionListener((ActionEvent evt) -> {
-                            OKHandler();
-                        });
-			
-			add(radioPanel, BorderLayout.LINE_START);
-			setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-			
-		} catch (Exception ex)
-		{
-			Debug.e(ex.toString());
-		}	
-	}
-	
-	public static void OKHandler()
-	{
-		xoff = Double.parseDouble(xo.getText().trim());
-		yoff = Double.parseDouble(yo.getText().trim());
-		dialog.dispose();
-	}
+    private PCBOffsets(Rectangle rec)
+    {
+        super(new BorderLayout());
+        JPanel radioPanel;
+        radioPanel = new JPanel(new GridLayout(0, 1));
+        radioPanel.setSize(300,200);
+
+        JLabel jLabel2 = new JLabel();
+        radioPanel.add(jLabel2);
+        jLabel2.setText(
+            " PCB dimensions: " + org.reprap.machines.GCodeRepRap.round(rec.ne().x() - rec.sw().x(), 1) + 
+            "(X) x " + org.reprap.machines.GCodeRepRap.round(rec.ne().y() - rec.sw().y(), 1) + "(Y) mm"
+        );
+        jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel jLabel3 = new JLabel();
+        radioPanel.add(jLabel3);
+        jLabel3.setText(" Offsets (X and Y) in mm:");
+        jLabel3.setHorizontalAlignment(SwingConstants.CENTER);			
+        xo = new JTextField("10");
+        radioPanel.add(xo);
+        xo.setHorizontalAlignment(SwingConstants.CENTER);
+        yo = new JTextField("10");
+        radioPanel.add(yo);
+        yo.setHorizontalAlignment(SwingConstants.CENTER);			
+
+        try
+        {
+
+            JButton okButton = new JButton();
+            radioPanel.add(okButton);
+            okButton.setText("OK");
+            okButton.addActionListener((ActionEvent evt) -> {
+                OKHandler();
+            });
+
+            add(radioPanel, BorderLayout.LINE_START);
+            setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+
+        } catch (Exception ex)
+        {
+            Debug.e(ex.toString());
+        }	
+    }
+
+    public static void OKHandler()
+    {
+        xoff = Double.parseDouble(xo.getText().trim());
+        yoff = Double.parseDouble(yo.getText().trim());
+        dialog.dispose();
+    }
     
     public static void pcbo(Rectangle rec) 
     {
@@ -123,124 +127,142 @@ class PCBOffsets extends JPanel {
 
 public class PCB {
 	
-	GerberGCode gerberGcode; 
-	String[] splitline;
-	Rectangle bigBox;
-	BufferedReader in;
-	String line;
-	String formatX = "23", formatY="23";
+    GerberGCode gerberGcode; 
+    String[] splitline;
+    Rectangle bigBox;
+    BufferedReader in;
+    String line;
+    String formatX = "23", formatY="23";
 
-	double scale = 1;
+    double scale = 1;
 
-	double penWidth = 0.7;
-	double zFeedRate = 50;
-	double zDown = 0;
-	static final double centreWidth = 0.9;
-	static double offsetX=0;
-	static double offsetY=0;
-	File inputTracksAndPads;
-	File inputDrill;
-	File outputGCodes;
-	Extruder pcbPen;
-	PolygonList penPaths;
-	GCodeReaderAndWriter gcode;
+    double penWidth = 0.7;
+    double zFeedRate = 50;
+    double zDown = 0;
+    static final double centreWidth = 0.9;
+    static double offsetX=0;
+    static double offsetY=0;
+    File inputTracksAndPads;
+    File inputDrill;
+    File outputGCodes;
+    Extruder pcbPen;
+    PolygonList penPaths;
+    GCodeReaderAndWriter gcode;
 
-	/**
-	 * @param itp
+    /**
+     * @param itp
      * @param id
      * @param og
      * @param pp
-	 */
-	public PCB(File itp, File id, File og, Extruder pp) 
-	{
-		inputTracksAndPads = itp;
-		inputDrill = id;
-		outputGCodes = og;
-		pcbPen = pp;
-		penWidth = pcbPen.getExtrusionSize();
-		Debug.d("Gerber RS274X to GCoder Converter for RepRap\n");
+     */
+    public PCB(File itp, File id, File og, Extruder pp) 
+    {
+        inputTracksAndPads = itp;
+        inputDrill = id;
+        outputGCodes = og;
+        pcbPen = pp;
+        penWidth = pcbPen.getExtrusionSize();
+        Debug.d("Gerber RS274X to GCoder Converter for RepRap\n");
 
 
-		Debug.d("Input: " + inputTracksAndPads.getName());
-		Debug.d("Output: " + outputGCodes.getName()+"\n");
-		Debug.d("Pen Width: " + penWidth + " mm");
+        Debug.d("Input: " + inputTracksAndPads.getName());
+        Debug.d("Output: " + outputGCodes.getName()+"\n");
+        Debug.d("Pen Width: " + penWidth + " mm");
 
-		createBitmap();
+        createBitmap();
 
-		penPaths = gerberGcode.getPolygons();
-		
-		penPaths = penPaths.nearEnds(new Point2D(0, 0), true, 1.5*penWidth);
-		
+        penPaths = gerberGcode.getPolygons();
 
-		if(Preferences.simulate() && penPaths.size() > 0)
-		{
-			RrGraphics simulationPlot2 = new RrGraphics("PCB pen plotlines");
-			simulationPlot2.init(penPaths.getBox(), false, "0");
-			simulationPlot2.add(penPaths);
-		}
+        penPaths = penPaths.nearEnds(new Point2D(0, 0), true, 1.5*penWidth);
 
-					
-		Debug.d("GCode file generated succesfully !");
-	}
+
+        if(Preferences.simulate() && penPaths.size() > 0)
+        {
+            RrGraphics simulationPlot2 = new RrGraphics("PCB pen plotlines");
+            simulationPlot2.init(penPaths.getBox(), false, "0");
+            simulationPlot2.add(penPaths);
+        }
+
+
+        Debug.d("GCode file generated succesfully !");
+    }
+
+    public static void main(String[] arg){
+        try {
+            GCodeReaderAndWriter reader = new GCodeReaderAndWriter("/Users/xuyi/Source/KiCad/minikame/gerber.gcode");
+            PCB pcb = new PCB(
+                new File("/Users/xuyi/Source/KiCad/minikame/gerber/minikame-Edge.Cuts.gbr"), 
+                new File("/Users/xuyi/Source/KiCad/minikame.drl"), 
+                new File("/Users/xuyi/Source/KiCad/minikame/gerber.gcode"), 
+                new GCodeExtruder(reader, 0, new Simulator())
+            );
+            pcb.writeGCodes();
+            reader.viewer();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void raisePen()
+    {
+            double zf = org.reprap.machines.GCodeRepRap.round(zFeedRate, 1);
+            double zu = org.reprap.machines.GCodeRepRap.round(pcbPen.getLift(), 1);
+            double xyf = org.reprap.machines.GCodeRepRap.round(pcbPen.getSlowXYFeedrate(), 1);		
+            try {
+                    gcode.queue("G1 F" + zf + "; Z feedrate");
+                    gcode.queue("G1 Z" + zu + "; Z clearance height");
+                    gcode.queue("G1 F" + xyf + "; XY feedrate");
+            } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
+            }
+    }
+
+    private void lowerPen()
+    {
+            double zf = org.reprap.machines.GCodeRepRap.round(zFeedRate, 1);
+            double zd = org.reprap.machines.GCodeRepRap.round(zDown, 1);
+            double xyf = org.reprap.machines.GCodeRepRap.round(pcbPen.getSlowXYFeedrate(), 1);
+            try {
+                    gcode.queue("G1 F" + zf + "; Z feedrate");
+                    gcode.queue("G1 Z" + zd + "; Z drawing height");
+                    gcode.queue("G1 F" + xyf + "; XY feedrate");
+            } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
+            }
+    }
 	
-	private void raisePen()
-	{
-		double zf = org.reprap.machines.GCodeRepRap.round(zFeedRate, 1);
-		double zu = org.reprap.machines.GCodeRepRap.round(pcbPen.getLift(), 1);
-		double xyf = org.reprap.machines.GCodeRepRap.round(pcbPen.getSlowXYFeedrate(), 1);		
-		try {
-			gcode.queue("G1 F" + zf + "; Z feedrate");
-			gcode.queue("G1 Z" + zu + "; Z clearance height");
-			gcode.queue("G1 F" + xyf + "; XY feedrate");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
-		}
-	}
-	
-	private void lowerPen()
-	{
-		double zf = org.reprap.machines.GCodeRepRap.round(zFeedRate, 1);
-		double zd = org.reprap.machines.GCodeRepRap.round(zDown, 1);
-		double xyf = org.reprap.machines.GCodeRepRap.round(pcbPen.getSlowXYFeedrate(), 1);
-		try {
-			gcode.queue("G1 F" + zf + "; Z feedrate");
-			gcode.queue("G1 Z" + zd + "; Z drawing height");
-			gcode.queue("G1 F" + xyf + "; XY feedrate");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
-		}
-	}
-	
-	private void PCBHeader()
-	{
-		gcode.startRun();
-		try 
-		{
-			gcode.queue("; PCB GCode generated by RepRap Java Host Software");
-			Date myDate = new Date();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
-			String myDateString = sdf.format(myDate);
-			gcode.queue("; Created: " + myDateString);
-			gcode.queue("; Gerber tracks and pads file: " + inputTracksAndPads.getName());
-			gcode.queue("; Drill file: " + inputDrill.getName());
-			gcode.queue(";#!RECTANGLE: " + bigBox);
-			gcode.queue(";#!LAYER: 1/1");
-			gcode.queue("G21 ;metric");
-			gcode.queue("G90 ;absolute positioning");
-			gcode.queue("M140 S0.0 ;set bed temperature and return");
-			gcode.queue("T" + pcbPen.getPhysicalExtruderNumber() + "; select new extruder");
-			//gcode.queue("M113; set extruder to use pot for PWM");
-			gcode.queue("G28; go home");
-			gcode.queue("G92 E0 ;zero the extruded length");
-			raisePen();
-		} catch (Exception e) 
-		{
-			// TODO Auto-generated catch block
-			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
-		}
-	}
+    private void PCBHeader()
+    {
+            gcode.startRun();
+            try 
+            {
+                    gcode.queue("; PCB GCode generated by RepRap Java Host Software");
+                    Date myDate = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss");
+                    String myDateString = sdf.format(myDate);
+                    gcode.queue("; Created: " + myDateString);
+                    gcode.queue("; Gerber tracks and pads file: " + inputTracksAndPads.getName());
+                    gcode.queue("; Drill file: " + inputDrill.getName());
+                    gcode.queue(";#!RECTANGLE: " + bigBox);
+                    gcode.queue(";#!LAYER: 1/1");
+                    gcode.queue("G21 ;metric");
+                    gcode.queue("G90 ;absolute positioning");
+                    gcode.queue("M140 S0.0 ;set bed temperature and return");
+                    gcode.queue("T" + pcbPen.getPhysicalExtruderNumber() + "; select new extruder");
+                    //gcode.queue("M113; set extruder to use pot for PWM");
+                    gcode.queue("G28; go home");
+                    gcode.queue("G92 E0 ;zero the extruded length");
+                    raisePen();
+            } catch (Exception e) 
+            {
+                    // TODO Auto-generated catch block
+                    Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
+            }
+    }
 	
 	private void PCBFooter()
 	{

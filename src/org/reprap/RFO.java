@@ -18,23 +18,21 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import javafx.scene.Group;
+import javafx.scene.transform.Transform;
+import javax.swing.JOptionPane;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.SAXException;
 
-
-import org.jogamp.java3d.Transform3D;
-import org.jogamp.java3d.TransformGroup;
-import javax.swing.JOptionPane;
 import org.jogamp.vecmath.Matrix4d;
-
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 import org.reprap.geometry.polyhedra.CSGReader;
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
-import org.xml.sax.SAXException;
 
 public class RFO 
 {
@@ -181,7 +179,7 @@ public class RFO
 		 * Transfom matrix to get an item in the right place.
 		 */
 		private double[] mElements;
-		private Transform3D transform;
+		private Transform transform;
 		
 		private int rowNumber = 0;
 		
@@ -565,9 +563,9 @@ public class RFO
 	 * Write a 4x4 homogeneous transform in XML format.
 	 * @param trans
 	 */
-	private void writeTransform(TransformGroup trans)
+	private void writeTransform(Group trans)
 	{
-		Transform3D t = new Transform3D();
+		Transform t = new Transform3D();
 		Matrix4d m = new Matrix4d();
 		trans.getTransform(t);
 		t.get(m);
@@ -609,40 +607,39 @@ public class RFO
 		xml.close();
 	}
 	
-	/**
-	 * The entire temporary directory with the legend file and ann the STLs is complete.
-	 * Compress it into the required rfo file using zip.  Note we delete the temporary files as we
-	 * go along, ending up by deleting the directory containing them.
-	 *
-	 */
-	private void compress()
-	{
-		try
-		{
-			ZipOutputStream rfoFile = new ZipOutputStream(new FileOutputStream(path + fileName)); 
-			File dirToZip = new File(rfoDir); 
-			String[] fileList = dirToZip.list(); 
-			byte[] buffer = new byte[4096]; 
-			int bytesIn = 0; 
+    /**
+     * The entire temporary directory with the legend file and ann the STLs is complete.
+     * Compress it into the required rfo file using zip.  Note we delete the temporary files as we
+     * go along, ending up by deleting the directory containing them.
+     *
+     */
+    private void compress()
+    {
+        try
+        {
+            ZipOutputStream rfoFile = new ZipOutputStream(new FileOutputStream(path + fileName)); 
+            File dirToZip = new File(rfoDir); 
+            String[] fileList = dirToZip.list(); 
+            byte[] buffer = new byte[4096]; 
+            int bytesIn = 0; 
 
-                    for (String fileList1 : fileList) {
-                        File f = new File(dirToZip, fileList1);
-                        FileInputStream fis = new FileInputStream(f);
-                        String zEntry = f.getPath();
-                        int start = zEntry.indexOf(uniqueName);
-                        zEntry = zEntry.substring(start + uniqueName.length() + 1, zEntry.length());
-                        ZipEntry entry = new ZipEntry(zEntry);
-                        rfoFile.putNextEntry(entry);
-                        while((bytesIn = fis.read(buffer)) != -1)
-                            rfoFile.write(buffer, 0, bytesIn);
-                        fis.close();
-                    }
-			rfoFile.close();
-		} catch (IOException e)
-		{
-			Debug.e("RFO.compress(): " + e);
-		}
-	}
+            for (String fileList1 : fileList) {
+                File f = new File(dirToZip, fileList1);
+                FileInputStream fis = new FileInputStream(f);
+                String zEntry = f.getPath();
+                int start = zEntry.indexOf(uniqueName);
+                zEntry = zEntry.substring(start + uniqueName.length() + 1, zEntry.length());
+                ZipEntry entry = new ZipEntry(zEntry);
+                rfoFile.putNextEntry(entry);
+                while((bytesIn = fis.read(buffer)) != -1)
+                    rfoFile.write(buffer, 0, bytesIn);
+                fis.close();
+            }
+            rfoFile.close();
+        } catch (IOException e) {
+            Debug.e("RFO.compress(): " + e);
+        }
+    }
 	
 	/**
 	 * Warn the user of an overwrite

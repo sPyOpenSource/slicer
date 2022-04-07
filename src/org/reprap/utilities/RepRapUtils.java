@@ -52,30 +52,28 @@ public class RepRapUtils
 	 */
     public static void copyTree(File src, File dest) throws IOException
     {
- 
     	if(src.isDirectory())
     	{
-    		//if directory doesn't exist, create it
-    		if(!dest.exists())
-    		{
-    		   dest.mkdir();
-    		   //System.out.println("Directory copied from " + src + "  to " + dest);
-    		}
- 
-    		//list all the directory contents
-    		String files[] = src.list();
- 
-    		for (String file : files) 
-    		{
-    		   //construct the src and dest file structure
-    		   File srcFile = new File(src, file);
-    		   File destFile = new File(dest, file);
-    		   //recursive copy
-    		   copyTree(srcFile,destFile);
-    		}
- 
-    	}else
-    		copyFile(src, dest);
+            //if directory doesn't exist, create it
+            if(!dest.exists())
+            {
+               dest.mkdir();
+               //System.out.println("Directory copied from " + src + "  to " + dest);
+            }
+
+            //list all the directory contents
+            String files[] = src.list();
+
+            for (String file : files) 
+            {
+               //construct the src and dest file structure
+               File srcFile = new File(src, file);
+               File destFile = new File(dest, file);
+               //recursive copy
+               copyTree(srcFile,destFile);
+            }
+    	} else
+            copyFile(src, dest);
     }
 	
     /**
@@ -89,15 +87,15 @@ public class RepRapUtils
     	// Thanks to Johan Nordstrom
     	FileInputStream fstream = new FileInputStream(f);
         int i;
-            try (DataInputStream in = new DataInputStream(fstream)) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(in));
-                i = 0;
-                while (( br.readLine()) != null)
-                {
-                    i++;
-                }
+        try (DataInputStream in = new DataInputStream(fstream)) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            i = 0;
+            while (( br.readLine()) != null)
+            {
+                i++;
             }
-		return i;
+        }
+        return i;
     }
 
 }

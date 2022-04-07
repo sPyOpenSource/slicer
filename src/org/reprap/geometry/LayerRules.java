@@ -26,160 +26,160 @@ import org.reprap.utilities.Debug;
  */
 public class LayerRules 
 {
-	/**
-	 * The coordinates of the first point plotted in a layer
-	 */
-	private final Point2D[] firstPoint;
+    /**
+     * The coordinates of the first point plotted in a layer
+     */
+    private final Point2D[] firstPoint;
+
+    /**
+     * The extruder first used in a layer
+     */	
+    private final int[] firstExtruder;
+
+    /**
+     * The coordinates of the last point plotted in a layer
+     */
+    private final Point2D[] lastPoint;
+
+    /**
+     * The extruder last used in a layer
+     */	
+    private final int[] lastExtruder;
+
+    /**
+     * Record extruder usage in each layer for planning
+     */
+    private final boolean[][] extruderUsedThisLayer;
+
+    /**
+     * The heights of the layers
+     */
+    private final double[] layerZ;
+
+    /**
+     * The name of the first file of output
+     */
+    private String prologueFileName;
+
+    /**
+     * The name of the last file of output
+     */
+    private String epilogueFileName;
 	
-	/**
-	 * The extruder first used in a layer
-	 */	
-	private final int[] firstExtruder;
+    /**
+     * The names of all the files for all the layers
+     */
+    private final String [] layerFileNames;
+
+    /**
+     * Are we reversing the layer orders?
+     */
+    private boolean reversing;
+
+    /**
+     * Flag to remember if we have reversed the layer order in the output file
+     */
+    private boolean alreadyReversed;
+
+    /**
+     * The machine
+     */
+    private Printer printer;
+
+    /**
+     * How far up the model we are in mm
+     */
+    private double modelZ;
+
+    /**
+     * How far we are up from machine Z=0
+     */
+    private double machineZ;
+
+    /**
+     * The count of layers up the model
+     */
+    private int modelLayer;
+
+    /**
+     * The number of layers the machine has done
+     */
+    private int machineLayer;
 	
-	/**
-	 * The coordinates of the last point plotted in a layer
-	 */
-	private final Point2D[] lastPoint;
+    /**
+     * The top of the model in model coordinates
+     */
+    private final double modelZMax;
+
+    /**
+     * The highest the machine should go this build
+     */
+    private final double machineZMax;
+
+    /**
+     * The number of the last model layer (first = 0)
+     */
+    private final int modelLayerMax;
+
+    /**
+     * The number of the last machine layer (first = 0)
+     */
+    private final int machineLayerMax;
+
+    /**
+     * Putting down foundations?
+     */
+    private boolean layingSupport;
+
+    /**
+     * The smallest step height of all the extruders
+     */
+    private double zStep;
+
+    /**
+     * The biggest step height of all the extruders
+     */
+    private double thickestZStep;
+
+    /**
+     * If we take a short step, remember it and add it on next time
+     */
+    private double addToStep = 0;
 	
-	/**
-	 * The extruder last used in a layer
-	 */	
-	private final int[] lastExtruder;
-	
-	/**
-	 * Record extruder usage in each layer for planning
-	 */
-	private final boolean[][] extruderUsedThisLayer;
-	
-	/**
-	 * The heights of the layers
-	 */
-	private final double[] layerZ;
-	
-	/**
-	 * The name of the first file of output
-	 */
-	private String prologueFileName;
-	
-	/**
-	 * The name of the last file of output
-	 */
-	private String epilogueFileName;
-	
-	/**
-	 * The names of all the files for all the layers
-	 */
-	private final String [] layerFileNames;
-	
-	/**
-	 * Are we reversing the layer orders?
-	 */
-	private boolean reversing;
-	
-	/**
-	 * Flag to remember if we have reversed the layer order in the output file
-	 */
-	private boolean alreadyReversed;
-	
-	/**
-	 * The machine
-	 */
-	private Printer printer;
-	
-	/**
-	 * How far up the model we are in mm
-	 */
-	private double modelZ;
-	
-	/**
-	 * How far we are up from machine Z=0
-	 */
-	private double machineZ;
-	
-	/**
-	 * The count of layers up the model
-	 */
-	private int modelLayer;
-	
-	/**
-	 * The number of layers the machine has done
-	 */
-	private int machineLayer;
-	
-	/**
-	 * The top of the model in model coordinates
-	 */
-	private final double modelZMax;
-	
-	/**
-	 * The highest the machine should go this build
-	 */
-	private final double machineZMax;
-	
-	/**
-	 * The number of the last model layer (first = 0)
-	 */
-	private final int modelLayerMax;
-	
-	/**
-	 * The number of the last machine layer (first = 0)
-	 */
-	private final int machineLayerMax;
-	
-	/**
-	 * Putting down foundations?
-	 */
-	private boolean layingSupport;
-	
-	/**
-	 * The smallest step height of all the extruders
-	 */
-	private double zStep;
-	
-	/**
-	 * The biggest step height of all the extruders
-	 */
-	private double thickestZStep;
-	
-	/**
-	 * If we take a short step, remember it and add it on next time
-	 */
-	private double addToStep = 0;
-	
-	/**
-	 * Are we going top to bottom or ground up?
-	 */
-	private boolean topDown = false;
-	
-	/**
-	 * This is true until it is first read, when it becomes false
-	 */
-	private boolean notStartedYet;
-	
-	/**
-	 * The XY rectangle that bounds the build
-	 */
-	private Rectangle bBox;
-	
-	/**
-	 * The maximum number of surface layers requested by any extruder
-	 */
-	private int maxSurfaceLayers = 2;
-	
-	/**
-	 * The point at which to purge extruders
-	 */
-	private Point2D purge;
-	
-	/**
-	 * The length of the purge trail in mm
-	 */
-	private final double purgeL = 25;
-	
-	/**
-	 * How many physical extruders?
-	 */
-	private int maxAddress = -1;
+    /**
+     * Are we going top to bottom or ground up?
+     */
+    private boolean topDown = false;
+
+    /**
+     * This is true until it is first read, when it becomes false
+     */
+    private boolean notStartedYet;
+
+    /**
+     * The XY rectangle that bounds the build
+     */
+    private Rectangle bBox;
+
+    /**
+     * The maximum number of surface layers requested by any extruder
+     */
+    private int maxSurfaceLayers = 2;
+
+    /**
+     * The point at which to purge extruders
+     */
+    private Point2D purge;
+
+    /**
+     * The length of the purge trail in mm
+     */
+    private final double purgeL = 25;
+
+    /**
+     * How many physical extruders?
+     */
+    private int maxAddress = -1;
 	
 	/**
 	 * 
@@ -306,52 +306,52 @@ public class LayerRules
 		new Point2D(gp.x().high() + 6, gp.y().high() + 6));
 	}
 	
-	public boolean purgeXOriented()
-	{
-		Point2D middle = Point2D.mul(0.5, printer.getBedNorthEast());
-		return Math.abs(middle.y() - purge.y()) > Math.abs(middle.x() - purge.x());
-	}
-	
-	public Point2D getPurgeEnd(boolean low, int pass)
-	{
-		double a = purgeL*0.5;
-		if(low)
-			a = -a;
-		double b = 4*printer.getExtruder().getExtrusionSize() - (printer.getExtruder().getPhysicalExtruderNumber()*3 + pass)*printer.getExtruder().getExtrusionSize();
-		if(purgeXOriented())
-			return Point2D.add(purge, new Point2D(a, b));
-		else
-			return Point2D.add(purge, new Point2D(b, a));
-	}
-	
-	public Point2D getPurgeMiddle()
-	{
-		return purge;
-	}
-	
-	public double getPurgeLength()
-	{
-		return purgeL;
-	}
-	
-	public Rectangle getBox()
-	{
-		return new Rectangle(bBox); // Something horrible happens to return by reference here; hence copy...
-	}
-	
-	public boolean getTopDown() { return topDown; }
-	
-	public void setPrinter(Printer p) { printer = p; }
-	public Printer getPrinter() { return printer; }
-	
-	public double getModelZ() { return modelZ; }
-	
-	public boolean getReversing() { return reversing; }
-	
-	public double getModelZ(int layer) 
-	{
-		return zStep*layer; 
-	}
+    public boolean purgeXOriented()
+    {
+        Point2D middle = Point2D.mul(0.5, printer.getBedNorthEast());
+        return Math.abs(middle.y() - purge.y()) > Math.abs(middle.x() - purge.x());
+    }
+
+    public Point2D getPurgeEnd(boolean low, int pass)
+    {
+            double a = purgeL*0.5;
+            if(low)
+                    a = -a;
+            double b = 4*printer.getExtruder().getExtrusionSize() - (printer.getExtruder().getPhysicalExtruderNumber()*3 + pass)*printer.getExtruder().getExtrusionSize();
+            if(purgeXOriented())
+                    return Point2D.add(purge, new Point2D(a, b));
+            else
+                    return Point2D.add(purge, new Point2D(b, a));
+    }
+
+    public Point2D getPurgeMiddle()
+    {
+            return purge;
+    }
+
+    public double getPurgeLength()
+    {
+            return purgeL;
+    }
+
+    public Rectangle getBox()
+    {
+            return new Rectangle(bBox); // Something horrible happens to return by reference here; hence copy...
+    }
+
+    public boolean getTopDown() { return topDown; }
+
+    public void setPrinter(Printer p) { printer = p; }
+    public Printer getPrinter() { return printer; }
+
+    public double getModelZ() { return modelZ; }
+
+    public boolean getReversing() { return reversing; }
+
+    public double getModelZ(int layer) 
+    {
+            return zStep*layer; 
+    }
 	
 	public double getMachineZ() { return machineZ; }
 	

@@ -5,38 +5,24 @@ import java.awt.Cursor;
 import java.awt.GraphicsConfigTemplate;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.net.URL;
 
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.AudioDevice;
-import org.jogamp.java3d.Background;
-import org.jogamp.java3d.BoundingSphere;
-import org.jogamp.java3d.Bounds;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.Canvas3D;
-import org.jogamp.java3d.GraphicsConfigTemplate3D;
-import org.jogamp.java3d.Material;
-import org.jogamp.java3d.PhysicalBody;
-import org.jogamp.java3d.PhysicalEnvironment;
-import org.jogamp.java3d.Transform3D;
-import org.jogamp.java3d.TransformGroup;
-import org.jogamp.java3d.View;
-import org.jogamp.java3d.ViewPlatform;
-import org.jogamp.java3d.VirtualUniverse;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Iterator;
+import javafx.geometry.Bounds;
+import javafx.scene.Group;
+import javafx.scene.layout.Background;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.transform.Transform;
+
 import javax.swing.JPanel;
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
 import org.reprap.Preferences;
-
-import org.jogamp.java3d.audioengines.javasound.JavaSoundMixer;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Iterator;
-import org.jogamp.java3d.Locale;
-
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
 
@@ -82,7 +68,7 @@ abstract public class Panel3D extends JPanel {
 	protected static final Color3f black = new Color3f(0, 0, 0);	
 	protected Appearance picked_app = null; // Colour for the selected part
 	protected Appearance wv_app = null; // Colour for the working volume
-	protected BranchGroup wv_and_stls = new BranchGroup(); // Where in the scene
+	protected Group wv_and_stls = new Group(); // Where in the scene
 
 	// the
 	// working volume and STLs
@@ -93,17 +79,17 @@ abstract public class Panel3D extends JPanel {
 	
 	// The world in the Applet
 	protected VirtualUniverse universe = null;
-	protected BranchGroup sceneBranchGroup = null;
+	protected Group sceneBranchGroup = null;
 	protected Bounds applicationBounds = null;
 
 	// Set up the RepRap working volume
-	abstract protected BranchGroup createSceneBranchGroup() throws Exception;
+	abstract protected Group createSceneBranchGroup() throws Exception;
 
 	// Set bg light grey
 	abstract protected Background createBackground();
 
-	abstract protected BranchGroup createViewBranchGroup(
-			TransformGroup[] tgArray, ViewPlatform vp);
+	abstract protected Group createViewBranchGroup(
+			Group[] tgArray, ViewPlatform vp);
 	
 	public void refreshPreferences()
 	{
@@ -163,10 +149,10 @@ abstract public class Panel3D extends JPanel {
 		
 
 		picked_app = new Appearance();
-		picked_app.setMaterial(new Material(selectedColour, black, selectedColour, black, 0f));
+		picked_app.setMaterial(new PhongMaterial(selectedColour, black, selectedColour, black, 0f));
 				
 		wv_app = new Appearance();
-		wv_app.setMaterial(new Material(machineColour, black, machineColour, black, 0f));
+		wv_app.setMaterial(new PhongMaterial(machineColour, black, machineColour, black, 0f));
 
 		initJava3d();
 
@@ -282,10 +268,10 @@ abstract public class Panel3D extends JPanel {
 
 		org.jogamp.java3d.Locale locale = createLocale(universe);
 
-		BranchGroup sceneBranchGroup = createSceneBranchGroup();
+		Group sceneBranchGroup = createSceneBranchGroup();
 
 		ViewPlatform vp = createViewPlatform();
-		BranchGroup viewBranchGroup = createViewBranchGroup(
+		Group viewBranchGroup = createViewBranchGroup(
 				getViewTransformGroupArray(), vp);
 
 		createView(vp);
@@ -341,7 +327,7 @@ abstract public class Panel3D extends JPanel {
 	}
 
 	protected void addViewBranchGroup(org.jogamp.java3d.Locale locale,
-			BranchGroup bg) {
+			Group bg) {
 		locale.addBranchGraph(bg);
 	}
 
@@ -349,12 +335,12 @@ abstract public class Panel3D extends JPanel {
 		return new org.jogamp.java3d.Locale(u);
 	}
 
-	public TransformGroup[] getViewTransformGroupArray() {
-		TransformGroup[] tgArray = new TransformGroup[1];
-		tgArray[0] = new TransformGroup();
+	public Group[] getViewTransformGroupArray() {
+		Group[] tgArray = new Group[1];
+		tgArray[0] = new Group();
 
-		Transform3D viewTrans = new Transform3D();
-		Transform3D eyeTrans = new Transform3D();
+		Transform viewTrans = new Transform3D();
+		Transform eyeTrans = new Transform3D();
 
 		BoundingSphere sceneBounds = (BoundingSphere) sceneBranchGroup
 				.getBounds();

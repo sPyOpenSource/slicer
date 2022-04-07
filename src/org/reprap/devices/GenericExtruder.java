@@ -1,15 +1,14 @@
 package org.reprap.devices;
 
 import java.io.IOException;
+import javafx.scene.Scene;
 
 import org.reprap.Preferences;
 import org.reprap.Extruder;
 import org.reprap.Printer;
 import org.reprap.geometry.LayerRules;
 import org.reprap.utilities.Debug;
-import org.jogamp.java3d.Appearance;
 import org.jogamp.vecmath.Color3f;
-import org.jogamp.java3d.Material;
 
 /**
  * @author jwiel
@@ -42,7 +41,7 @@ public abstract class GenericExtruder implements Extruder
 	/**
 	 * Maximum motor speed (value between 0-255)
 	 */
-	protected int maxExtruderSpeed; 
+	protected int maxExtruderSpeed;
 	
 	/**
 	 * The time to run the extruder at the start
@@ -196,7 +195,7 @@ public abstract class GenericExtruder implements Extruder
 	/**
 	 *  The colour of the material to use in the simulation windows 
 	 */	
-	protected Appearance materialColour;
+	protected Scene materialColour;
 	
 	/**
 	 * Enable wiping procedure for nozzle
@@ -447,8 +446,8 @@ public abstract class GenericExtruder implements Extruder
 			Color3f col = new Color3f((float)Preferences.loadGlobalDouble(prefName + "ColourR(0..1)"), 
 					(float)Preferences.loadGlobalDouble(prefName + "ColourG(0..1)"), 
 					(float)Preferences.loadGlobalDouble(prefName + "ColourB(0..1)"));
-			materialColour = new Appearance();
-			materialColour.setMaterial(new Material(col, black, col, black, 101f));
+			materialColour = null;//new Scene();
+			//materialColour.setMaterial(new PhongMaterial(col, black, col, black, 101f));
 			surfaceLayers = Preferences.loadGlobalInt(prefName + "SurfaceLayers(0..N)");
 			singleLine = Preferences.loadGlobalBool(prefName + "SingleLine");
 			feedDiameter = Preferences.loadGlobalDouble(prefName + "FeedDiameter(mm)");
@@ -796,7 +795,7 @@ public abstract class GenericExtruder implements Extruder
     /* (non-Javadoc)
      * @see org.reprap.Extruder#getColour()
      */    
-    public Appearance getAppearance()
+    public Scene getAppearance()
     {
     	return materialColour;
     }  
@@ -1030,52 +1029,52 @@ public abstract class GenericExtruder implements Extruder
     	return pauseBetweenSegments;
     }
     
-	/**
-	 * What stuff are we working with?
-	 * @return
-	 */
-	public String getMaterial()
-	{
-		return material;
-	}
+    /**
+     * What stuff are we working with?
+     * @return
+     */
+    public String getMaterial()
+    {
+            return material;
+    }
+
+    /**
+     * What stuff are we holding up with?
+     * @return
+     */
+    public String getSupportMaterial()
+    {
+            return supportMaterial;
+    }
+
+    public int getSupportExtruderNumber()
+    {
+            return getNumberFromMaterial(supportMaterial);
+    }
+
+    public Extruder getSupportExtruder()
+    {
+            return org.reprap.Main.gui.getPrinter().getExtruder(supportMaterial);
+    }
 	
-	/**
-	 * What stuff are we holding up with?
-	 * @return
-	 */
-	public String getSupportMaterial()
-	{
-		return supportMaterial;
-	}
-	
-	public int getSupportExtruderNumber()
-	{
-		return getNumberFromMaterial(supportMaterial);
-	}
-	
-	public Extruder getSupportExtruder()
-	{
-		return org.reprap.Main.gui.getPrinter().getExtruder(supportMaterial);
-	}
-	
-	/**
-	 * What stuff are we infilling with?
-	 * @return
-	 */
-	public String getInfillMaterial()
-	{
-		return inFillMaterial;
-	}
-	
-	public int getInfillExtruderNumber()
-	{
-		return getNumberFromMaterial(inFillMaterial);
-	}
-	
-	public Extruder getInfillExtruder()
-	{
-		return org.reprap.Main.gui.getPrinter().getExtruder(inFillMaterial);
-	}
+    /**
+     * What stuff are we infilling with?
+     * @return
+     */
+    public String getInfillMaterial()
+    {
+            return inFillMaterial;
+    }
+
+    public int getInfillExtruderNumber()
+    {
+            return getNumberFromMaterial(inFillMaterial);
+    }
+
+    public Extruder getInfillExtruder()
+    {
+            return org.reprap.Main.gui.getPrinter().getExtruder(inFillMaterial);
+    }
 	
     public static int getNumberFromMaterial(String material)
     {
@@ -1099,25 +1098,26 @@ public abstract class GenericExtruder implements Extruder
 		return -1;
     }
     
-    public static Appearance getAppearanceFromNumber(int n)
+    public static Scene getAppearanceFromNumber(int n)
     {
     	String prefName = "Extruder" + n + "_";
     	Color3f col = null;
-		try
-		{
-			col = new Color3f((float)Preferences.loadGlobalDouble(prefName + "ColourR(0..1)"), 
-				(float)Preferences.loadGlobalDouble(prefName + "ColourG(0..1)"), 
-				(float)Preferences.loadGlobalDouble(prefName + "ColourB(0..1)"));
-		} catch (Exception ex)
-		{
-			Debug.e(ex.toString());
-		}
-		Appearance a = new Appearance();
-		a.setMaterial(new Material(col, black, col, black, 101f));
-		return a;
+        try
+        {
+                col = new Color3f(
+                        (float)Preferences.loadGlobalDouble(prefName + "ColourR(0..1)"), 
+                        (float)Preferences.loadGlobalDouble(prefName + "ColourG(0..1)"), 
+                        (float)Preferences.loadGlobalDouble(prefName + "ColourB(0..1)")
+                );
+        } catch (IOException ex) {
+                Debug.e(ex.toString());
+        }
+        /*Scene a = new Scene();
+        a.setMaterial(new PhongMaterial(col, black, col, black, 101f));*/
+        return null;//a;
     }
     
-    public static Appearance getAppearanceFromMaterial(String material)
+    public static Scene getAppearanceFromMaterial(String material)
     {
     	return(getAppearanceFromNumber(getNumberFromMaterial(material)));
     }
@@ -1132,57 +1132,57 @@ public abstract class GenericExtruder implements Extruder
     	return extrusionLastFoundationWidth;
     }
     
-	/**
-	 * At the support layer before a layer is to be separated, how far up
-	 * the normal Z movement do we go to make a bigger gap to form a weak join?
-	 * @return
-	 */
-	public double getSeparationFraction()
-	{
-		return separationFraction;
-	}
-	
-	/**
-	 * The arc compensation factor.  
-	 * See org.reprap.geometry.polygons.RrPolygon.arcCompensate(...)
-	 * @return
-	 */
-	public double getArcCompensationFactor()
-	{
-		return arcCompensationFactor;
-	}
-	
-	/**
-	 * The arc short sides.  
-	 * See org.reprap.geometry.polygons.RrPolygon.arcCompensate(...)
-	 * @return
-	 */
-	public double getArcShortSides()
-	{
-		return arcShortSides;
-	}
-	
-	/**
-	 * The direction to hatch even-numbered layers in degrees anticlockwise
-	 * from the X axis
-	 * @return
-	 */
-	public double getEvenHatchDirection()
-	{
-		return evenHatchDirection;
-	}
+    /**
+     * At the support layer before a layer is to be separated, how far up
+     * the normal Z movement do we go to make a bigger gap to form a weak join?
+     * @return
+     */
+    public double getSeparationFraction()
+    {
+            return separationFraction;
+    }
 
-	/**
-	 * The direction to hatch odd-numbered layers in degrees anticlockwise
-	 * from the X axis
-	 * @return
-	 */
-	public double getOddHatchDirection()
-	{
-		return oddHatchDirection;		
-	}
+    /**
+     * The arc compensation factor.  
+     * See org.reprap.geometry.polygons.RrPolygon.arcCompensate(...)
+     * @return
+     */
+    public double getArcCompensationFactor()
+    {
+            return arcCompensationFactor;
+    }
+
+    /**
+     * The arc short sides.  
+     * See org.reprap.geometry.polygons.RrPolygon.arcCompensate(...)
+     * @return
+     */
+    public double getArcShortSides()
+    {
+            return arcShortSides;
+    }
 	
-	   /**
+    /**
+     * The direction to hatch even-numbered layers in degrees anticlockwise
+     * from the X axis
+     * @return
+     */
+    public double getEvenHatchDirection()
+    {
+            return evenHatchDirection;
+    }
+
+    /**
+     * The direction to hatch odd-numbered layers in degrees anticlockwise
+     * from the X axis
+     * @return
+     */
+    public double getOddHatchDirection()
+    {
+            return oddHatchDirection;		
+    }
+	
+    /**
      * Find out what our current speed is
      * @return
      */
@@ -1329,25 +1329,25 @@ public abstract class GenericExtruder implements Extruder
     	return purgeTime;
     }
     
-	/**
-	 * Purge the extruder
-	 */
-	public void purge(double liftZ) throws Exception
-	{
-		getPrinter().moveToPurge(liftZ);
-		try
-		{
-			if(getPurgeTime() > 0)
-			{
-				setExtrusion(getFastXYFeedrate(), false);
-				getPrinter().machineWait(getPurgeTime(), false, true);
-				setExtrusion(0, false);
-				getPrinter().printEndReverse();
-				zeroExtrudedLength(true);
-			}
-		} catch (Exception e)
-		{}
-	}
+    /**
+     * Purge the extruder
+     */
+    public void purge(double liftZ) throws Exception
+    {
+            getPrinter().moveToPurge(liftZ);
+            try
+            {
+                    if(getPurgeTime() > 0)
+                    {
+                            setExtrusion(getFastXYFeedrate(), false);
+                            getPrinter().machineWait(getPurgeTime(), false, true);
+                            setExtrusion(0, false);
+                            getPrinter().printEndReverse();
+                            zeroExtrudedLength(true);
+                    }
+            } catch (Exception e)
+            {}
+    }
     
     /**
      * If this is true, plot outlines from the middle of their infilling hatch to reduce dribble at
@@ -1364,7 +1364,7 @@ public abstract class GenericExtruder implements Extruder
     	return lift;
     }
     
-	 /**
+    /**
      * This decides how many layers to fine-infill for areas that are upward- 
      * or downward-facing surfaces of the object. 
      * @return

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Comparator;
 import java.util.Collections;
 
-/**
 
 /**
  * @author adrian
@@ -23,15 +22,15 @@ import java.util.Collections;
  */
 enum Bop 
 {
-	ZERO("zero"),
-	ONE("one"),
-	LEAF("leaf"),
-	NOT("not"),
-	LEFT("left"),
-	RIGHT("right"),
-	AND("and"),
-	OR("or"),
-	XOR("xor");
+    ZERO("zero"),
+    ONE("one"),
+    LEAF("leaf"),
+    NOT("not"),
+    LEFT("left"),
+    RIGHT("right"),
+    AND("and"),
+    OR("or"),
+    XOR("xor");
 	
     private String name;
     
@@ -40,7 +39,7 @@ enum Bop
         this.name = name;
     }
     
-        @Override
+    @Override
     public String toString() { return name; }
     
     /**
@@ -280,18 +279,18 @@ class BooleanExpression
 	{
 		if(leafCount < 0)
 		{
-			if(null == leafOp) {
-                            leafCount = c1.leafCount()+c2.leafCount();
-                        } else switch (leafOp) {
-                        case LEAF:
-                            leafCount = 1;
-                            break;
-                        case NOT:
-                            leafCount = c1.leafCount();
-                            break;
-                        default:
-                            leafCount = c1.leafCount()+c2.leafCount();
-                            break;
+                    if(null == leafOp) {
+                        leafCount = c1.leafCount()+c2.leafCount();
+                    } else switch (leafOp) {
+                    case LEAF:
+                        leafCount = 1;
+                        break;
+                    case NOT:
+                        leafCount = c1.leafCount();
+                        break;
+                    default:
+                        leafCount = c1.leafCount()+c2.leafCount();
+                        break;
                     }
 		}
 
@@ -301,17 +300,17 @@ class BooleanExpression
 	
 	private void recordVariables()
 	{
-		int vc = leafCount();
-		variables = new Variable[vc];
-		int i = 0;
-		int k;
-		if(null == leafOp) {
-                    for(k = 0; k < c1.variables.length; k++){
-                        variables[i++] = c1.variables[k];
-                    }
-                    for(k = 0; k < c2.variables.length; k++){
-                        variables[i++] = c2.variables[k];
-                    }
+            int vc = leafCount();
+            variables = new Variable[vc];
+            int i = 0;
+            int k;
+            if(null == leafOp) {
+                for(k = 0; k < c1.variables.length; k++){
+                    variables[i++] = c1.variables[k];
+                }
+                for(k = 0; k < c2.variables.length; k++){
+                    variables[i++] = c2.variables[k];
+                }
             } else {
                     switch (leafOp) {
                 case LEAF:
@@ -330,8 +329,8 @@ class BooleanExpression
                         variables[i++] = c2.variables[k];
                     }
                     break;
-            }
                 }
+            }
 	}
 	
 	public void setAll(int i)

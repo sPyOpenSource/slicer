@@ -6,7 +6,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
+
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.paint.Material;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Shape3D;
+import javafx.scene.transform.Transform;
+
 import org.reprap.geometry.LayerRules;
 import org.reprap.geometry.polygons.BooleanGrid;
 import org.reprap.geometry.polygons.BooleanGridList;
@@ -24,15 +33,6 @@ import org.reprap.RFO;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
 
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.GeometryArray;
-import org.jogamp.java3d.Group;
-import org.jogamp.java3d.Material;
-import org.jogamp.java3d.Node;
-import org.jogamp.java3d.SceneGraphObject;
-import org.jogamp.java3d.Shape3D;
-import org.jogamp.java3d.Transform3D;
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
@@ -157,9 +157,9 @@ public class AllSTLsToBuild
 	 */
 	class SliceCache
 	{
-		private BooleanGridList[][] sliceRing;
-		private BooleanGridList[][] supportRing;
-		private int[] layerNumber;
+		private final BooleanGridList[][] sliceRing;
+		private final BooleanGridList[][] supportRing;
+		private final int[] layerNumber;
 		private int ringPointer;
 		private final int noLayer = Integer.MIN_VALUE;
 		private int ringSize = 10;
@@ -516,19 +516,19 @@ public class AllSTLsToBuild
 		for(int i = 0; i < stls.size(); i++)
 		{
 			STLObject stl = stls.get(i);
-			Transform3D trans = stl.getTransform();
+			Transform trans = stl.getTransform();
 			
-			BranchGroup bg = stl.getSTL();
+			Group bg = stl.getSTL();
 			
-			Iterator<Node> enumKids = bg.getAllChildren();
+			ObservableList<Node> enumKids = bg.getChildren();
 
-			while(enumKids.hasNext())
+			for(Node ob:enumKids)
 			{
-				Object ob = enumKids.next();
+				//Object ob = enumKids.next();
 
-				if(ob instanceof BranchGroup)
+				if(ob instanceof Group)
 				{
-					BranchGroup bg1 = (BranchGroup)ob;
+					Group bg1 = (Group)ob;
 					Attributes att = (Attributes)(bg1.getUserData());
 					if(XYZbox == null)
 					{
@@ -574,15 +574,15 @@ public class AllSTLsToBuild
 		setBoxes();
 	}
 	
-	/**
-	 * Run through a Shape3D and find its enclosing XYZ box
-	 * @param shape
-	 * @param trans
-	 * @param z
-	 */
-	private BoundingBox BBoxPoints(Shape3D shape, Transform3D trans)
+    /**
+     * Run through a Shape3D and find its enclosing XYZ box
+     * @param shape
+     * @param trans
+     * @param z
+     */
+    private BoundingBox BBoxPoints(Shape3D shape, Transform trans)
     {
-		BoundingBox b = null;
+        BoundingBox b = null;
         GeometryArray g = (GeometryArray)shape.getGeometry();
         Point3d p1 = new Point3d();
         Point3d q1 = new Point3d();
@@ -608,25 +608,25 @@ public class AllSTLsToBuild
 	 * @param trans
 	 * @param z
 	 */
-	private BoundingBox BBox(Object value, Transform3D trans) 
+	private BoundingBox BBox(Object sg, Transform trans) 
     {
 		BoundingBox b = null;
 		BoundingBox s;
 		
-        if(value instanceof SceneGraphObject) 
-        {
-            SceneGraphObject sg = (SceneGraphObject)value;
+        //if(value instanceof SceneGraphObject) 
+        //{
+            //SceneGraphObject sg = (SceneGraphObject)value;
             if(sg instanceof Group) 
             {
                 Group g = (Group)sg;
-                Iterator<Node> enumKids = g.getAllChildren( );
-                while(enumKids.hasNext())
+                ObservableList<Node> enumKids = g.getChildren( );
+                for(Node ob:enumKids)
                 {
                 	if(b == null)
-                		b = BBox(enumKids.next(), trans);
+                		b = BBox(ob, trans);
                 	else
                 	{
-                		s = BBox(enumKids.next(), trans);
+                		s = BBox(ob, trans);
                 		if(s != null)
                 			b.expand(s);
                 	}
@@ -635,7 +635,7 @@ public class AllSTLsToBuild
             {
                 b = BBoxPoints((Shape3D)sg, trans);
             }
-        }
+        //}
         
         return b;
     }
@@ -787,8 +787,8 @@ public class AllSTLsToBuild
 		RrGraphics rg = layerRules.getPrinter().getGraphics();
 		if(rg == null) return;
 		PolygonList pp = new PolygonList();
-		Appearance black = new Appearance();
-		Material b = new Material();
+		Scene black = new Scene();
+		Material b = new PhongMaterial();
 		b.setDiffuseColor(new Color3f(0,0,0));
 		black.setMaterial(b);
 		Attributes a = new Attributes(null,null,null,black);
@@ -1308,10 +1308,10 @@ public class AllSTLsToBuild
 		
 		if(!layerRules.purgeXOriented())
 		{
-			s.translate(new Vector3d(-0.5*shieldSize.x, -0.5*shieldSize.y, 0));
-			Transform3D t3d1 = s.getTransform();
-			Transform3D t3d2 = new Transform3D();
-			t3d2.rotZ(0.5*Math.PI);
+			s.translate(new Vector3d(-0.5 * shieldSize.x, -0.5 * shieldSize.y, 0));
+			Transform t3d1 = s.getTransform();
+			Transform t3d2 = new Transform3D();
+			t3d2.rotate(0, 0, 0.5 * Math.PI);
 			t3d1.mul(t3d2);
 			s.setTransform(t3d1);
 			s.translate(new Vector3d(yOff, -xOff, zOff));
@@ -1440,13 +1440,13 @@ public class AllSTLsToBuild
 		// Generate all the edges for STLObject i at this z
 		
 		STLObject stlObject = stls.get(stlIndex);
-		Transform3D trans = stlObject.getTransform();
+		Transform trans = stlObject.getTransform();
 		Matrix4d m4 = new Matrix4d();
 		trans.get(m4);
 		
 		for(int i = 0; i < stlObject.getCount(); i++)
 		{
-			BranchGroup bg1 = stlObject.getSTL(i);
+			Group bg1 = stlObject.getSTL(i);
 			Attributes attr = (Attributes)(bg1.getUserData());
 			atts[attr.getExtruder().getID()] = attr;
 			CSG3D csg = stlObject.getCSG(i);
@@ -1597,14 +1597,14 @@ public class AllSTLsToBuild
 	
 
 	
-	/**
-	 * Run through a Shape3D and set edges from it at plane z
-	 * Apply the transform first
-	 * @param shape
-	 * @param trans
-	 * @param z
-	 */
-	private void addAllEdges(Shape3D shape, Transform3D trans, double z, Attributes att, ArrayList<LineSegment> edges[])
+    /**
+     * Run through a Shape3D and set edges from it at plane z
+     * Apply the transform first
+     * @param shape
+     * @param trans
+     * @param z
+     */
+    private void addAllEdges(Shape3D shape, Transform trans, double z, Attributes att, ArrayList<LineSegment> edges[])
     {
         GeometryArray g = (GeometryArray)shape.getGeometry();
         Point3d p1 = new Point3d();
@@ -1620,7 +1620,7 @@ public class AllSTLsToBuild
         }
         if(g != null)
         {
-            for(int i = 0; i < g.getVertexCount(); i+=3) 
+            for(int i = 0; i < g.getVertexCount(); i += 3) 
             {
                 g.getCoordinate(i, p1);
                 g.getCoordinate(i+1, p2);
@@ -1633,28 +1633,28 @@ public class AllSTLsToBuild
         }
     }
 	
-	/**
-	 * Unpack the Shape3D(s) from value and set edges from them
-	 * @param value
-	 * @param trans
-	 * @param z
-	 */
-	private void recursiveSetEdges(Object value, Transform3D trans, double z, Attributes att, ArrayList<LineSegment> edges[]) 
+    /**
+     * Unpack the Shape3D(s) from value and set edges from them
+     * @param value
+     * @param trans
+     * @param z
+     */
+    private void recursiveSetEdges(Object sg, Transform trans, double z, Attributes att, ArrayList<LineSegment> edges[]) 
     {
-        if(value instanceof SceneGraphObject) 
-        {
-            SceneGraphObject sg = (SceneGraphObject)value;
+        //if(value instanceof SceneGraphObject) 
+        //{
+            //SceneGraphObject sg = (SceneGraphObject)value;
             if(sg instanceof Group) 
             {
                 Group g = (Group)sg;
-                Iterator<Node> enumKids = g.getAllChildren( );
-                while(enumKids.hasNext())
-                    recursiveSetEdges(enumKids.next(), trans, z, att, edges);
+                ObservableList<Node> enumKids = g.getChildren( );
+                for(Node ob:enumKids)
+                    recursiveSetEdges(ob, trans, z, att, edges);
             } else if (sg instanceof Shape3D) 
             {
                 addAllEdges((Shape3D)sg, trans, z, att, edges);
             }
-        }
+        //}
     }
 
 }

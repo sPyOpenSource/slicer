@@ -147,7 +147,6 @@ public class Polygon
 	
 
 	
-	
 	/**
 	 * Make an empty polygon
 	 */
@@ -423,7 +422,7 @@ public class Polygon
 		if(speeds == null) {
 			speeds = new ArrayList<>();
 			for(int j = 0; j < size(); j++)
-				speeds.add(new Double(0));
+				speeds.add(0d);
 		}
 		speeds.set(i, s);
 	}
@@ -529,46 +528,46 @@ public class Polygon
 		updateExtrudeValveEnd();
 	}
 	
-	/**
-	 * Remove a point.
-	 * N.B. This does not amend the enclosing box
-	 * @param i
-	 */
-	public void remove(int i)
-	{
-		points.remove(i);
-		if(speeds != null)
-			speeds.remove(i);
-	}
-	
-	/**
-	 * Recompute the box (sometimes useful if points have been deleted) 
-	 */
-	public void re_box()
-	{
-		box = new Rectangle();
-		int leng = size();
-		for(int i = 0; i < leng; i++) {
-			box.expand(points.get(i)); 
-		}
-	}
-	
-	
-	/**
-	 * Output the polygon in SVG XML format
-	 * This ignores any speeds
+    /**
+     * Remove a point.
+     * N.B. This does not amend the enclosing box
+     * @param i
+     */
+    public void remove(int i)
+    {
+            points.remove(i);
+            if(speeds != null)
+                    speeds.remove(i);
+    }
+
+    /**
+     * Recompute the box (sometimes useful if points have been deleted) 
+     */
+    public void re_box()
+    {
+            box = new Rectangle();
+            int leng = size();
+            for(int i = 0; i < leng; i++) {
+                    box.expand(points.get(i)); 
+            }
+    }
+
+
+    /**
+     * Output the polygon in SVG XML format
+     * This ignores any speeds
      * @return 
-	 */
-	public String svg()
-	{
-		String result = "<polygon points=\"";
-		int leng = size();
-		for(int i = 0; i < leng; i++)
-			result += Double.toString((point(i)).x()) + "," 
-					+ Double.toString((point(i)).y());
-		result +="\" />";
-		return result;
-	}
+     */
+    public String svg()
+    {
+            String result = "<polygon points=\"";
+            int leng = size();
+            for(int i = 0; i < leng; i++)
+                    result += Double.toString((point(i)).x()) + "," 
+                                    + Double.toString((point(i)).y());
+            result +="\" />";
+            return result;
+    }
 		
 	/**
 	 * Negate (i.e. reverse cyclic order)
@@ -591,74 +590,74 @@ public class Polygon
 		return result;
 	}
 	
-	/**
-	 * @return same polygon starting at a random vertex
-	 */
-	public Polygon randomStart()
-	{
-		return newStart(rangen.nextInt(size()));
-	}
-	
-	/**
+    /**
+     * @return same polygon starting at a random vertex
+     */
+    public Polygon randomStart()
+    {
+            return newStart(rangen.nextInt(size()));
+    }
+
+    /**
      * @param i
-	 * @return same polygon, but starting at vertex i
-	 */
-	public Polygon newStart(int i)
-	{
-		if(!isClosed())
-			Debug.e("RrPolygon.newStart(i): reordering an open polygon!");
-	
-		if(i < 0 || i >= size()) {
-			Debug.e("RrPolygon.newStart(i): dud index: " + i);
-			return this;
-		}
-		Polygon result = new Polygon(att, closed);
-		for(int j = 0; j < size(); j++) {
-			result.add(point(i));
-			if(speeds != null)
-				result.setSpeed(j, speed(i));
-			i++;
-			if(i >= size())
-				i = 0;
-		}
-		result.setExtrudeEnd(extrudeEnd, extrudeEndDistance2);
-		result.setValveEnd(valveEnd, valveEndDistance2);
-		result.updateExtrudeValveEnd();
-		return result;
-	}
-	
-	/**
+     * @return same polygon, but starting at vertex i
+     */
+    public Polygon newStart(int i)
+    {
+            if(!isClosed())
+                    Debug.e("RrPolygon.newStart(i): reordering an open polygon!");
+
+            if(i < 0 || i >= size()) {
+                    Debug.e("RrPolygon.newStart(i): dud index: " + i);
+                    return this;
+            }
+            Polygon result = new Polygon(att, closed);
+            for(int j = 0; j < size(); j++) {
+                    result.add(point(i));
+                    if(speeds != null)
+                            result.setSpeed(j, speed(i));
+                    i++;
+                    if(i >= size())
+                            i = 0;
+            }
+            result.setExtrudeEnd(extrudeEnd, extrudeEndDistance2);
+            result.setValveEnd(valveEnd, valveEndDistance2);
+            result.updateExtrudeValveEnd();
+            return result;
+    }
+
+    /**
      * @param lc
-	 * @return same polygon starting at point incremented from last polygon
-	 */
-	public Polygon incrementedStart(LayerRules lc)
-	{
-		if(size() == 0 || lc.getModelLayer() < 0)
-			return this;
-		int i = lc.getModelLayer() % size();
-		return newStart(i);
-	}
-	
-	/**
-	 * Find the nearest vertex on a polygon to a given point
-	 * @param p
-	 * @return
-	 */
-	public int nearestVertex(Point2D p)
-	{
-		double d = Double.POSITIVE_INFINITY;
-		int result = -1;
-		for(int i = 0; i < size(); i++) {
-			double d2 = Point2D.dSquared(point(i), p);
-			if(d2 < d) {
-				d = d2;
-				result = i;
-			}
-		}
-		if(result < 0)
-			Debug.e("RrPolygon.nearestVertex(): no point found!");
-		return result;
-	}
+     * @return same polygon starting at point incremented from last polygon
+     */
+    public Polygon incrementedStart(LayerRules lc)
+    {
+            if(size() == 0 || lc.getModelLayer() < 0)
+                    return this;
+            int i = lc.getModelLayer() % size();
+            return newStart(i);
+    }
+
+    /**
+     * Find the nearest vertex on a polygon to a given point
+     * @param p
+     * @return
+     */
+    public int nearestVertex(Point2D p)
+    {
+            double d = Double.POSITIVE_INFINITY;
+            int result = -1;
+            for(int i = 0; i < size(); i++) {
+                    double d2 = Point2D.dSquared(point(i), p);
+                    if(d2 < d) {
+                            d = d2;
+                            result = i;
+                    }
+            }
+            if(result < 0)
+                    Debug.e("RrPolygon.nearestVertex(): no point found!");
+            return result;
+    }
 	
 	/**
 	 * Find the nearest vertex on this polygon to any on polygon p,
@@ -1061,7 +1060,7 @@ public class Polygon
 				try
 				{
 					Circle c = new Circle(previous, current, next);
-					offset = factor*(Math.sqrt(t2 + 4*c.radiusSquared())*0.5 - Math.sqrt(c.radiusSquared()));
+					offset = factor*(Math.sqrt(t2 + 4 * c.radiusSquared()) * 0.5 - Math.sqrt(c.radiusSquared()));
 					//System.out.println("Circle r: " + Math.sqrt(c.radiusSquared()) + " offset: " + offset);
 					offsetPoint = Point2D.sub(current, c.centre());
 					offsetPoint = Point2D.add(current, Point2D.mul(offsetPoint.norm(), offset));
@@ -1088,8 +1087,8 @@ public class Polygon
 	
 	private Interval accRange(double startV, double s, double acc)
 	{
-		double vMax = Math.sqrt(2*acc*s + startV*startV);
-		double vMin = -2*acc*s + startV*startV;
+		double vMax = Math.sqrt(2 * acc * s + startV * startV);
+		double vMin = -2 * acc * s + startV * startV;
 		if(vMin <= 0)
 			vMin = 0; //-Math.sqrt(-vMin);
 		else
@@ -1507,7 +1506,7 @@ public class Polygon
 	{
 		List<Integer> points = new ArrayList<>();
 		for(int i = 0; i < size(); i++)
-				points.add(i);
+                    points.add(i);
 		return points;
 	}
 	

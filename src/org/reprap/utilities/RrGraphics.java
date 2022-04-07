@@ -65,9 +65,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javafx.scene.Scene;
+import javafx.scene.paint.Material;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 
 import org.reprap.geometry.polygons.BooleanGrid;
 import org.reprap.geometry.polygons.Point2D;
@@ -78,11 +85,8 @@ import org.reprap.geometry.polygons.Polygon;
 import org.reprap.geometry.polygons.PolygonList;
 import org.reprap.gui.StatusMessage;
 import org.reprap.Attributes;
-import org.jogamp.java3d.Appearance;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
+
 import org.jogamp.vecmath.Color3f;
-import org.jogamp.java3d.Material;
 
 /**
  * Class to plot images of geometrical structures for debugging.
@@ -241,8 +245,10 @@ public class RrGraphics
 		plot(p);	
 	}
 	
-	/**
-	 * @param b
+    /**
+     * @param b
+     * @param waitTillDone
+     * @param ln
 	 */
 	public void init(Rectangle b, boolean waitTillDone, String ln)
 	{
@@ -284,7 +290,7 @@ public class RrGraphics
 					loop = !statusWindow.isCancelled();
 				} catch (InterruptedException e) 
 				{
-Logger.getLogger(RrGraphics.class.getName()).log(Level.SEVERE, null, e);
+                                    Logger.getLogger(RrGraphics.class.getName()).log(Level.SEVERE, null, e);
 				}
 			}
 			jframe.dispose();
@@ -430,7 +436,7 @@ Logger.getLogger(RrGraphics.class.getName()).log(Level.SEVERE, null, e);
 	 */
 	private void setColour(Attributes at)
 	{
-		Appearance ap = at.getAppearance();
+		Scene ap = at.getAppearance();
 		Material mt = ap.getMaterial();
 		Color3f col = new Color3f();
 		mt.getDiffuseColor(col);

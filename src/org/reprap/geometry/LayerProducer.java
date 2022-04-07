@@ -7,6 +7,7 @@ package org.reprap.geometry;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.reprap.Printer;
 import org.reprap.Attributes;
 import org.reprap.Preferences;
@@ -22,55 +23,55 @@ import org.reprap.utilities.RrGraphics;
  */
 class segmentSpeeds
 {
-	/**
-	 * 
-	 */
-	public Point2D p1, p2, p3;
+    /**
+     * 
+     */
+    public Point2D p1, p2, p3;
+
+    /**
+     * 
+     */
+    public double ca;
+
+    /**
+     * 
+     */
+    public boolean plotMiddle;
+
+    /**
+     * 
+     */
+    public boolean abandon;
 	
-	/**
-	 * 
-	 */
-	public double ca;
-	
-	/**
-	 * 
-	 */
-	public boolean plotMiddle;
-	
-	/**
-	 * 
-	 */
-	public boolean abandon;
-	
-	/**
-	 * @param before
-	 * @param now
-	 * @param after
-	 * @param fastLength
-	 */
-	public segmentSpeeds(Point2D before, Point2D now, Point2D after, double fastLength)
-	{
-		Point2D a = Point2D.sub(now, before);
-		double amod = a.mod();
-		abandon = amod == 0;
-		if(abandon)
-			return;
-		Point2D b = Point2D.sub(after, now);
-		if(b.mod() == 0)
-			ca = 0;
-		else
-			ca = Point2D.mul(a.norm(), b.norm());
-		plotMiddle = true;
-		if(amod <= 2*fastLength)
-		{
-			fastLength = amod*0.5;
-			plotMiddle = false;
-		}
-		a = a.norm();
-		p1 = Point2D.add(before, Point2D.mul(a, fastLength));
-		p2 = Point2D.add(p1, Point2D.mul(a, amod - 2*fastLength));
-		p3 = Point2D.add(p2, Point2D.mul(a, fastLength));
-	}
+    /**
+     * @param before
+     * @param now
+     * @param after
+     * @param fastLength
+     */
+    public segmentSpeeds(Point2D before, Point2D now, Point2D after, double fastLength)
+    {
+        Point2D a = Point2D.sub(now, before);
+        double amod = a.mod();
+        abandon = amod == 0;
+        if(abandon)
+            return;
+        Point2D b = Point2D.sub(after, now);
+        if(b.mod() == 0)
+            ca = 0;
+        else
+            ca = Point2D.mul(a.norm(), b.norm());
+        plotMiddle = true;
+        if(amod <= 2 * fastLength)
+        {
+            fastLength = amod * 0.5;
+            plotMiddle = false;
+        }
+        a = a.norm();
+        p1 = Point2D.add(before, Point2D.mul(a, fastLength));
+        p2 = Point2D.add(p1, Point2D.mul(a, amod - 2 * fastLength));
+        p3 = Point2D.add(p2, Point2D.mul(a, fastLength));
+    }
 }
 
 /**
@@ -78,196 +79,187 @@ class segmentSpeeds
  */
 public class LayerProducer {
 	
-	private RrGraphics simulationPlot = null;
-	
-	/**
-	 * 
-	 */
-	private LayerRules layerConditions = null;
-	
-	/**
-	 * 
-	 */
-	private boolean paused = false;
+    private RrGraphics simulationPlot = null;
+
+    private LayerRules layerConditions = null;
+
+    private boolean paused = false;
 
 
+    private PolygonList allPolygons[];
 	
-	private PolygonList allPolygons[];
-	
-	/**
-	 * The clue is in the name...
-	 */
-	private double currentFeedrate;
-	
-	/**
-	 * Record the end of each polygon as a clue where to start next
-	 */
-	private Point2D startNearHere = null;
+    /**
+     * The clue is in the name...
+     */
+    private double currentFeedrate;
 
+    /**
+     * Record the end of each polygon as a clue where to start next
+     */
+    private Point2D startNearHere = null;
+
+
+    /**
+     * Flag to prevent cyclic graphs going round forever
+     */
+    private boolean beingDestroyed = false;
+
+    /**
+     * Destroy me and all that I point to
+     */
+    public void destroy() 
+    {
+            if(beingDestroyed) // Prevent infinite loop
+                    return;
+            beingDestroyed = true;
+
+            if(startNearHere != null)
+                    startNearHere.destroy();
+            startNearHere = null;
+            allPolygons = null;
+            beingDestroyed = false;
+    }
 	
-	/**
-	 * Flag to prevent cyclic graphs going round forever
-	 */
-	private boolean beingDestroyed = false;
 	
-	/**
-	 * Destroy me and all that I point to
-	 */
-	public void destroy() 
-	{
-		if(beingDestroyed) // Prevent infinite loop
-			return;
-		beingDestroyed = true;
-		
-		if(startNearHere != null)
-			startNearHere.destroy();
-		startNearHere = null;
-		allPolygons = null;
-		beingDestroyed = false;
-	}
-	
-	
-	/**
-	 * Set up a normal layer
-	 * @param ap[]
-	 * @param lc
-	 * @param simPlot
-	 * @throws Exception
-	 */
-	public LayerProducer(PolygonList ap[], LayerRules lc, RrGraphics simPlot) throws Exception 
-	{
-		layerConditions = lc;
-		startNearHere = null;
-		simulationPlot = simPlot;
-		
-		allPolygons = ap;
-		
-		if(simulationPlot != null)
-		{
-			if(!simulationPlot.isInitialised())
-			{
-				Rectangle rec = lc.getBox();
-				if(Preferences.loadGlobalBool("Shield"))
-					rec.expand(Point2D.add(rec.sw(), new Point2D(-7, -7))); // TODO: Yuk - this should be a parameter
-				simulationPlot.init(rec, false, "" + lc.getModelLayer() + " (z=" + lc.getModelZ() + ")");
-			} else {
-				simulationPlot.cleanPolygons("" + lc.getModelLayer() + " (z=" + lc.getModelZ() + ")");
-                        }
-		}
-	}
+    /**
+     * Set up a normal layer
+     * @param ap[]
+     * @param lc
+     * @param simPlot
+     * @throws Exception
+     */
+    public LayerProducer(PolygonList ap[], LayerRules lc, RrGraphics simPlot) throws Exception 
+    {
+        layerConditions = lc;
+        startNearHere = null;
+        simulationPlot = simPlot;
+
+        allPolygons = ap;
+
+        if(simulationPlot != null)
+        {
+            if(!simulationPlot.isInitialised())
+            {
+                Rectangle rec = lc.getBox();
+                if(Preferences.loadGlobalBool("Shield"))
+                    rec.expand(Point2D.add(rec.sw(), new Point2D(-7, -7))); // TODO: Yuk - this should be a parameter
+                simulationPlot.init(rec, false, "" + lc.getModelLayer() + " (z=" + lc.getModelZ() + ")");
+            } else {
+                simulationPlot.cleanPolygons("" + lc.getModelLayer() + " (z=" + lc.getModelZ() + ")");
+            }
+        }
+    }
 	
 
+    /**
+     * Stop printing
+     *
+     */
+    public void pause()
+    {
+        paused = true;
+    }
+
+    /**
+     * Start printing
+     *
+     */
+    public void resume()
+    {
+        paused = false;
+    }
+
+    /**
+     * @return current X and Y position of the printer
+     */
+    private Point2D posNow()
+    {
+        return new Point2D(layerConditions.getPrinter().getX(), layerConditions.getPrinter().getY());
+    }
 	
-	/**
-	 * Stop printing
-	 *
-	 */
-	public void pause()
-	{
-		paused = true;
-	}
-	
-	/**
-	 * Start printing
-	 *
-	 */
-	public void resume()
-	{
-		paused = false;
-	}
-	
-	/**
-	 * @return current X and Y position of the printer
-	 */
-	private Point2D posNow()
-	{
-		return new Point2D(layerConditions.getPrinter().getX(), layerConditions.getPrinter().getY());
-	}
-	
-	/**
-	 * speed up for short lines
-	 * @param p
-	 * @return
-	 * @throws Exception 
-	 */
-	private boolean shortLine(Point2D p, boolean stopExtruder, boolean closeValve) throws Exception
-	{
-		Printer printer = layerConditions.getPrinter();
-		double shortLen = printer.getExtruder().getShortLength();
-		if(shortLen < 0)
-			return false;
-		Point2D a = Point2D.sub(posNow(), p);
-		double amod = a.mod();
-		if(amod > shortLen) {
-//			Debug.d("Long segment.  Current feedrate is: " + currentFeedrate);
-			return false;
-		}
+    /**
+     * speed up for short lines
+     * @param p
+     * @return
+     * @throws Exception 
+     */
+    private boolean shortLine(Point2D p, boolean stopExtruder, boolean closeValve) throws Exception
+    {
+        Printer printer = layerConditions.getPrinter();
+        double shortLen = printer.getExtruder().getShortLength();
+        if(shortLen < 0)
+            return false;
+        Point2D a = Point2D.sub(posNow(), p);
+        double amod = a.mod();
+        if(amod > shortLen) {
+//          Debug.d("Long segment.  Current feedrate is: " + currentFeedrate);
+            return false;
+        }
 
 // TODO: FIX THIS
 //		printer.setSpeed(LinePrinter.speedFix(printer.getExtruder().getXYSpeed(), 
 //				printer.getExtruder().getShortSpeed()));
-		printer.printTo(p.x(), p.y(), layerConditions.getMachineZ(), printer.getExtruder().getShortLineFeedrate(), stopExtruder, closeValve);
-		return true;	
-	}
+        printer.printTo(p.x(), p.y(), layerConditions.getMachineZ(), printer.getExtruder().getShortLineFeedrate(), stopExtruder, closeValve);
+        return true;	
+    }
 	
-	/**
-	 * @param first First point, the end of the line segment to be plotted to from the current position.
-	 * @param second Second point, the end of the next line segment; used for angle calculations
-	 * @param turnOff True if the extruder should be turned off at the end of this segment.
-	 * @throws Exception 
-	 */
-	private void plot(Point2D first, Point2D second, boolean stopExtruder, boolean closeValve) throws Exception
-	{
-		Printer printer = layerConditions.getPrinter();
-		if (printer.isCancelled()) return;
-		
-		// Don't call delay; this isn't controlling the printer
-		while(paused)
-		{
-			try
-			{
-				Thread.sleep(200);
-			} catch (InterruptedException ex) {
-                            Logger.getLogger(LayerProducer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-		}
-		
-		if(shortLine(first, stopExtruder, closeValve))
-			return;
-		
-		double z = layerConditions.getMachineZ();
-		
-		double speedUpLength = printer.getExtruder().getAngleSpeedUpLength();
-		if(speedUpLength > 0)
-		{
-			segmentSpeeds ss = new segmentSpeeds(posNow(), first, second, 
-					speedUpLength);
-			if(ss.abandon)
-				return;
+    /**
+     * @param first First point, the end of the line segment to be plotted to from the current position.
+     * @param second Second point, the end of the next line segment; used for angle calculations
+     * @param turnOff True if the extruder should be turned off at the end of this segment.
+     * @throws Exception 
+     */
+    private void plot(Point2D first, Point2D second, boolean stopExtruder, boolean closeValve) throws Exception
+    {
+        Printer printer = layerConditions.getPrinter();
+        if (printer.isCancelled()) return;
 
-			printer.printTo(ss.p1.x(), ss.p1.y(), z, currentFeedrate, false, false);
+        // Don't call delay; this isn't controlling the printer
+        while(paused)
+        {
+            try
+            {
+                Thread.sleep(200);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LayerProducer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
-			if(ss.plotMiddle)
-			{
+        if(shortLine(first, stopExtruder, closeValve))
+            return;
+
+        double z = layerConditions.getMachineZ();
+
+        double speedUpLength = printer.getExtruder().getAngleSpeedUpLength();
+        if(speedUpLength > 0)
+        {
+            segmentSpeeds ss = new segmentSpeeds(posNow(), first, second, speedUpLength);
+            if(ss.abandon)
+                return;
+
+            printer.printTo(ss.p1.x(), ss.p1.y(), z, currentFeedrate, false, false);
+
+            if(ss.plotMiddle)
+            {
 //TODO: FIX THIS.
 //				int straightSpeed = LinePrinter.speedFix(currentSpeed, (1 - 
 //						printer.getExtruder().getAngleSpeedFactor()));
-				//printer.setFeedrate(printer.getExtruder().getAngleFeedrate());
-				printer.printTo(ss.p2.x(), ss.p2.y(), z, printer.getExtruder().getAngleFeedrate(), false, false);
-			}
-			
-			printer.printTo(ss.p3.x(), ss.p3.y(), z, printer.getExtruder().getAngleFeedrate(), stopExtruder, closeValve);
-		// Leave speed set for the start of the next line.
-		} else {
-			printer.printTo(first.x(), first.y(), z, currentFeedrate, stopExtruder, closeValve);
-                }
-	}
+                //printer.setFeedrate(printer.getExtruder().getAngleFeedrate());
+                printer.printTo(ss.p2.x(), ss.p2.y(), z, printer.getExtruder().getAngleFeedrate(), false, false);
+            }
+
+            printer.printTo(ss.p3.x(), ss.p3.y(), z, printer.getExtruder().getAngleFeedrate(), stopExtruder, closeValve);
+        // Leave speed set for the start of the next line.
+        } else {
+            printer.printTo(first.x(), first.y(), z, currentFeedrate, stopExtruder, closeValve);
+        }
+    }
 	
-	private void singleMove(Point2D p)
-	{
-		Printer pt = layerConditions.getPrinter();
-		pt.singleMove(p.x(), p.y(), pt.getZ(), pt.getFastXYFeedrate(), true);
-	}
+    private void singleMove(Point2D p)
+    {
+        Printer pt = layerConditions.getPrinter();
+        pt.singleMove(p.x(), p.y(), pt.getZ(), pt.getFastXYFeedrate(), true);
+    }
 	
 	/**
 	 * @param first
@@ -288,7 +280,7 @@ public class LayerProducer {
 		{
 			try
 			{
-				Thread.sleep(200);
+                            Thread.sleep(200);
 			} catch (InterruptedException ex) {
                             Logger.getLogger(LayerProducer.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -354,12 +346,12 @@ public class LayerProducer {
 		Point2D lastPoint = p.point(0);
 		for (int i = 1; i < p.size(); i++)
 		{
-			Point2D n=p.point(i);
-			plotDist+=Point2D.d(lastPoint, n);
-			lastPoint=n;
+			Point2D n = p.point(i);
+			plotDist += Point2D.d(lastPoint, n);
+			lastPoint = n;
 		}
-		if (plotDist<Preferences.machineResolution()*0.5) {
-			Debug.d("Rejected line with "+p.size()+" points, length: "+plotDist);
+		if (plotDist < Preferences.machineResolution() * 0.5) {
+			Debug.d("Rejected line with " + p.size() + " points, length: " + plotDist);
 			return;
 		}
 		
@@ -387,12 +379,19 @@ public class LayerProducer {
 		if(acc)
 		{
 			if(Preferences.loadGlobalBool("RepRapAccelerations")) {
-				p.setSpeeds(printer.getFastXYFeedrate(), att.getExtruder().getSlowXYFeedrate(), p.isClosed()?outlineFeedrate:infillFeedrate, 
-					att.getExtruder().getMaxAcceleration());
-			
+				p.setSpeeds(
+                                        printer.getFastXYFeedrate(), 
+                                        att.getExtruder().getSlowXYFeedrate(), 
+                                        p.isClosed()?outlineFeedrate:infillFeedrate, 
+					att.getExtruder().getMaxAcceleration()
+                                );
                         } else {
-				p.setSpeeds(printer.getFastXYFeedrate(), att.getExtruder().getFastXYFeedrate(), p.isClosed()?outlineFeedrate:infillFeedrate, 
-						att.getExtruder().getMaxAcceleration());
+				p.setSpeeds(
+                                        printer.getFastXYFeedrate(), 
+                                        att.getExtruder().getFastXYFeedrate(), 
+                                        p.isClosed()?outlineFeedrate:infillFeedrate, 
+                                        att.getExtruder().getMaxAcceleration()
+                                );
                         }
 		}
 		
@@ -403,7 +402,6 @@ public class LayerProducer {
 
 		p.backStepExtrude(extrudeBackLength);
 		p.backStepValve(valveBackLength);
-		
 		
 		if(liftZ > 0)
 			printer.singleMove(printer.getX(), printer.getY(), currentZ + liftZ, printer.getFastFeedrateZ(), true);
@@ -436,7 +434,7 @@ public class LayerProducer {
 				
 		for(int i = 1; i < p.size(); i++)
 		{
-			Point2D next = p.point((i+1)%p.size());
+			Point2D next = p.point((i + 1) % p.size());
 
 			if (printer.isCancelled())
 			{
@@ -451,8 +449,8 @@ public class LayerProducer {
                         }
 			//Debug.g(printer.getExtruder().getMaterial());
 			oldexoff = extrudeOff;
-			extrudeOff = (i > p.extrudeEnd() && extrudeBackLength > 0) || i == p.size()-1;
-			valveOff = (i > p.valveEnd() && valveBackLength > 0) || i == p.size()-1;			
+			extrudeOff = (i > p.extrudeEnd() && extrudeBackLength > 0) || i == p.size() - 1;
+			valveOff = (i > p.valveEnd() && valveBackLength > 0) || i == p.size() - 1;			
 			plot(p.point(i), next, extrudeOff, valveOff);
 			if(oldexoff ^ extrudeOff)
 				printer.printEndReverse();
@@ -479,24 +477,24 @@ public class LayerProducer {
 		}
 	}
 			
-	/**
-	 * Master plot function - draw everything.  Supress border and/or hatch by
-	 * setting borderPolygons and/or hatchedPolygons null
-	 * @throws Exception 
-	 */
-	public void plot() throws Exception
-	{
-		boolean firstOneInLayer = true;
-		boolean firstOneThisMaterial;
-		
-            for (PolygonList allPolygon : allPolygons) {
-                firstOneThisMaterial = true;
-                for(int j = 0; j < allPolygon.size(); j++)
-                {
-                    plot(allPolygon.get(j), firstOneInLayer, firstOneThisMaterial);
-                    firstOneInLayer = false;
-                    firstOneThisMaterial = false;
-                }
+    /**
+     * Master plot function - draw everything.  Supress border and/or hatch by
+     * setting borderPolygons and/or hatchedPolygons null
+     * @throws Exception 
+     */
+    public void plot() throws Exception
+    {
+        boolean firstOneInLayer = true;
+        boolean firstOneThisMaterial;
+
+        for (PolygonList allPolygon : allPolygons) {
+            firstOneThisMaterial = true;
+            for(int j = 0; j < allPolygon.size(); j++)
+            {
+                plot(allPolygon.get(j), firstOneInLayer, firstOneThisMaterial);
+                firstOneInLayer = false;
+                firstOneThisMaterial = false;
             }
-	}
+        }
+    }
 }

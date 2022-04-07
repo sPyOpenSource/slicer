@@ -16,115 +16,115 @@ import org.reprap.utilities.Debug;
 public class BooleanGridList 
 {
 
-		private List<BooleanGrid> shapes = null;
-		
-		public BooleanGridList()
-		{
-			shapes = new ArrayList<>();
-		}
-		
-		/**
-		 * Deep copy
-		 * @param a
-		 */
-		public BooleanGridList(BooleanGridList a)
-		{
-			shapes = new ArrayList<>();
-			
-			if(a == null) return;
-			
-			for(int i = 0; i < a.size(); i++)
-				shapes.add(new BooleanGrid(a.get(i)));
-		}
-		
-		/**
-		 * Return the ith shape
-		 * @param i
-		 * @return
-		 */
-		public BooleanGrid get(int i)
-		{
-			return shapes.get(i);
-		}
-		
-		/**
-		 * Is a point in any of the shapes?
-		 * @param p
-		 * @return
-		 */
-		public boolean membership(Point2D p)
-		{
-			for(int i = 0; i < size(); i++)
-				if(get(i).get(p))
-					return true;
-			return false;
-		}
-		
-		/**
-		 * Return the ith attribute
-		 * @param i
-		 * @return
-		 */
-		public Attributes attribute(int i)
-		{
-			return shapes.get(i).attribute();
-		}
-		
-		/**
-		 * How many shapes are there in the list?
-		 * @return
-		 */
-		public int size()
-		{
-			return shapes.size();
-		}
-		
-		/**
-		 * Remove an entry and close the gap
-		 * @param i
-		 */
-		public void remove(int i)
-		{
-			shapes.remove(i);
-		}
+    private List<BooleanGrid> shapes = null;
 
+    public BooleanGridList()
+    {
+            shapes = new ArrayList<>();
+    }
+
+    /**
+     * Deep copy
+     * @param a
+     */
+    public BooleanGridList(BooleanGridList a)
+    {
+            shapes = new ArrayList<>();
+
+            if(a == null) return;
+
+            for(int i = 0; i < a.size(); i++)
+                    shapes.add(new BooleanGrid(a.get(i)));
+    }
+
+    /**
+     * Return the ith shape
+     * @param i
+     * @return
+     */
+    public BooleanGrid get(int i)
+    {
+            return shapes.get(i);
+    }
 		
-		/**
-		 * Add a shape on the end
-		 * @param b
-		 */
-		public void add(BooleanGrid b)
-		{
-			if(b == null)
-			{
-				Debug.e("BooleanGridList.add(): attempt to add null BooleanGrid.");
-				return;
-			}
-			if(b != BooleanGrid.nullBooleanGrid())
-				shapes.add(b);
-		}
+    /**
+     * Is a point in any of the shapes?
+     * @param p
+     * @return
+     */
+    public boolean membership(Point2D p)
+    {
+            for(int i = 0; i < size(); i++)
+                    if(get(i).get(p))
+                            return true;
+            return false;
+    }
+
+    /**
+     * Return the ith attribute
+     * @param i
+     * @return
+     */
+    public Attributes attribute(int i)
+    {
+            return shapes.get(i).attribute();
+    }
+
+    /**
+     * How many shapes are there in the list?
+     * @return
+     */
+    public int size()
+    {
+            return shapes.size();
+    }
 		
-		/**
-		 * Add another list of shapes on the end
-		 * @param aa
-		 */
-		public void add(BooleanGridList aa)
-		{
-			for(int i = 0; i < aa.size(); i++)
-					add(aa.get(i));
-		}
+    /**
+     * Remove an entry and close the gap
+     * @param i
+     */
+    public void remove(int i)
+    {
+            shapes.remove(i);
+    }
+
+
+    /**
+     * Add a shape on the end
+     * @param b
+     */
+    public void add(BooleanGrid b)
+    {
+        if(b == null)
+        {
+            Debug.e("BooleanGridList.add(): attempt to add null BooleanGrid.");
+            return;
+        }
+        if(b != BooleanGrid.nullBooleanGrid())
+            shapes.add(b);
+    }
 		
-		/**
-		 * Reverse the order of the list
-		 * @return
-		 */
-		public BooleanGridList reverse()
-		{
-			BooleanGridList result = new BooleanGridList();
-			for(int i = size() - 1; i >= 0; i--)
-				result.add(get(i));
-			return result;
-		}
+    /**
+     * Add another list of shapes on the end
+     * @param aa
+     */
+    public void add(BooleanGridList aa)
+    {
+        for(int i = 0; i < aa.size(); i++)
+            add(aa.get(i));
+    }
+
+    /**
+     * Reverse the order of the list
+     * @return
+     */
+    public BooleanGridList reverse()
+    {
+            BooleanGridList result = new BooleanGridList();
+            for(int i = size() - 1; i >= 0; i--)
+                    result.add(get(i));
+            return result;
+    }
 		
 		/**
 		 * Offset all the shapes in the list for this layer

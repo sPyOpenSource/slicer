@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.File;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
+
 import org.reprap.Attributes;
 import org.reprap.CartesianPrinter;
 import org.reprap.Preferences;
@@ -220,7 +221,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 		forceSelection = true;
 		
 		//load extruder prefs
-		int extruderCount = Preferences.loadGlobalInt("NumberOfExtruders");
+		int extruderCount = 2;//Preferences.loadGlobalInt("NumberOfExtruders");
 		if (extruderCount < 1)
 			throw new Exception("A Reprap printer must contain at least one extruder.");
 
@@ -617,7 +618,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * @return segment length in millimeters
 	 */
 	public double segmentLength(double x, double y) {
-		return Math.sqrt(x*x + y*y);
+		return Math.sqrt(x * x + y * y);
 	}
 	
 	/* (non-Javadoc)
@@ -748,7 +749,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 			Debug.e("Attempt to move y to " + y + " which is outside [0, " + Preferences.loadGlobalDouble("WorkingY(mm)") + "]");
 		if(z > Preferences.loadGlobalDouble("WorkingZ(mm)") || z < 0)
 			Debug.e("Attempt to move z to " + z + " which is outside [0, " + Preferences.loadGlobalDouble("WorkingZ(mm)") + "]");
-		} catch (Exception e)
+		} catch (IOException e)
 		{}
 	}
 	
@@ -917,7 +918,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 			synchronized(msg) {
 				msg.wait();
 			}
-		} catch (Exception ex) {
+		} catch (InterruptedException ex) {
 		}
 		if (msg.getResult() == false)
 			setCancelled(true);
@@ -945,7 +946,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 			synchronized(msg) {
 				msg.wait();
 			}
-		} catch (Exception ex) {
+		} catch (InterruptedException ex) {
 		}
 		if (msg.getResult() == false)
 			setCancelled(true);
@@ -1092,8 +1093,9 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 */
 	public void setSeparating(boolean s)
 	{
-		for(int i = 0; i < extruders.length; i++)
-			extruders[i].setSeparating(s);
+            for (Extruder extruder : extruders) {
+                extruder.setSeparating(s);
+            }
 	}
 	
 	/**

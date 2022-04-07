@@ -1,13 +1,5 @@
 package org.reprap.utilities;
 
-import org.jogamp.java3d.loaders.Loader;
-import org.jogamp.java3d.loaders.Scene;
-import org.jogamp.java3d.loaders.SceneBase;
-import org.jogamp.java3d.loaders.IncorrectFormatException;
-import org.jogamp.java3d.loaders.ParsingErrorException;
-import org.jogamp.java3d.utils.geometry.GeometryInfo;
-import org.jogamp.java3d.utils.geometry.NormalGenerator;
-
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -19,18 +11,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import java.util.StringTokenizer;
-import java.util.ArrayList;
-
-import org.jogamp.vecmath.Point3f;
-import org.jogamp.vecmath.Vector3f;
-
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.Shape3D;
-
 // New from JDK 1.4 for endian related problems
 import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.geometry.Point3D;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.TriangleMesh;
+
+import org.jogamp.vecmath.Vector3f;
 
 /**
  * Title:         STL Loader
@@ -58,7 +58,7 @@ import java.nio.ByteBuffer;
  *    private SceneBase makeScene()
  */
 
-public class StlFile implements Loader
+public class StlFile
 {
   private static final boolean DEBUG = false;     // Sets mode to Debug: outputs every action done
 
@@ -66,22 +66,22 @@ public class StlFile implements Loader
   private static final int MAX_PATH_LENGTH = 1024;
 
   // Global variables
-  private int flag;                                      // Needed cause implements Loader
+  private int flag;                   // Needed cause implements Loader
 
-  private URL baseUrl = null;                // Reading files over Internet
+  private URL baseUrl = null;         // Reading files over Internet
   private String basePath = null;     // For local files
 
-  private boolean fromUrl = false;   // Usefull for binary files
-  private boolean Ascii = true;           // File type Ascii -> true o binary -> false
+  private boolean fromUrl = false;    // Usefull for binary files
+  private boolean Ascii = true;       // File type Ascii -> true o binary -> false
   private String fileName = null;
 
   // Arrays with coordinates and normals
   // Needed for reading ASCII files because its size is unknown until the end
-  private ArrayList coordList;		// Holds Point3f
-  private ArrayList normList;		// Holds Vector3f
+  private final ArrayList coordList = new ArrayList();		// Holds Point3f
+  private final ArrayList normList = new ArrayList();		// Holds Vector3f
 
   // GeometryInfo needs Arrays
-  private Point3f[] coordArray = null;
+  private List<Point3D> coordArray = new ArrayList<>();
   private Vector3f[] normArray = null;
 
   // Needed because TRIANGLE_STRIP_ARRAY
@@ -89,13 +89,24 @@ public class StlFile implements Loader
   private int[] stripCounts = null;
 
   // Default = Not available
-  private String objectName="Not available";
+  private String objectName = "Not available";
 
-  /**
-  *  Constructor
-  */
-  public StlFile()
+  public static void main(String[] args)
   {
+        StlFile file = new StlFile();
+        String filename = "/Users/xuyi/Pictures/edf/files/edf120.stl";
+        try {
+            Reader reader = new BufferedReader(new FileReader(filename));
+            file.setBasePathFromFilename(filename);
+            file.setFileName(filename);
+            StlFileParser st = new StlFileParser(reader);
+
+            // Initialize data
+            file.setAscii(true);      // Default ascii
+            file.readFile(st);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(StlFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
   }
 
   /**
@@ -106,13 +117,13 @@ public class StlFile implements Loader
    */
   private void readEOL(StlFileParser parser)
   {
-	  do {
-		  try {
-			  parser.nextToken();
-		  } catch (IOException e) {
-			  System.err.println("IO Error on line " + parser.lineno() + ": " + e.getMessage());
-		  }
-	  } while (parser.ttype != StlFileParser.TT_EOL);
+	do {
+            try {
+                parser.nextToken();
+            } catch (IOException e) {
+                System.err.println("IO Error on line " + parser.lineno() + ": " + e.getMessage());
+            }
+	} while (parser.ttype != StlFileParser.TT_EOL);
   }
 
   /**
@@ -128,9 +139,9 @@ public class StlFile implements Loader
   {
 	if(parser.sval == null)
 	{
-		// Added by AB
-		this.setAscii(false);
-		return;
+            // Added by AB
+            this.setAscii(false);
+            return;
 	}
     if( !parser.sval.equals("solid"))
     {
@@ -181,13 +192,13 @@ public class StlFile implements Loader
   {
     Vector3f v = new Vector3f();
 
-    if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("normal")))
+    if(!(parser.ttype == StlFileParser.TT_WORD && parser.sval.equals("normal")))
     {
       System.err.println("Format Error:expecting 'normal' on line " + parser.lineno());
     } else {
       if (parser.getNumber())
       {
-        v.x=(float)parser.nval;
+        v.x = (float)parser.nval;
 
         if(DEBUG)
         {
@@ -197,13 +208,13 @@ public class StlFile implements Loader
 
         if (parser.getNumber())
         {
-          v.y=(float)parser.nval;
+          v.y = (float)parser.nval;
           if(DEBUG)
             System.out.print("Y=" + v.y + " ");
 
 	  if (parser.getNumber())
           {
-            v.z=(float)parser.nval;
+            v.z = (float)parser.nval;
             if(DEBUG)
               System.out.println("Z=" + v.z);
 
@@ -226,7 +237,7 @@ public class StlFile implements Loader
    */
   private void readVertex(StlFileParser parser)
   {
-    Point3f p = new Point3f();
+    float x, y, z;
 
     if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("vertex")))
     {
@@ -234,40 +245,40 @@ public class StlFile implements Loader
     } else {
       if (parser.getNumber())
       {
-        p.x=(float)parser.nval;
+        x = (float)parser.nval;
 
         if(DEBUG)
         {
           System.out.println("Vertex:");
-          System.out.print("X=" + p.x + " ");
+          System.out.print("X=" + x + " ");
         }
 
         if (parser.getNumber())
         {
-          p.y=(float)parser.nval;
+          y = (float)parser.nval;
           if(DEBUG)
-            System.out.print("Y=" + p.y + " ");
+            System.out.print("Y=" + y + " ");
 
 	  if (parser.getNumber())
           {
-	    p.z=(float)parser.nval;
+	    z = (float)parser.nval;
             if(DEBUG)
-              System.out.println("Z=" + p.z);
+              System.out.println("Z=" + z);
 
             // We add that vertex to the array of vertex
-            coordList.add(p);
+            coordList.add(new Point3D(x, y, z));
             readEOL(parser);
 	  } else {
               System.err.println("Format Error: expecting coordinate on line " + parser.lineno());
           }
         } else {
-          System.err.println("Format Error: expecting coordinate on line " + parser.lineno());
-      }
+            System.err.println("Format Error: expecting coordinate on line " + parser.lineno());
+        }
       } else {
-              System.err.println("Format Error: expecting coordinate on line " + parser.lineno());
-              }
+            System.err.println("Format Error: expecting coordinate on line " + parser.lineno());
+        }
     }
-  }//End of read vertex
+}//End of read vertex
 
   /**
    * Method that reads "outer loop" and then EOL
@@ -276,21 +287,21 @@ public class StlFile implements Loader
    */
   private void readLoop(StlFileParser parser)
   {
-    if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("outer")))
+    if(!(parser.ttype == StlFileParser.TT_WORD && parser.sval.equals("outer")))
     {
       System.err.println("Format Error:expecting 'outer' on line " + parser.lineno());
     } else {
-      try{
-          parser.nextToken();
-          } catch (IOException e) {
-        System.err.println("IO error on line " + parser.lineno() + ": " + e.getMessage());
-      }
-      if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("loop")))
-      {
-        System.err.println("Format Error:expecting 'loop' on line " + parser.lineno());
-      } else {
-          readEOL(parser);
-      }
+        try{
+            parser.nextToken();
+        } catch (IOException e) {
+            System.err.println("IO error on line " + parser.lineno() + ": " + e.getMessage());
+        }
+        if(!(parser.ttype == StlFileParser.TT_WORD && parser.sval.equals("loop")))
+        {
+            System.err.println("Format Error:expecting 'loop' on line " + parser.lineno());
+        } else {
+            readEOL(parser);
+        }
     }
   }//End of readLoop
 
@@ -301,9 +312,9 @@ public class StlFile implements Loader
    */
   private void readEndLoop(StlFileParser parser)
   {
-    if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("endloop")))
+    if(!(parser.ttype == StlFileParser.TT_WORD && parser.sval.equals("endloop")))
     {
-      System.err.println("Format Error:expecting 'endloop' on line " + parser.lineno());
+        System.err.println("Format Error:expecting 'endloop' on line " + parser.lineno());
     } else {
         readEOL(parser);
     }
@@ -316,9 +327,9 @@ public class StlFile implements Loader
    */
   private void readEndFacet(StlFileParser parser)
   {
-    if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("endfacet")))
+    if(!(parser.ttype == StlFileParser.TT_WORD && parser.sval.equals("endfacet")))
     {
-      System.err.println("Format Error:expecting 'endfacet' on line " + parser.lineno());
+        System.err.println("Format Error:expecting 'endfacet' on line " + parser.lineno());
     } else {
         readEOL(parser);
     }
@@ -332,7 +343,7 @@ public class StlFile implements Loader
    */
   private void readFacet(StlFileParser parser)
   {
-    if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("facet")))
+    if(!(parser.ttype == StlFileParser.TT_WORD && parser.sval.equals("facet")))
     {
       System.err.println("Format Error:expecting 'facet' on line " + parser.lineno());
     } else {
@@ -378,46 +389,42 @@ public class StlFile implements Loader
   {
     //File structure: Normal Vertex1 Vertex2 Vertex3
     Vector3f normal = new Vector3f();
-    Point3f vertex = new Point3f();
 
     if(DEBUG)
       System.out.println("Reading face number " + index);
 
     // Read the Normal
-    normArray[index]=new Vector3f();
-    normArray[index].x=in.getFloat();
-    normArray[index].y=in.getFloat();
-    normArray[index].z=in.getFloat();
+    normArray[index] = new Vector3f();
+    normArray[index].x = in.getFloat();
+    normArray[index].y = in.getFloat();
+    normArray[index].z = in.getFloat();
 
     if(DEBUG)
       System.out.println("Normal: X=" + normArray[index].x + " Y=" + normArray[index].y + " Z=" + normArray[index].z);
 
     // Read vertex1
-    coordArray[index*3] = new Point3f();
-    coordArray[index*3].x=in.getFloat();
-    coordArray[index*3].y=in.getFloat();
-    coordArray[index*3].z=in.getFloat();
+    coordArray.add(new Point3D(in.getFloat(), in.getFloat(), in.getFloat()));
 
     if(DEBUG)
-      System.out.println("Vertex 1: X=" + coordArray[index*3].x + " Y=" + coordArray[index*3].y + " Z=" + coordArray[index*3].z);
+      System.out.println("Vertex 1: X=" + coordArray.get(index * 3).getX() + 
+              " Y=" + coordArray.get(index * 3).getY() + 
+              " Z=" + coordArray.get(index * 3).getZ());
 
     // Read vertex2
-    coordArray[index*3+1] = new Point3f();
-    coordArray[index*3+1].x=in.getFloat();
-    coordArray[index*3+1].y=in.getFloat();
-    coordArray[index*3+1].z=in.getFloat();
+    coordArray.add(new Point3D(in.getFloat(), in.getFloat(), in.getFloat()));
 
     if(DEBUG)
-      System.out.println("Vertex 2: X=" + coordArray[index*3+1].x + " Y=" + coordArray[index*3+1].y + " Z=" + coordArray[index*3+1].z);
+      System.out.println("Vertex 2: X=" + coordArray.get(index * 3 + 1).getX() + 
+              " Y=" + coordArray.get(index * 3 + 1).getY() + 
+              " Z=" + coordArray.get(index * 3 + 1).getZ());
 
     // Read vertex3
-    coordArray[index*3+2] = new Point3f();
-    coordArray[index*3+2].x=in.getFloat();
-    coordArray[index*3+2].y=in.getFloat();
-    coordArray[index*3+2].z=in.getFloat();
+    coordArray.add(new Point3D(in.getFloat(), in.getFloat(), in.getFloat()));
 
     if(DEBUG)
-      System.out.println("Vertex 3: X=" + coordArray[index*3+2].x + " Y=" + coordArray[index*3+2].y + " Z=" + coordArray[index*3+2].z);
+      System.out.println("Vertex 3: X=" + coordArray.get(index * 3 + 2).getX() + 
+              " Y=" + coordArray.get(index * 3 + 2).getY() + 
+              " Z=" + coordArray.get(index * 3 + 2).getZ());
 
   }// End of readFacetB
 
@@ -440,8 +447,8 @@ public class StlFile implements Loader
   {
     FileInputStream data;                 // For reading the file
     ByteBuffer dataBuffer;                // For reading in the correct endian
-    byte[] Info=new byte[80];             // Header data
-    byte[] Array_number= new byte[4];     // Holds the number of faces
+    byte[] Info = new byte[80];           // Header data
+    byte[] Array_number = new byte[4];    // Holds the number of faces
     byte[] Temp_Info;                     // Intermediate array
 
     int Number_faces; // First info (after the header) on the file
@@ -461,7 +468,7 @@ public class StlFile implements Loader
       if(80 != data.read(Info))
       { // File is incorrect
         //System.out.println("Format Error: 80 bytes expected");
-        throw new IncorrectFormatException();
+        //throw new IncorrectFormatException();
       } else { // We must first read the number of faces -> 4 bytes int
         // It depends on the endian so..
 
@@ -470,7 +477,7 @@ public class StlFile implements Loader
         dataBuffer.order(ByteOrder.nativeOrder());    // Set the right order
         Number_faces = dataBuffer.getInt();
 
-        Temp_Info = new byte[50*Number_faces];        // Each face has 50 bytes of data
+        Temp_Info = new byte[50 * Number_faces];        // Each face has 50 bytes of data
 
         data.read(Temp_Info);                         // We get the rest of the file
 
@@ -481,7 +488,7 @@ public class StlFile implements Loader
           System.out.println("Number of faces= " + Number_faces);
 
         // We can create that array directly as we know how big it's going to be
-        coordArray = new Point3f[Number_faces*3]; // Each face has 3 vertex
+        //coordArray = new Point3D[Number_faces * 3]; // Each face has 3 vertex
         normArray = new Vector3f[Number_faces];
         stripCounts = new int[Number_faces];
 
@@ -501,7 +508,7 @@ public class StlFile implements Loader
           } catch (IOException e) {
             // Quitar
             System.out.println("Format Error: iteration number " + i);
-            throw new IncorrectFormatException();
+            //throw new IncorrectFormatException();
           }
         }//End for
       }// End file reading
@@ -524,10 +531,10 @@ public class StlFile implements Loader
   {
     try{
         parser.nextToken();
-        } catch (IOException e) {
-      System.err.println("IO Error on line " + parser.lineno() + ": " + e.getMessage());
-      System.err.println("File seems to be empty");
-      return;         // ????? Throw ?????
+    } catch (IOException e) {
+        System.err.println("IO Error on line " + parser.lineno() + ": " + e.getMessage());
+        System.err.println("File seems to be empty");
+        return;         // ????? Throw ?????
     }
 
     // Here we try to detect what kind of file it is (see readSolid)
@@ -537,9 +544,9 @@ public class StlFile implements Loader
     { // Ascii file
       try
       {
-          parser.nextToken();
+        parser.nextToken();
       } catch (IOException e) {
-       System.err.println("IO Error on line " + parser.lineno() + ": " + e.getMessage());
+        System.err.println("IO Error on line " + parser.lineno() + ": " + e.getMessage());
       }
 
       // Read all the facets of the object
@@ -557,15 +564,13 @@ public class StlFile implements Loader
       }// End while
 
       // Why are we out of the while?: EOF or endsolid
-      if(parser.ttype == StlFileParser.TT_EOF)
-       System.err.println("Format Error:expecting 'endsolid', line " + parser.lineno());
-      else
-      {
+      if(parser.ttype == StlFileParser.TT_EOF){
+        System.err.println("Format Error:expecting 'endsolid', line " + parser.lineno());
+      } else {
         if(DEBUG)
           System.out.println("File readed");
       }
     }//End of Ascii reading
-
     else
     { // Binary file
       try{
@@ -591,13 +596,8 @@ public class StlFile implements Loader
    * @return Scene The scene with the object loaded.
    *
    * @throws FileNotFoundException
-   * @throws IncorrectFormatException
-   * @throws ParsingErrorException
    */
-  @Override
-  public Scene load(String filename) throws FileNotFoundException,
-					    IncorrectFormatException,
-					    ParsingErrorException
+  public Scene load(String filename) throws FileNotFoundException
   {
     setBasePathFromFilename(filename);
     setFileName(filename);     // For binary files
@@ -618,13 +618,8 @@ public class StlFile implements Loader
    * @return Scene The scene with the object loaded.
    *
    * @throws FileNotFoundException
-   * @throws IncorrectFormatException
-   * @throws ParsingErrorException
    */
-  @Override
-  public Scene load(URL url) throws FileNotFoundException,
-				    IncorrectFormatException,
-				    ParsingErrorException
+  public Scene load(URL url) throws FileNotFoundException
   {
     BufferedReader reader;
 
@@ -632,8 +627,7 @@ public class StlFile implements Loader
 
     try {
       reader = new BufferedReader(new InputStreamReader(url.openStream()));
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new FileNotFoundException();
     }
     fromUrl = true;
@@ -652,23 +646,18 @@ public class StlFile implements Loader
    * @return Scene The scene with the object loaded.
    *
    * @throws FileNotFoundException
-   * @throws IncorrectFormatException
-   * @throws ParsingErrorException
    */
-  @Override
-  public Scene load(Reader reader) throws FileNotFoundException,
-                                          IncorrectFormatException,
-                                          ParsingErrorException
+  public Scene load(Reader reader) throws FileNotFoundException
   {
     // That method calls the method that loads the file for real..
     // Even if the Stl format is not complicated I've decided to use
     // a parser as in the Obj's loader included in Java3D
 
-    StlFileParser st=new StlFileParser(reader);
+    StlFileParser st = new StlFileParser(reader);
 
     // Initialize data
-    coordList = new ArrayList();
-    normList = new ArrayList();
+    //coordList = new ArrayList();
+    //normList = new ArrayList();
     setAscii(true);      // Default ascii
 
     readFile(st);
@@ -684,12 +673,12 @@ public class StlFile implements Loader
    *
    * @return Point3f[] The result.
    */
-  private Point3f[] objectToPoint3Array(ArrayList inList)
+  private Point3D[] objectToPoint3Array(ArrayList inList)
   {
-    Point3f outList[] = new Point3f[inList.size()];
+    Point3D outList[] = new Point3D[inList.size()];
 
     for (int i = 0 ; i < inList.size() ; i++) {
-      outList[i] = (Point3f)inList.get(i);
+      outList[i] = (Point3D)inList.get(i);
     }
     return outList;
   } // End of objectToPoint3Array
@@ -729,15 +718,45 @@ public class StlFile implements Loader
    *
    * @return SceneBase The scene
    */
-  private SceneBase makeScene()
+  private Scene makeScene()
   {
-    // Create Scene to pass back
-    SceneBase scene = new SceneBase();
-    BranchGroup group = new BranchGroup();
-    scene.setSceneGroup(group);
-
+        // Create Scene to pass back
+        Group group = new Group();
+        float[] points = {
+            50, 0, 0,  // v0 (iv0 = 0)
+            45, 10, 0, // v1 (iv1 = 1)
+            55, 10, 0  // v2 (iv2 = 2)
+        };
+        float[] texCoords = {0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f};
+        int[] faces = {0, 0, 2, 2, 1, 1, 0, 0, 1, 1, 2, 2};
+        int i = 0;
+        for(Point3D p:coordArray){
+            /*Sphere ball = new Sphere(0.5);
+            ball.translateXProperty().set(p.getX());
+            ball.translateYProperty().set(p.getY());
+            ball.translateZProperty().set(p.getZ());
+            group.getChildren().add(ball);*/
+            points[i * 3] = (float)p.getX();
+            points[i * 3 + 1] = (float)p.getY();
+            points[i * 3 + 2] = (float)p.getZ();
+            i++;
+            if(i == 3){
+                i = 0;
+                TriangleMesh mesh = new TriangleMesh();
+                mesh.getPoints().addAll(points);
+                mesh.getTexCoords().addAll(texCoords);
+                mesh.getFaces().addAll(faces);
+                MeshView meshView = new MeshView();
+                meshView.setMesh(mesh);
+                group.getChildren().add(meshView);
+            }
+        }
+        
+        Scene scene = new Scene(group, 800, 600, true, SceneAntialiasing.BALANCED);
+        scene.setFill(Color.GREEN);
+        
     // Store the scene info on a GeometryInfo
-    GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_STRIP_ARRAY);
+    /*GeometryInfo gi = new GeometryInfo(GeometryInfo.TRIANGLE_STRIP_ARRAY);
 
     // Convert ArrayLists to arrays: only needed if file was not binary
     if(this.Ascii)
@@ -745,7 +764,6 @@ public class StlFile implements Loader
       coordArray = objectToPoint3Array(coordList);
       normArray = objectToVectorArray(normList);
     }
-    
 
     gi.setCoordinates(coordArray);
     gi.setStripCounts(stripCounts); 
@@ -756,17 +774,15 @@ public class StlFile implements Loader
     Shape3D shape = new Shape3D();
     shape.setGeometry(gi.getGeometryArray());
     
-    group.addChild(shape);
+    group.getChildren().add(shape);
     
-    
-    scene.addNamedObject(objectName, shape);
+    scene.addNamedObject(objectName, shape);*/
     
     return scene;
   } // end of makeScene
 
   /////////////////////// Accessors and Modifiers ///////////////////////////
 
-  @Override
   public URL getBaseUrl()
   {
     return baseUrl;
@@ -777,7 +793,6 @@ public class StlFile implements Loader
    *
    * @param url The new url
    */
-  @Override
   public void setBaseUrl(URL url)
   {
     baseUrl = url;
@@ -802,7 +817,6 @@ public class StlFile implements Loader
   } // End of setBaseUrlFromUrl
 
 
-  @Override
   public String getBasePath()
   {
     return basePath;
@@ -816,7 +830,6 @@ public class StlFile implements Loader
    *
    * @param pathName The new Path to the file
    */
-  @Override
   public void setBasePath(String pathName)
   {
     basePath = pathName;
@@ -854,13 +867,11 @@ public class StlFile implements Loader
     setBasePath(sb.toString());
   } // End of setBasePathFromFilename
 
-  @Override
   public int getFlags()
   {
     return flag;
   }
 
-  @Override
   public void setFlags(int parm)
   {
     this.flag=parm;

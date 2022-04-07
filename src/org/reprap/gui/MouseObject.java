@@ -56,26 +56,19 @@ This version: 14 April 2006
 
 package org.reprap.gui;
 
-import org.jogamp.java3d.Bounds;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.Group;
-import org.jogamp.java3d.Transform3D;
-import org.jogamp.java3d.TransformGroup;
-
+import javafx.scene.Group;
+import javafx.scene.transform.Transform;
 import org.reprap.geometry.polyhedra.STLObject;
 
-import org.jogamp.java3d.utils.behaviors.mouse.MouseRotate;
-import org.jogamp.java3d.utils.behaviors.mouse.MouseZoom;
-import org.jogamp.java3d.utils.behaviors.mouse.MouseTranslate;
 
 //************************************************************************
 
 public class MouseObject
 {
-    private BranchGroup top = null;        // Attach this to the rest of the tree
-    private TransformGroup free = null;    // Mouse transform with no restrictions
-    private TransformGroup slide = null;   // Mouse transform that only does XY sliding
-    private TransformGroup trans = null;   // Set to one of the two above   
+    private Group top = null;        // Attach this to the rest of the tree
+    private Group free = null;    // Mouse transform with no restrictions
+    private Group slide = null;   // Mouse transform that only does XY sliding
+    private Group trans = null;   // Set to one of the two above   
     private STLObject movingThing = null;  // The part of the scene being moved
     
     // Constructor takes the bounds of the world and two factors for translate
@@ -85,9 +78,9 @@ public class MouseObject
     {
         // Set up the free transform that allows all movements
         
-        free = new TransformGroup( );
-        free.setCapability( TransformGroup.ALLOW_TRANSFORM_READ );
-        free.setCapability( TransformGroup.ALLOW_TRANSFORM_WRITE );
+        free = new Group( );
+        free.setCapability( Group.ALLOW_TRANSFORM_READ );
+        free.setCapability( Group.ALLOW_TRANSFORM_WRITE );
         
         MouseRotate mr = new MouseRotate( free );
         mr.setSchedulingBounds( behaviorBounds );
@@ -105,7 +98,7 @@ public class MouseObject
         
         // Set up the slide transform that only allows XY movement
         
-        slide = new TransformGroup( );
+        slide = new Group( );
         slide.setCapability( TransformGroup.ALLOW_TRANSFORM_READ );
         slide.setCapability( TransformGroup.ALLOW_TRANSFORM_WRITE );
         
@@ -116,7 +109,7 @@ public class MouseObject
         
         // Set up the thing to attach and detach
         
-        top = new BranchGroup();
+        top = new Group();
         
         // We aren't attached to anything yet
         
@@ -124,7 +117,7 @@ public class MouseObject
         
         // ALLOW_EVERYTHING would be useful...
         
-        top.setCapability(BranchGroup.ALLOW_DETACH);
+        top.setCapability(Group.ALLOW_DETACH);
         top.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         top.setCapability(Group.ALLOW_CHILDREN_WRITE); 
         
@@ -149,7 +142,7 @@ public class MouseObject
     
     public void move(STLObject stl, boolean slideOnly)
     {
-        Transform3D t3d = new Transform3D();
+        Transform t3d = new Transform3D();
         trans.getTransform(t3d);
         
         // Detach us from whatever we were stuck to
@@ -191,7 +184,7 @@ public class MouseObject
         
         // ...set that thing's static transform to the identity...
         
-        Transform3D identity = new Transform3D();
+        Transform identity = new Transform3D();
         movingThing.setTransform(identity);
         
         // ...and set the mouse transform to that of the thing being moved.
@@ -214,9 +207,9 @@ public class MouseObject
     
     // Allow others to apply a transform to what we're controlling
     
-    public void mul(Transform3D t3d)
+    public void mul(Transform t3d)
     {
-        Transform3D current = new Transform3D();
+        Transform current = new Transform3D();
         trans.getTransform(current);
         current.mul(t3d);
         trans.setTransform(current);
@@ -224,11 +217,11 @@ public class MouseObject
     
     // Get and set our transform
     
-    public void getTransform(Transform3D t3d)
+    public void getTransform(Transform t3d)
     {
         trans.getTransform(t3d);
     }
-    public void setTransform(Transform3D t3d)
+    public void setTransform(Transform t3d)
     {
         trans.setTransform(t3d);
     }

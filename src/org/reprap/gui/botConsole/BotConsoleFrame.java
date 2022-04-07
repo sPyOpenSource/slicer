@@ -25,7 +25,7 @@ import javax.swing.JOptionPane;
  * 
  */
 public class BotConsoleFrame extends javax.swing.JFrame {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private Thread pollThread = null;
     boolean updatePosition = false;
@@ -36,7 +36,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     int outOf = -1;
     private static BotConsoleFrame bcf = null;
     private static int exPanelNumber;
-    PrintTabFrame printTabFrame = new PrintTabFrame(false);
+    PrintTabFrame printTabFrame = new PrintTabFrame();
     
     /** Creates new form BotConsoleFrame */
     public BotConsoleFrame()
@@ -61,24 +61,23 @@ public class BotConsoleFrame extends javax.swing.JFrame {
         exPanelNumber = 0;
         pollThread = new Thread() 
         {
-                @Override
-        	public void run()
-        	{
-        		Thread.currentThread().setName("GUI Poll");
-        		while(true)
-        		{
-        			try 
-        			{
-        				Thread.sleep(1500);
-        				updateProgress();
-        				if(carryOnPolling)
-        					updatePanels();   
-        			} catch (InterruptedException ex) 
-        			{
-        				// This is normal when shutting down, so ignore		
-        			}
-        		}
-        	}
+            @Override
+            public void run()
+            {
+                Thread.currentThread().setName("GUI Poll");
+                while(true)
+                {
+                    try 
+                    {
+                        Thread.sleep(1500);
+                        updateProgress();
+                        if(carryOnPolling)
+                            updatePanels();   
+                    } catch (InterruptedException ex) {
+                        // This is normal when shutting down, so ignore		
+                    }
+                }
+            }
         };
 
         pollThread.start(); 
@@ -99,20 +98,21 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     	int currentExtruder = org.reprap.Main.gui.getPrinter().getExtruder().getID();
     	
     	try {
-			org.reprap.Main.gui.getPrinter().selectExtruder(exPanelNumber, true, false, null);
-		} catch (Exception e) {
-			handleException(e);
-		}
+            org.reprap.Main.gui.getPrinter().selectExtruder(exPanelNumber, true, false, null);
+        } catch (Exception e) {
+            handleException(e);
+        }
     	try {
-			org.reprap.Main.gui.getPrinter().selectExtruder(currentExtruder, true, false, null);
-		} catch (Exception e) {
-			handleException(e);
-		}
+            org.reprap.Main.gui.getPrinter().selectExtruder(currentExtruder, true, false, null);
+        } catch (Exception e) {
+            handleException(e);
+        }
     	
     	exPanelNumber++;
 
-    	if(updatePosition)
-    		xYZTabPanel.recordCurrentPosition();
+    	if(updatePosition){
+            xYZTabPanel.recordCurrentPosition();
+        }
     	updatePosition = false;
     }
     
@@ -133,12 +133,14 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     
     public void setFractionDone(double f, int l, int o)
     {
-    	if(f >= 0)
-    		fractionDone = f;
-    	if(l >= 0)
-    		layer = l;
+    	if(f >= 0){
+            fractionDone = f;
+        }
+    	if(l >= 0){
+            layer = l;
+        }
     	if(o >= 0)
-    		outOf = o;
+            outOf = o;
     }
 
     /**
@@ -151,22 +153,22 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     {
     	carryOnPolling = false;
     	try 
-		{
-			Thread.sleep(200); 
-		} catch (InterruptedException ex) 
-		{
-			// This is normal when shutting down, so ignore		
-		}
+        {
+            Thread.sleep(200); 
+        } catch (InterruptedException ex) 
+        {
+            // This is normal when shutting down, so ignore		
+        }
     }
     public void resumePolling()
     {
     	try 
-		{
-			Thread.sleep(200); 
-		} catch (InterruptedException ex) 
-		{
-			// This is normal when shutting down, so ignore		
-		}
+        {
+            Thread.sleep(200); 
+        } catch (InterruptedException ex) 
+        {
+            // This is normal when shutting down, so ignore		
+        }
     	carryOnPolling = true;
     }
  
@@ -204,19 +206,19 @@ public class BotConsoleFrame extends javax.swing.JFrame {
 
         addExtruderPanels();
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 750, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 400, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -256,8 +258,9 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     
     public static GenericExtruderTabPanel getGenericExtruderTabPanel(int i)
     {
-    	if(i >= 0 && i < bcf.extruderPanels.length)
-    		return bcf.extruderPanels[i];
+    	if(i >= 0 && i < bcf.extruderPanels.length){
+            return bcf.extruderPanels[i];
+        }
     	Debug.e("getGenericExtruderTabPanel - extruder out of range: " + i);
     	return bcf.extruderPanels[0];
     }

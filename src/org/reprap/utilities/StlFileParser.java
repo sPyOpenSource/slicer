@@ -82,12 +82,12 @@ public class StlFileParser extends StreamTokenizer
     try {
         nextToken();
 	if (ttype != TT_WORD){
-	  throw new IOException("Expected number on line " + lineno());
+	    throw new IOException("Expected number on line " + lineno());
         }
 	nval =  (Double.valueOf(sval));
     } catch (IOException | NumberFormatException e) {
-      System.err.println(e.getMessage());
-      return false;
+        System.err.println(e.getMessage());
+        return false;
     }
     return true;
   } // end of getNumber

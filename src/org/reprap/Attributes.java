@@ -1,8 +1,7 @@
 package org.reprap;
 
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.BranchGroup;
-
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import org.reprap.devices.GenericExtruder;
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
@@ -30,12 +29,12 @@ public class Attributes {
 	/**
 	 * Where this is in the STLObject of which it is a part
 	 */
-	private BranchGroup part;
+	private Group part;
 	
 	/**
 	 * The appearance (colour) in the loading and simulation windows
 	 */
-	private Appearance app;
+	private Scene app;
 	
 	/**
 	 * The extruder corresponsing to this material.  This is lazily evaluated
@@ -51,7 +50,7 @@ public class Attributes {
 	 * @param b Where in p
 	 * @param a what it looks like
 	 */
-	public Attributes(String s, STLObject p, BranchGroup b, Appearance a)
+	public Attributes(String s, STLObject p, Group b, Scene a)
 	{
 		material = s;
 		parent = p;
@@ -85,12 +84,12 @@ public class Attributes {
 	/**
 	 * @return the bit of the STLObject that this is
 	 */
-	public BranchGroup getPart() { return part; }
+	public Group getPart() { return part; }
 	
 	/**
 	 * @return what colour am I?
 	 */
-	public Appearance getAppearance() { return app; }
+	public Scene getAppearance() { return app; }
 	
 	/**
 	 * Find my extruder in the list (if not known) or just
@@ -140,11 +139,11 @@ public class Attributes {
 	 * To be used in conjunction with changing the parent
 	 * @param b
 	 */
-	public void setPart(BranchGroup b) { part = b; }
+	public void setPart(Group b) { part = b; }
 	
 	/**
 	 * New colour
 	 * @param a
 	 */
-	public void setAppearance(Appearance a) { app = a; }
+	public void setAppearance(Scene a) { app = a; }
 }

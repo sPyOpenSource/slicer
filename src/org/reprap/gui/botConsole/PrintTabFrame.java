@@ -7,31 +7,28 @@
 package org.reprap.gui.botConsole;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.swing.JOptionPane;
 
 import org.reprap.Extruder;
-import org.reprap.Main;
 import org.reprap.Printer;
+import org.reprap.machines.GCodeRepRap;
 import org.reprap.pcb.PCB;
 
 /**
  *
  * @author  ensab
  */
-public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
+public class PrintTabFrame extends javax.swing.JFrame {
     private static final long serialVersionUID = 1L;
     private BotConsoleFrame parentBotConsoleFrame = null;
-    private final Printer printer;
+    private Printer printer = null;
     private final boolean paused = false;
     private final boolean seenSNAP = false;
     private boolean seenGCode = false;
@@ -44,26 +41,31 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     private boolean slicing = false;
     private final boolean sdCard = false;
     private Thread printerFilePlay;
-    
+
     /** Creates new form PrintTabFrame
-     * @param pref */
-    public PrintTabFrame(boolean pref) {
+     *
+     */
+    public PrintTabFrame() {
         initComponents();
     	String machine = "simulator";
-    	
+
     	machine = org.reprap.Preferences.RepRapMachine();
 
     	seenGCode = true;
     	printerFilePlay = null;
 
-    	printer = org.reprap.Main.gui.getPrinter();
+        try {
+            printer = new GCodeRepRap();//org.reprap.Main.gui.getPrinter();
+        } catch (Exception ex) {
+            Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     	enableSLoad();
     }
-    
+
     /**
      * Keep the user amused.If fractionDone is negative, the function
- queries the layer statistics.If it is 0 or positive, the function uses
- it.
+     * queries the layer statistics.If it is 0 or positive, the function uses
+     * it.
      * @param fractionDone
      * @param layer
      * @param layers
@@ -73,12 +75,12 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     	if(layer >= 0){
     		currentLayerOutOfN.setText("" + layer + "/" + layers);
         }
-    	
+
     	if(layers < 0)
     	{
     		layers = org.reprap.Main.gui.getLayers();
     	}
-    	
+
     	if(layer < 0)
     	{
     		layer = org.reprap.Main.gui.getLayer();
@@ -86,15 +88,14 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
         		currentLayerOutOfN.setText("" + layer + "/" + layers);
                 }
     	}
-    	
+
     	if(fractionDone < 0)
     	{
     		// Only bother if the layer has just changed
-
     		if(layer == oldLayer){
     			return;
                 }
-    		
+
     		boolean topDown = layer < oldLayer;
 
     		oldLayer = layer;
@@ -105,11 +106,11 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     			fractionDone = (double)layer/(double)layers;
                 }
     	}
- 
+
     	progressBar.setMinimum(0);
     	progressBar.setMaximum(100);
     	progressBar.setValue((int)(100*fractionDone));
-    	
+
     	GregorianCalendar cal = new GregorianCalendar();
     	SimpleDateFormat dateFormat = new SimpleDateFormat("EE HH:mm");
     	Date d = cal.getTime();
@@ -119,18 +120,18 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     		startTime = e;
     		return;
     	}
-    	
+
     	long f = (long)((double)(e - startTime)/fractionDone);
     	int h = (int)(f/60000)/60;
     	int m = (int)(f/60000)%60;
-    	
+
     	if(m > 9){
     		expectedBuildTime.setText("" + h + ":" + m);
         } else {
     		expectedBuildTime.setText("" + h + ":0" + m);
         }
     	expectedFinishTime.setText(dateFormat.format(new Date(startTime + f)));
-    	
+
     	if(printerFilePlay != null)
     	{
     		if(!printerFilePlay.isAlive()){
@@ -138,7 +139,7 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
                 }
     	}
     }
-    
+
     /**
      * So the BotConsoleFrame can let us know who it is
      * @param b
@@ -148,12 +149,6 @@ public class PrintTabFrame extends javax.swing.JInternalFrame {//AB99
     	parentBotConsoleFrame = b;
     }
 
-void pauseButtonActionPerformed(java.awt.event.ActionEvent evt){
-    
-}
-void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
-    
-}
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -163,10 +158,6 @@ void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        printButton = new java.awt.Button();
-        pauseButton = new java.awt.Button();
-        stopButton = new java.awt.Button();
-        exitButton = new java.awt.Button();
         layerPauseCheck = new javax.swing.JCheckBox();
         toSNAPRepRapRadioButton = new javax.swing.JRadioButton();
         expectedBuildTimeLabel = new javax.swing.JLabel();
@@ -177,48 +168,13 @@ void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
         progressLabel = new javax.swing.JLabel();
         currentLayerOutOfN = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
-        loadSTL = new java.awt.Button();
-        loadGCode = new java.awt.Button();
         gCodeToFileRadioButton = new javax.swing.JRadioButton();
-        loadRFO = new java.awt.Button();
         toGCodeRepRapRadioButton = new javax.swing.JRadioButton();
         fileNameBox = new javax.swing.JLabel();
-        preferencesButton = new java.awt.Button();
-        saveRFO = new java.awt.Button();
         displayPathsCheck = new javax.swing.JCheckBox();
-
-        printButton.setBackground(new java.awt.Color(51, 204, 0));
-        printButton.setFont(printButton.getFont());
-        printButton.setLabel("Print"); // NOI18N
-        printButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                printButtonActionPerformed(evt);
-            }
-        });
-
-        pauseButton.setBackground(new java.awt.Color(255, 204, 0));
-        pauseButton.setLabel("Pause"); // NOI18N
-        pauseButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pauseButtonActionPerformed(evt);
-            }
-        });
-
-        stopButton.setBackground(new java.awt.Color(255, 0, 0));
-        stopButton.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        stopButton.setLabel("STOP !"); // NOI18N
-        stopButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopButtonActionPerformed(evt);
-            }
-        });
-
-        exitButton.setLabel("Exit");
-        exitButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButtonActionPerformed(evt);
-            }
-        });
+        loadSTL = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         layerPauseCheck.setText("Pause at end of layer"); // NOI18N
         layerPauseCheck.addActionListener(new java.awt.event.ActionListener() {
@@ -257,38 +213,11 @@ void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
         currentLayerOutOfN.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         currentLayerOutOfN.setText("000/000"); // NOI18N
 
-        loadSTL.setActionCommand("loadSTL");
-        loadSTL.setBackground(new java.awt.Color(0, 204, 255));
-        loadSTL.setLabel("Load STL"); // NOI18N
-        loadSTL.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadSTL(evt);
-            }
-        });
-
-        loadGCode.setActionCommand("loadGCode");
-        loadGCode.setBackground(new java.awt.Color(0, 204, 255));
-        loadGCode.setLabel("Load GCode"); // NOI18N
-        loadGCode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                LoadGCode(evt);
-            }
-        });
-
         buttonGroup1.add(gCodeToFileRadioButton);
         gCodeToFileRadioButton.setText("Send GCodes to file");
         gCodeToFileRadioButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 selectorRadioButtonMousePressed(evt);
-            }
-        });
-
-        loadRFO.setActionCommand("loadRFO");
-        loadRFO.setBackground(new java.awt.Color(153, 153, 153));
-        loadRFO.setLabel("Load RFO"); // NOI18N
-        loadRFO.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadRFO(evt);
             }
         });
 
@@ -303,24 +232,6 @@ void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
         fileNameBox.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         fileNameBox.setText(" - ");
 
-        preferencesButton.setActionCommand("preferences");
-        preferencesButton.setBackground(new java.awt.Color(255, 102, 255));
-        preferencesButton.setLabel("Preferences"); // NOI18N
-        preferencesButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                preferences(evt);
-            }
-        });
-
-        saveRFO.setActionCommand("saveRFO");
-        saveRFO.setBackground(new java.awt.Color(153, 153, 153));
-        saveRFO.setLabel("Save RFO"); // NOI18N
-        saveRFO.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveRFO(evt);
-            }
-        });
-
         displayPathsCheck.setText("Display paths");
         displayPathsCheck.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -328,117 +239,116 @@ void stopButtonActionPerformed(java.awt.event.ActionEvent evt){
             }
         });
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        loadSTL.setActionCommand("loadSTL");
+        loadSTL.setLabel("Load STL");
+        loadSTL.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadSTL(evt);
+            }
+        });
+
+        jButton2.setText("Load GCode");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Print");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(saveRFO, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 100, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(loadGCode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 100, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                .add(loadRFO, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 100, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(loadSTL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 100, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(toSNAPRepRapRadioButton)
-                            .add(toGCodeRepRapRadioButton)
-                            .add(gCodeToFileRadioButton)
-                            .add(layerPauseCheck)
-                            .add(displayPathsCheck))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, preferencesButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(layout.createSequentialGroup()
-                                .add(printButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(pauseButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 78, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(stopButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 75, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(exitButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 62, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                    .add(layout.createSequentialGroup()
-                        .add(expectedFinishTimeLabel)
-                        .add(7, 7, 7)
-                        .add(expectedFinishTime))
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(expectedBuildTimeLabel)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(expectedBuildTime))
-                            .add(layout.createSequentialGroup()
-                                .add(progressLabel)
-                                .add(7, 7, 7)
-                                .add(currentLayerOutOfN)))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(layout.createSequentialGroup()
-                                .add(hoursMinutesLabel1)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(fileNameBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 394, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(0, 0, Short.MAX_VALUE))
-                            .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(expectedBuildTimeLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(expectedBuildTime))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(progressLabel)
+                                .addGap(7, 7, 7)
+                                .addComponent(currentLayerOutOfN)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(hoursMinutesLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fileNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButton2)
+                                    .addComponent(jButton3)
+                                    .addComponent(loadSTL))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(toSNAPRepRapRadioButton)
+                                    .addComponent(toGCodeRepRapRadioButton)
+                                    .addComponent(gCodeToFileRadioButton))
+                                .addGap(64, 64, 64)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(layerPauseCheck)
+                                    .addComponent(displayPathsCheck)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(expectedFinishTimeLabel)
+                                .addGap(7, 7, 7)
+                                .addComponent(expectedFinishTime)))
+                        .addGap(0, 132, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(loadSTL, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 41, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(loadGCode, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 41, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(layout.createSequentialGroup()
-                        .add(toSNAPRepRapRadioButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(toGCodeRepRapRadioButton)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(gCodeToFileRadioButton))
-                    .add(preferencesButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 45, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(layerPauseCheck)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(displayPathsCheck))
-                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(pauseButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(printButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(stopButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(exitButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 39, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(layout.createSequentialGroup()
-                            .add(loadRFO, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 41, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                            .add(saveRFO, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 41, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(expectedBuildTimeLabel)
-                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                        .add(expectedBuildTime)
-                        .add(hoursMinutesLabel1)
-                        .add(fileNameBox)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(expectedFinishTimeLabel)
-                    .add(expectedFinishTime))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                        .add(progressLabel)
-                        .add(currentLayerOutOfN))
-                    .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(toSNAPRepRapRadioButton)
+                    .addComponent(loadSTL)
+                    .addComponent(layerPauseCheck))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(toGCodeRepRapRadioButton)
+                    .addComponent(jButton2)
+                    .addComponent(displayPathsCheck))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(gCodeToFileRadioButton)
+                    .addComponent(jButton3))
+                .addGap(118, 118, 118)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(expectedBuildTimeLabel)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(expectedBuildTime)
+                        .addComponent(hoursMinutesLabel1)
+                        .addComponent(fileNameBox)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(expectedFinishTimeLabel)
+                    .addComponent(expectedFinishTime))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(progressLabel)
+                        .addComponent(currentLayerOutOfN))
+                    .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
 public void printLive(boolean p)
 {
 	slicing = true;
@@ -453,7 +363,7 @@ private void restoreSliceButton()
 {
 	slicing = false;
 	//sliceButton.setText("Slice");
-	//sliceButton.setBackground(new java.awt.Color(51, 204, 0)); 
+	//sliceButton.setBackground(new java.awt.Color(51, 204, 0));
 	printerFilePlay = null;
 }
 
@@ -472,59 +382,6 @@ private boolean worthSaving()
 	return false;
 }
 
-private void printButtonActionPerformed(java.awt.event.ActionEvent evt) 
-{//GEN-FIRST:event_printButtonActionPerformed
-	if(slicing){
-		return;
-        }
-	
-	if(worthSaving())
-	{
-		int toDo = JOptionPane.showConfirmDialog(null, "First save the build as an RFO file?");
-		switch(toDo)
-		{
-		case JOptionPane.YES_OPTION:
-			saveRFO(null);
-			break;
-			
-		case JOptionPane.NO_OPTION:
-			break;
-			
-		case JOptionPane.CANCEL_OPTION:
-			return;
-		
-		default:
-			saveRFO(null);
-		}
-	}
-	
-	printLive(false);
-	
-	parentBotConsoleFrame.suspendPolling();
-    parentBotConsoleFrame.setFractionDone(-1, -1, -1);
-    org.reprap.Main.gui.mouseToWorld();
-    
-    	int sp = -1;
-    	if(loadedFiles != null){
-    		sp = loadedFiles.length();
-        }
-    	if(sp <= 0) {
-    		JOptionPane.showMessageDialog(null, "There are no STLs/RFOs loaded to slice to file.");
-    		restoreSliceButton();
-    		return;
-    	}
-    	sp = Math.max(loadedFiles.indexOf(".stl"), Math.max(loadedFiles.indexOf(".STL"), Math.max(loadedFiles.indexOf(".rfo"), loadedFiles.indexOf(".RFO"))));
-    	if(sp <= 0) {
-    		JOptionPane.showMessageDialog(null, "The loaded file is not an STL or an RFO file.");
-    	}
-    	printer.setTopDown(true);	
-    	if(printer.setGCodeFileForOutput(loadedFiles.substring(0, sp)) == null) {
-    		restoreSliceButton();
-    		return;
-    	}
-    	org.reprap.Main.gui.onProduceB();
-}//GEN-LAST:event_printButtonActionPerformed
-
 private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
 {
 	if(!SLoadOK){
@@ -535,7 +392,7 @@ private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
 	{
 		JOptionPane.showMessageDialog(null, "You have no PCB-pen among your extruders; see http://reprap.org/wiki/Plotting#Using_the_RepRap_Host_Software.");
 		return;
-	}	
+	}
 	parentBotConsoleFrame.suspendPolling();
 	File inputGerber = org.reprap.Main.gui.onOpen("PCB Gerber file", new String[] {"top", "bot"}, "");
 	if(inputGerber == null)
@@ -557,12 +414,9 @@ private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
 	if(sp > 0){
 		fileRoot = inputGerber.getAbsolutePath().substring(0, sp);
         }
-	drill = fileRoot+drill;
+	drill = fileRoot + drill;
 	File inputDrill = new File(drill);
-	if(inputDrill == null)
-	{
-		JOptionPane.showMessageDialog(null, "Drill file " + drill + " not found; drill centres will not be marked");
-	}
+	JOptionPane.showMessageDialog(null, "Drill file " + drill + " not found; drill centres will not be marked");
 	File outputGCode = org.reprap.Main.gui.onOpen("G-Code file for PCB printing", new String[] {"gcode"}, fileRoot);
 	if(outputGCode == null)
 	{
@@ -574,41 +428,9 @@ private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
 	parentBotConsoleFrame.resumePolling();
 }
 
-//private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
-//}//GEN-LAST:event_pauseButtonActionPerformed
-
-//private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
-//}//GEN-LAST:event_stopButtonActionPerformed
-
-private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) 
-{//GEN-FIRST:event_exitButtonActionPerformed
-	if(worthSaving())
-	{
-		int toDo = JOptionPane.showConfirmDialog(null, "First save the build as an RFO file?");
-		switch(toDo)
-		{
-		case JOptionPane.YES_OPTION:
-			saveRFO(null);
-			break;
-			
-		case JOptionPane.NO_OPTION:
-			break;
-			
-		case JOptionPane.CANCEL_OPTION:
-			return;
-		
-		default:
-			saveRFO(null);
-		}
-	}
-	Main.ftd.killThem();
-	printer.dispose();
-	System.exit(0);
-}//GEN-LAST:event_exitButtonActionPerformed
-
 private void layerPause(boolean p)
 {
-	org.reprap.Main.gui.setLayerPause(p);	
+	org.reprap.Main.gui.setLayerPause(p);
 }
 
 private void layerPauseCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_layerPauseCheckActionPerformed
@@ -616,7 +438,7 @@ org.reprap.Main.gui.setLayerPause(layerPauseCheck.isSelected());
 }//GEN-LAST:event_layerPauseCheckActionPerformed
 
 private void selectorRadioButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectorRadioButtonMousePressed
-	
+
 	@SuppressWarnings("unused")
 	String machine = "simulator";
 	boolean closeMessage = false;
@@ -637,8 +459,34 @@ private void selectorRadioButtonMousePressed(java.awt.event.MouseEvent evt) {//G
 }//GEN-LAST:event_selectorRadioButtonMousePressed
 
 
-private void loadSTL(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSTL
+private void saveSCAD(java.awt.event.ActionEvent evt) {
 	if(!SLoadOK){
+		return;
+        }
+	if(loadedFiles.contentEquals(""))
+	{
+		JOptionPane.showMessageDialog(null, "There's nothing to save...");
+		return;
+	}
+	int sp = Math.max(loadedFiles.indexOf(".stl"), Math.max(loadedFiles.indexOf(".STL"), Math.max(loadedFiles.indexOf(".rfo"), loadedFiles.indexOf(".RFO"))));
+	if(sp <= 0)
+   	{
+		JOptionPane.showMessageDialog(null, "The loaded file is not an STL or an RFO file.");
+	}
+	org.reprap.Main.gui.saveSCAD(loadedFiles.substring(0, sp));
+}
+
+private void displayPaths(boolean disp)
+{
+		org.reprap.Preferences.setSimulate(disp);
+}
+
+private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_displayPathsCheckMouseClicked
+	displayPaths(displayPathsCheck.isSelected());
+}//GEN-LAST:event_displayPathsCheckMouseClicked
+
+    private void loadSTL(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSTL
+        if(!SLoadOK){
 		return;
         }
 	if(gcodeLoaded)
@@ -664,7 +512,7 @@ private void loadSTL(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSTL
 		JOptionPane.showMessageDialog(null, "No STL was loaded.");
 		return;
 	}
-	
+
 	if(loadedFilesLong){
 		return;
         }
@@ -678,10 +526,10 @@ private void loadSTL(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadSTL
 	fileNameBox.setText(loadedFiles);
 	stlLoaded = true;
 	gcodeLoaded = false;
-}//GEN-LAST:event_loadSTL
+    }//GEN-LAST:event_loadSTL
 
-private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGCode
-	if(!GLoadOK){
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if(!GLoadOK){
 		return;
         }
 	if(seenSNAP)
@@ -731,13 +579,13 @@ private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGC
                 }
 		loadedFiles = "";
 	}
-	
+
 	if(sdCard)
 	{
 		parentBotConsoleFrame.suspendPolling();
 		String[] files = printer.getSDFiles();
 		if(files.length > 0)
-		{	
+		{
 			loadedFiles = (String)JOptionPane.showInputDialog(
 					this,
 					"Select the SD file to print:",
@@ -765,116 +613,60 @@ private void LoadGCode(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoadGC
 		JOptionPane.showMessageDialog(null, "No GCode was loaded.");
 		return;
 	}
-	
+
 	fileNameBox.setText(loadedFiles);
 	gcodeLoaded = true;
 	stlLoaded = false;
-}//GEN-LAST:event_LoadGCode
+    }//GEN-LAST:event_jButton2ActionPerformed
 
-private void loadRFO(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadRFO
-		if(!SLoadOK){
-			return;
-                }
-		if(gcodeLoaded)
-		{
-			int response = JOptionPane.showOptionDialog(
-					null                       // Center in window.
-					, "This will abandon the previous GCode file you loaded."        // Message
-					, "Load RFO"               // Title in titlebar
-					, JOptionPane.YES_NO_OPTION  // Option type
-					, JOptionPane.PLAIN_MESSAGE  // messageType
-					, null                       // Icon (none)
-					, new String[] {"OK", "Cancel"}                    // Button text as above.
-					, ""    // Default button's label
-			);
-			if(response == 1){
-				return;
-                        }
-			loadedFiles = "";
-		}
-
-		String fn = printer.loadRFOFileForMaking();
-		if(fn.length() <= 0)
-		{
-			JOptionPane.showMessageDialog(null, "No .rfo file was loaded.");
-			return;
-		}
-
-		if(loadedFilesLong){
-			return;
-                }
-		if(loadedFiles.length() > 50)
-		{
-			loadedFiles += "...";
-			loadedFilesLong = true;
-		} else {
-			loadedFiles += fn + " ";
-                }
-		fileNameBox.setText(loadedFiles);
-		stlLoaded = true;
-		gcodeLoaded = false;
-}//GEN-LAST:event_loadRFO
-
-private void preferences(java.awt.event.ActionEvent evt) {                             
-	org.reprap.gui.RepRapPreferences prefs = new org.reprap.gui.RepRapPreferences();
-	prefs.setVisible(true);	// prefs.show();
-}                            
-
-private void changeMachine(java.awt.event.ActionEvent evt) {                             
-		
-}                            
-
-private void help(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferences
-	try {
-        URI url = new URI("http://reprap.org/wiki/RepRapPro_Slicer");
-        Desktop.getDesktop().browse(url);//***AB
-     } catch(IOException | URISyntaxException e) {
-         Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, e);
-     }
-}//GEN-LAST:event_preferences
-
-private void saveRFO(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveRFO
-	if(!SLoadOK){
-		return;
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if(slicing){
+            return;
         }
-	if(loadedFiles.contentEquals(""))
-	{
-		JOptionPane.showMessageDialog(null, "There's nothing to save...");
-		return;
-	}
-	int sp = Math.max(loadedFiles.indexOf(".stl"), Math.max(loadedFiles.indexOf(".STL"), Math.max(loadedFiles.indexOf(".rfo"), loadedFiles.indexOf(".RFO"))));
-	if(sp <= 0)
-   	{
-		JOptionPane.showMessageDialog(null, "The loaded file is not an STL or an RFO file.");
-	} 
-	printer.saveRFOFile(loadedFiles.substring(0, sp));
-}//GEN-LAST:event_saveRFO
 
-private void saveSCAD(java.awt.event.ActionEvent evt) {                          
-	if(!SLoadOK){
-		return;
+        if(worthSaving())
+        {
+            int toDo = JOptionPane.showConfirmDialog(null, "First save the build as an RFO file?");
+            switch(toDo)
+            {
+                case JOptionPane.YES_OPTION:
+                        //saveRFO(null);
+                        break;
+
+                case JOptionPane.NO_OPTION:
+                        break;
+
+                case JOptionPane.CANCEL_OPTION:
+                        return;
+            }
         }
-	if(loadedFiles.contentEquals(""))
-	{
-		JOptionPane.showMessageDialog(null, "There's nothing to save...");
-		return;
-	}
-	int sp = Math.max(loadedFiles.indexOf(".stl"), Math.max(loadedFiles.indexOf(".STL"), Math.max(loadedFiles.indexOf(".rfo"), loadedFiles.indexOf(".RFO"))));
-	if(sp <= 0)
-   	{
-		JOptionPane.showMessageDialog(null, "The loaded file is not an STL or an RFO file.");
-	} 
-	org.reprap.Main.gui.saveSCAD(loadedFiles.substring(0, sp));
-}
 
-private void displayPaths(boolean disp)
-{
-		org.reprap.Preferences.setSimulate(disp);
-}
+        printLive(false);
 
-private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_displayPathsCheckMouseClicked
-	displayPaths(displayPathsCheck.isSelected());
-}//GEN-LAST:event_displayPathsCheckMouseClicked
+        parentBotConsoleFrame.suspendPolling();
+        parentBotConsoleFrame.setFractionDone(-1, -1, -1);
+        org.reprap.Main.gui.mouseToWorld();
+
+        int sp = -1;
+        if(loadedFiles != null){
+                sp = loadedFiles.length();
+        }
+        if(sp <= 0) {
+                JOptionPane.showMessageDialog(null, "There are no STLs/RFOs loaded to slice to file.");
+                restoreSliceButton();
+                return;
+        }
+        sp = Math.max(loadedFiles.indexOf(".stl"), Math.max(loadedFiles.indexOf(".STL"), Math.max(loadedFiles.indexOf(".rfo"), loadedFiles.indexOf(".RFO"))));
+        if(sp <= 0) {
+                JOptionPane.showMessageDialog(null, "The loaded file is not an STL or an RFO file.");
+        }
+        printer.setTopDown(true);
+        if(printer.setGCodeFileForOutput(loadedFiles.substring(0, sp)) == null) {
+                restoreSliceButton();
+                return;
+        }
+        org.reprap.Main.gui.onProduceB();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
 
 private void enableSLoad()
@@ -882,15 +674,15 @@ private void enableSLoad()
 	SLoadOK = true;
 	GLoadOK = false;
 	loadSTL.setBackground(new java.awt.Color(0, 204, 255));
-	loadRFO.setBackground(new java.awt.Color(0, 204, 255));
-	saveRFO.setBackground(new java.awt.Color(0, 204, 255));
+	//loadRFO.setBackground(new java.awt.Color(0, 204, 255));
+	//saveRFO.setBackground(new java.awt.Color(0, 204, 255));
 	try
-	{	
+	{
 		org.reprap.Preferences.setRepRapMachine("GCodeRepRap");
 		org.reprap.Preferences.setGCodeUseSerial(false);
 	} catch (Exception e) {
 		JOptionPane.showMessageDialog(null, e.toString());
-	}	
+	}
 }
 
 
@@ -898,7 +690,6 @@ private void enableSLoad()
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel currentLayerOutOfN;
     private javax.swing.JCheckBox displayPathsCheck;
-    private java.awt.Button exitButton;
     private javax.swing.JLabel expectedBuildTime;
     private javax.swing.JLabel expectedBuildTimeLabel;
     private javax.swing.JLabel expectedFinishTime;
@@ -906,21 +697,41 @@ private void enableSLoad()
     private javax.swing.JLabel fileNameBox;
     private javax.swing.JRadioButton gCodeToFileRadioButton;
     private javax.swing.JLabel hoursMinutesLabel1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox layerPauseCheck;
-    private java.awt.Button loadGCode;
-    private java.awt.Button loadRFO;
-    private java.awt.Button loadSTL;
-    private java.awt.Button pauseButton;
-    private java.awt.Button preferencesButton;
-    private java.awt.Button printButton;
+    private javax.swing.JButton loadSTL;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel progressLabel;
-    private java.awt.Button saveRFO;
-    private java.awt.Button stopButton;
     private javax.swing.JRadioButton toGCodeRepRapRadioButton;
     private javax.swing.JRadioButton toSNAPRepRapRadioButton;
     // End of variables declaration//GEN-END:variables
     private boolean SLoadOK = false;
     private boolean GLoadOK = false;
 
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(PrintTabFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            new PrintTabFrame().setVisible(true);
+        });
+    }
 }

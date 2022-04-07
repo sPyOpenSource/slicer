@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JInternalFrameFormInfo">
+<Form version="1.5" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="buttonGroup1">
     </Component>
   </NonVisualComponents>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -14,7 +15,7 @@
     <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
@@ -26,42 +27,6 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="saveRFO" min="-2" pref="100" max="-2" attributes="1"/>
-                          <Component id="loadGCode" min="-2" pref="100" max="-2" attributes="1"/>
-                          <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                              <Component id="loadRFO" alignment="0" min="-2" pref="100" max="-2" attributes="1"/>
-                              <Component id="loadSTL" alignment="0" min="-2" pref="100" max="-2" attributes="1"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="toSNAPRepRapRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="toGCodeRepRapRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="gCodeToFileRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="layerPauseCheck" min="-2" max="-2" attributes="0"/>
-                          <Component id="displayPathsCheck" min="-2" max="-2" attributes="1"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="preferencesButton" alignment="0" min="-2" max="-2" attributes="1"/>
-                          <Group type="102" attributes="0">
-                              <Component id="printButton" min="-2" pref="72" max="-2" attributes="1"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="pauseButton" min="-2" pref="78" max="-2" attributes="1"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="stopButton" min="-2" pref="75" max="-2" attributes="1"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="exitButton" min="-2" pref="62" max="-2" attributes="1"/>
-                          </Group>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="expectedFinishTimeLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                      <Component id="expectedFinishTime" min="-2" max="-2" attributes="0"/>
-                  </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
@@ -86,8 +51,36 @@
                           <Component id="progressBar" max="32767" attributes="0"/>
                       </Group>
                   </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jButton2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jButton3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="loadSTL" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="toSNAPRepRapRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="toGCodeRepRapRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="gCodeToFileRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="64" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="layerPauseCheck" min="-2" max="-2" attributes="0"/>
+                                  <Component id="displayPathsCheck" min="-2" max="-2" attributes="1"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="expectedFinishTimeLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                              <Component id="expectedFinishTime" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="0" pref="132" max="32767" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -95,43 +88,23 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="loadSTL" min="-2" pref="41" max="-2" attributes="1"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="loadGCode" min="-2" pref="41" max="-2" attributes="1"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="toSNAPRepRapRadioButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="toGCodeRepRapRadioButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="gCodeToFileRadioButton" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="preferencesButton" min="-2" pref="45" max="-2" attributes="1"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="toSNAPRepRapRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="loadSTL" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="layerPauseCheck" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="layerPauseCheck" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="displayPathsCheck" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                      <Group type="103" alignment="1" groupAlignment="0" attributes="0">
-                          <Component id="pauseButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                          <Component id="printButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                          <Component id="stopButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                          <Component id="exitButton" alignment="0" min="-2" pref="39" max="-2" attributes="1"/>
-                      </Group>
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="loadRFO" min="-2" pref="41" max="-2" attributes="1"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="saveRFO" min="-2" pref="41" max="-2" attributes="1"/>
-                      </Group>
-                  </Group>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="toGCodeRepRapRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="displayPathsCheck" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="gCodeToFileRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="expectedBuildTimeLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Group type="103" alignment="1" groupAlignment="3" attributes="0">
@@ -153,61 +126,12 @@
                   </Group>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="9" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="java.awt.Button" name="printButton">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="cc" red="33" type="rgb"/>
-        </Property>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="printButton" property="font" relativeSize="true" size="0"/>
-          </FontInfo>
-        </Property>
-        <Property name="label" type="java.lang.String" value="Print" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="printButtonActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="java.awt.Button" name="pauseButton">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="cc" red="ff" type="rgb"/>
-        </Property>
-        <Property name="label" type="java.lang.String" value="Pause" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pauseButtonActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="java.awt.Button" name="stopButton">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="0" green="0" red="ff" type="rgb"/>
-        </Property>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="12" style="1"/>
-        </Property>
-        <Property name="label" type="java.lang.String" value="STOP !" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stopButtonActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="java.awt.Button" name="exitButton">
-      <Properties>
-        <Property name="label" type="java.lang.String" value="Exit"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitButtonActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JCheckBox" name="layerPauseCheck">
       <Properties>
         <Property name="text" type="java.lang.String" value="Pause at end of layer" noResource="true"/>
@@ -286,30 +210,6 @@
     </Component>
     <Component class="javax.swing.JProgressBar" name="progressBar">
     </Component>
-    <Component class="java.awt.Button" name="loadSTL">
-      <Properties>
-        <Property name="actionCommand" type="java.lang.String" value="loadSTL"/>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="cc" red="0" type="rgb"/>
-        </Property>
-        <Property name="label" type="java.lang.String" value="Load STL" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadSTL"/>
-      </Events>
-    </Component>
-    <Component class="java.awt.Button" name="loadGCode">
-      <Properties>
-        <Property name="actionCommand" type="java.lang.String" value="loadGCode"/>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="cc" red="0" type="rgb"/>
-        </Property>
-        <Property name="label" type="java.lang.String" value="Load GCode" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LoadGCode"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JRadioButton" name="gCodeToFileRadioButton">
       <Properties>
         <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
@@ -319,18 +219,6 @@
       </Properties>
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="selectorRadioButtonMousePressed"/>
-      </Events>
-    </Component>
-    <Component class="java.awt.Button" name="loadRFO">
-      <Properties>
-        <Property name="actionCommand" type="java.lang.String" value="loadRFO"/>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="99" green="99" red="99" type="rgb"/>
-        </Property>
-        <Property name="label" type="java.lang.String" value="Load RFO" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadRFO"/>
       </Events>
     </Component>
     <Component class="javax.swing.JRadioButton" name="toGCodeRepRapRadioButton">
@@ -352,36 +240,6 @@
         <Property name="text" type="java.lang.String" value=" - "/>
       </Properties>
     </Component>
-    <Component class="java.awt.Button" name="preferencesButton">
-      <Properties>
-        <Property name="actionCommand" type="java.lang.String" value="preferences"/>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="66" red="ff" type="rgb"/>
-        </Property>
-        <Property name="label" type="java.lang.String" value="Preferences" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="preferences"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="PrintTabFrame_preferencesButton"/>
-      </AuxValues>
-    </Component>
-    <Component class="java.awt.Button" name="saveRFO">
-      <Properties>
-        <Property name="actionCommand" type="java.lang.String" value="saveRFO"/>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="99" green="99" red="99" type="rgb"/>
-        </Property>
-        <Property name="label" type="java.lang.String" value="Save RFO" noResource="true"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveRFO"/>
-      </Events>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="PrintTabFrame_saveRFO"/>
-      </AuxValues>
-    </Component>
     <Component class="javax.swing.JCheckBox" name="displayPathsCheck">
       <Properties>
         <Property name="text" type="java.lang.String" value="Display paths"/>
@@ -392,6 +250,31 @@
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="PrintTabFrame_displayPathsCheck"/>
       </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="loadSTL">
+      <Properties>
+        <Property name="actionCommand" type="java.lang.String" value="loadSTL"/>
+        <Property name="label" type="java.lang.String" value="Load STL"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadSTL"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Load GCode"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Print"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

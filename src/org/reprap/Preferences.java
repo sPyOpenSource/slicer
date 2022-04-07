@@ -11,16 +11,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import java.util.Properties;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.Material;
+
+import javafx.scene.Scene;
+
 import org.jogamp.vecmath.Color3f;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RepRapUtils;
@@ -59,10 +62,10 @@ public class Preferences {
 	private static final int grid = 100;             // Click outline polygons to a...
 	public static int grid() { return grid; }
 	
-	private static final double gridRes = 1.0/grid;  // ...10 micron grid
+	private static final double gridRes = 1.0 / grid;  // ...10 micron grid
 	public static double gridRes() { return gridRes; }	
 	
-	private static final double lessGridSquare = gridRes*gridRes*0.01;  // Small squared size of a gridsquare
+	private static final double lessGridSquare = gridRes * gridRes * 0.01;  // Small squared size of a gridsquare
 	public static double lessGridSquare() { return lessGridSquare; }	
 	
 	private static final double tiny = 1.0e-12;      // A small number
@@ -94,7 +97,7 @@ public class Preferences {
 	public static boolean GCodeUseSerial() { return gCodeUseSerial; }
 	public static void setGCodeUseSerial(boolean s) { gCodeUseSerial = s;}	
 	
-	private static String repRapMachine="GCodeRepRap";
+	private static String repRapMachine = "GCodeRepRap";
 	public static String RepRapMachine() { return repRapMachine; }
 	public static void setRepRapMachine(String s) { repRapMachine = s; }
 	
@@ -118,11 +121,14 @@ public class Preferences {
 		
 		if (mainFile.exists())
 		{
-			mainPreferences.load(mainUrl.openStream());
-			comparePreferences();
+                    mainPreferences.load(mainUrl.openStream());
+                    comparePreferences();
 		} else
 		{
-			Debug.e("Can't find your RepRap configurations: " + getPropertiesPath());
+                    File file = new File("/Users/xuyi/reprap.properties");
+                    copySystemConfigurations(file);
+                    mainPreferences.load(file.toURI().toURL().openStream());
+                    Debug.e("Can't find your RepRap configurations: " + getPropertiesPath());
 		}
 
 	}
@@ -586,20 +592,20 @@ public class Preferences {
 		return result;
 	}
 	
-	public static Appearance unselectedApp()
+	public static Scene unselectedApp()
 	{
 		Color3f unselectedColour = null;
 		try
 		{
-			unselectedColour = new Color3f((float)0.3, (float)0.3, (float)0.3);
+                    unselectedColour = new Color3f((float)0.3, (float)0.3, (float)0.3);
 		} catch (Exception ex)
 		{
-			Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		Appearance unselectedApp = new Appearance();
+		/*Scene unselectedApp = new Scene();
 		unselectedApp.setMaterial(new 
-				Material(unselectedColour, black, unselectedColour, black, 0f));
-		return unselectedApp;
+				PhongMaterial(unselectedColour, black, unselectedColour, black, 0f));*/
+		return null;
 	}
 	
 }

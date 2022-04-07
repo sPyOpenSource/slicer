@@ -30,129 +30,129 @@ import java.util.logging.Logger;
  */
 public class GCodeRepRap extends GenericRepRap {
 	
-	/**
-	* our class to send gcode instructions
-	*/
-	GCodeReaderAndWriter gcode;
-	
-	/**
-	 * @throws Exception
-	 */
-	public GCodeRepRap() throws Exception {
-		
-		super();
+    /**
+    * our class to send gcode instructions
+    */
+    GCodeReaderAndWriter gcode;
 
-		gcode = new GCodeReaderAndWriter();
-		String s = "M110";
-		if(Debug.d())
-			s += " ; Reset the line numbers";
-		gcode.queue(s);
+    /**
+     * @throws Exception
+     */
+    public GCodeRepRap() throws Exception {
+        super();
 
-		loadExtruders();
-		
-		forceSelection = true;
-	}
-	
-        @Override
-	public void loadMotors()
-	{
+        gcode = new GCodeReaderAndWriter();
+        String s = "M110";
+        if(Debug.d())
+            s += " ; Reset the line numbers";
+        gcode.queue(s);
 
-	}
+        loadExtruders();
+
+        forceSelection = true;
+    }
+
+    @Override
+    public void loadMotors()
+    {
+
+    }
 	
-        @Override
-	public void loadExtruders() throws Exception
-	{
-		try
-		{
-			int extruderCount = Preferences.loadGlobalInt("NumberOfExtruders");
-			extruders = new GCodeExtruder[extruderCount];
-		} catch (IOException e)
-		{
-			Debug.e(e.toString());
-		}
-		
-		super.loadExtruders();
-	}
-	
-        @Override
-	public Extruder extruderFactory(int count)
-	{
-		return new GCodeExtruder(gcode, count, this);
-	}
-	
-	private void qFeedrate(double feedrate) throws Exception
-	{		
-		if(currentFeedrate == feedrate)
-			return;
-		String s = "G1 F" + feedrate;
-		if(Debug.d())
-			s += " ; feed for start of next move";
-		gcode.queue(s);
-		currentFeedrate = feedrate;		
-	}
+    @Override
+    public void loadExtruders() throws Exception
+    {
+        /*try
+        {
+            int extruderCount = Preferences.loadGlobalInt("NumberOfExtruders");
+            extruders = new GCodeExtruder[extruderCount];
+        } catch (IOException e)
+        {
+            Debug.e(e.toString());
+        }*/
+        extruders = new GCodeExtruder[2];
+
+        super.loadExtruders();
+    }
+
+    @Override
+    public Extruder extruderFactory(int count)
+    {
+        return new GCodeExtruder(gcode, count, this);
+    }
+
+    private void qFeedrate(double feedrate) throws Exception
+    {		
+        if(currentFeedrate == feedrate)
+            return;
+        String s = "G1 F" + feedrate;
+        if(Debug.d())
+            s += " ; feed for start of next move";
+        gcode.queue(s);
+        currentFeedrate = feedrate;		
+    }
 	
 	private void qXYMove(double x, double y, double feedrate) throws Exception
 	{	
-		double dx = x - currentX;
-		double dy = y - currentY;
-		
-		double extrudeLength = extruders[extruder].getDistance(Math.sqrt(dx*dx + dy*dy));
-		String se = "";
+            double dx = x - currentX;
+            double dy = y - currentY;
 
-		if(extrudeLength > 0)
-		{
-			if(extruders[extruder].getReversing())
-				extrudeLength = -extrudeLength;
-			extruders[extruder].getExtruderState().add(extrudeLength);
-			if(extruders[extruder].get5D())
-			{
-				if(Preferences.loadGlobalBool("ExtrusionRelative"))
-					se = " E" + round(extrudeLength, 3);
-				else
-					se = " E" + round(extruders[extruder].getExtruderState().length(), 3);
-			}
-		}
-		
-		double xyFeedrate = round(extruders[extruder].getFastXYFeedrate(), 1);
-		
-		if(xyFeedrate < feedrate && Math.abs(extrudeLength) > Preferences.tiny())
-		{
-			Debug.d("GCodeRepRap().qXYMove: extruding feedrate (" + feedrate + ") exceeds maximum (" + xyFeedrate + ").");
-			feedrate = xyFeedrate;
-		}
-		
-		if(getExtruder().getMaxAcceleration() <= 0)
-			qFeedrate(feedrate);
-		
-		
-		if(dx == 0.0 && dy == 0.0)
-		{
-			if(currentFeedrate != feedrate)
-				qFeedrate(feedrate);
-			return;
-		}
-		
-		
-		String s = "G1 ";
+            double extrudeLength = extruders[extruder].getDistance(Math.sqrt(dx * dx + dy * dy));
+            String se = "";
 
-		if (dx != 0)
-			s += "X" + x;
-		if (dy != 0)
-			s += " Y" + y;
+            if(extrudeLength > 0)
+            {
+                if(extruders[extruder].getReversing())
+                    extrudeLength = -extrudeLength;
+                extruders[extruder].getExtruderState().add(extrudeLength);
+                if(extruders[extruder].get5D())
+                {
+                    if(Preferences.loadGlobalBool("ExtrusionRelative"))
+                        se = " E" + round(extrudeLength, 3);
+                    else
+                        se = " E" + round(extruders[extruder].getExtruderState().length(), 3);
+                }
+            }
 
-		s += se;
-		
-		if (currentFeedrate != feedrate)
-		{
-			s += " F" + feedrate;
-			currentFeedrate = feedrate;
-		}
-		
-		if(Debug.d())
-			s += " ;horizontal move";
-		gcode.queue(s);
-		currentX = x;
-		currentY = y;
+            double xyFeedrate = round(extruders[extruder].getFastXYFeedrate(), 1);
+
+            if(xyFeedrate < feedrate && Math.abs(extrudeLength) > Preferences.tiny())
+            {
+                Debug.d("GCodeRepRap().qXYMove: extruding feedrate (" + feedrate + ") exceeds maximum (" + xyFeedrate + ").");
+                feedrate = xyFeedrate;
+            }
+
+            if(getExtruder().getMaxAcceleration() <= 0)
+                qFeedrate(feedrate);
+
+
+            if(dx == 0.0 && dy == 0.0)
+            {
+                if(currentFeedrate != feedrate)
+                    qFeedrate(feedrate);
+                return;
+            }
+
+
+            String s = "G1 ";
+
+            if (dx != 0)
+                s += "X" + x;
+            if (dy != 0)
+                s += " Y" + y;
+
+            s += se;
+
+            if (currentFeedrate != feedrate)
+            {
+                s += " F" + feedrate;
+                currentFeedrate = feedrate;
+            }
+
+            if(Debug.d())
+                s += " ;horizontal move";
+            gcode.queue(s);
+            currentX = x;
+            currentY = y;
 	}
 	
 	private void qZMove(double z, double feedrate) throws Exception
@@ -215,11 +215,11 @@ public class GCodeRepRap extends GenericRepRap {
         @Override
 	public void moveTo(double x, double y, double z, double feedrate, boolean startUp, boolean endUp) throws Exception
 	{
-		if (isCancelled())
-			return;
-		
-		try
-		{
+            if (isCancelled())
+                    return;
+
+            try
+            {
 		if(x > Preferences.loadGlobalDouble("WorkingX(mm)") || x < 0)
 		{
 			Debug.e("Attempt to move x to " + x + " which is outside [0, " + Preferences.loadGlobalDouble("WorkingX(mm)") + "]");
@@ -235,8 +235,8 @@ public class GCodeRepRap extends GenericRepRap {
 			Debug.d("Attempt to move z to " + z + " which is outside [0, " + Preferences.loadGlobalDouble("WorkingZ(mm)") + "]");
 			z = Math.max(0, Math.min(z, Preferences.loadGlobalDouble("WorkingZ(mm)")));
 		}
-		} catch (IOException e)
-		{}
+            } catch (IOException e)
+            {}
 
 		x = round(x, 2);
 		y = round(y, 2);
@@ -341,7 +341,7 @@ public class GCodeRepRap extends GenericRepRap {
 				moveTo(x, y, z, feedrate, false, false);
 				return;
 			} 
-		}catch (Exception e1) 
+		} catch (Exception e1) 
 		{
 			 Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e1);
 		}
@@ -418,7 +418,7 @@ public class GCodeRepRap extends GenericRepRap {
 			}
 		} catch (Exception e)
 		{
-			Debug.e(e.toString());
+			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -487,7 +487,7 @@ public class GCodeRepRap extends GenericRepRap {
 		
 		forceSelection = true;  // Force it to set the extruder to use at the start
 				
-		try	{
+		try {
 			super.startRun(lc);
 		} catch (Exception E) {
 			Debug.d("Initialization error: " + E.toString());
@@ -533,7 +533,7 @@ public class GCodeRepRap extends GenericRepRap {
 				gcode.queue("; ------");
 
 		} catch(Exception e){
-			//oops
+                    Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 		}
 		//write/close our file/serial port
 		gcode.finish(lc);
@@ -625,14 +625,15 @@ public class GCodeRepRap extends GenericRepRap {
 		gcode.queue(s);
 	}
 	
-	/**
-	 * Are we paused?
-	 * @return
-	 */
-	public boolean iAmPaused()
-	{
-		return gcode.iAmPaused();
-	}
+    /**
+     * Are we paused?
+     * @return
+     */
+    @Override
+    public boolean iAmPaused()
+    {
+            return gcode.iAmPaused();
+    }
 	
 	/**
 	 * Get X, Y, Z and E (if supported) coordinates in an array
@@ -683,7 +684,7 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.queue(s);
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.getSDFiles() has thrown:");
-			e.printStackTrace();
+			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 		}
 		return gcode.getSDFileNames();	
 	}
@@ -700,7 +701,7 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.queue(s);
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.fanOn() has thrown:");
-			e.printStackTrace();
+			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 		}		
 	}
 	
@@ -716,7 +717,7 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.queue(s);
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.fanOff() has thrown:");
-			e.printStackTrace();
+			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 		}			
 	}
 	
@@ -737,7 +738,7 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.queue(s);
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.printSDFile() has thrown:");
-			e.printStackTrace();
+			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 			return false;
 		}
 		s = "M24";
@@ -747,7 +748,7 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.queue(s);
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.printSDFile() has thrown:");
-			 Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
+			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 			return false;
 		}
 		return true;

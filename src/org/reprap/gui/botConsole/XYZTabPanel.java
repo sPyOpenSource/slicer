@@ -14,18 +14,17 @@ import org.reprap.utilities.Debug;
  * @author  ensab
  */
 public class XYZTabPanel extends javax.swing.JPanel {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private double XYfastSpeed;
     private double ZfastSpeed;
     private boolean firstZero = true;
     private Printer printer;
     private static double nudgeSize = 0;
-	private BotConsoleFrame parentBotConsoleFrame = null;
-	private Thread agitateThread = null;
+    private BotConsoleFrame parentBotConsoleFrame = null;
+    private Thread agitateThread = null;
 	
-    private void setPrefs() throws IOException {
-    	
+    private void setPrefs() throws IOException {	
     	XYfastSpeed = printer.getExtruder().getFastXYFeedrate();
     	ZfastSpeed = printer.getFastFeedrateZ();
         
@@ -139,27 +138,27 @@ public class XYZTabPanel extends javax.swing.JPanel {
             }
         });
 
-        org.jdesktop.layout.GroupLayout nudgePanelLayout = new org.jdesktop.layout.GroupLayout(nudgePanel);
+        javax.swing.GroupLayout nudgePanelLayout = new javax.swing.GroupLayout(nudgePanel);
         nudgePanel.setLayout(nudgePanelLayout);
         nudgePanelLayout.setHorizontalGroup(
-            nudgePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(nudgePanelLayout.createSequentialGroup()
+            nudgePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(nudgePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(nudgeSizeRB1)
-                .add(18, 18, 18)
-                .add(nudgeSizeRB2)
-                .add(18, 18, 18)
-                .add(nudgeSizeRB3)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(nudgeSizeRB1)
+                .addGap(18, 18, 18)
+                .addComponent(nudgeSizeRB2)
+                .addGap(18, 18, 18)
+                .addComponent(nudgeSizeRB3)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         nudgePanelLayout.setVerticalGroup(
-            nudgePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, nudgePanelLayout.createSequentialGroup()
+            nudgePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, nudgePanelLayout.createSequentialGroup()
                 .addContainerGap(14, Short.MAX_VALUE)
-                .add(nudgePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(nudgeSizeRB1)
-                    .add(nudgeSizeRB2)
-                    .add(nudgeSizeRB3)))
+                .addGroup(nudgePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(nudgeSizeRB1)
+                    .addComponent(nudgeSizeRB2)
+                    .addComponent(nudgeSizeRB3)))
         );
 
         motorsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Axis positions"));
@@ -192,30 +191,30 @@ public class XYZTabPanel extends javax.swing.JPanel {
             }
         });
 
-        org.jdesktop.layout.GroupLayout motorsPanelLayout = new org.jdesktop.layout.GroupLayout(motorsPanel);
+        javax.swing.GroupLayout motorsPanelLayout = new javax.swing.GroupLayout(motorsPanel);
         motorsPanel.setLayout(motorsPanelLayout);
         motorsPanelLayout.setHorizontalGroup(
-            motorsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(motorsPanelLayout.createSequentialGroup()
-                .add(23, 23, 23)
-                .add(goButton)
-                .add(121, 121, 121)
-                .add(homeAllButton)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(storeAllButton)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(recallAllButton)
+            motorsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(motorsPanelLayout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(goButton)
+                .addGap(121, 121, 121)
+                .addComponent(homeAllButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(storeAllButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(recallAllButton)
                 .addContainerGap(24, Short.MAX_VALUE))
         );
         motorsPanelLayout.setVerticalGroup(
-            motorsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, motorsPanelLayout.createSequentialGroup()
-                .add(75, 75, 75)
-                .add(motorsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(goButton)
-                    .add(recallAllButton)
-                    .add(storeAllButton)
-                    .add(homeAllButton))
+            motorsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, motorsPanelLayout.createSequentialGroup()
+                .addGap(75, 75, 75)
+                .addGroup(motorsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(goButton)
+                    .addComponent(recallAllButton)
+                    .addComponent(storeAllButton)
+                    .addComponent(homeAllButton))
                 .addContainerGap())
         );
 
@@ -235,26 +234,26 @@ public class XYZTabPanel extends javax.swing.JPanel {
         zSpeedField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         zSpeedField.setText("0000");
 
-        org.jdesktop.layout.GroupLayout speedsPanelLayout = new org.jdesktop.layout.GroupLayout(speedsPanel);
+        javax.swing.GroupLayout speedsPanelLayout = new javax.swing.GroupLayout(speedsPanel);
         speedsPanel.setLayout(speedsPanelLayout);
         speedsPanelLayout.setHorizontalGroup(
-            speedsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(speedsPanelLayout.createSequentialGroup()
-                .add(jLabel2)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(xySpeedField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(18, 18, 18)
-                .add(jLabel3)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(zSpeedField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            speedsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(speedsPanelLayout.createSequentialGroup()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(xySpeedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(zSpeedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         speedsPanelLayout.setVerticalGroup(
-            speedsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(speedsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                .add(jLabel2)
-                .add(jLabel3)
-                .add(zSpeedField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(xySpeedField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            speedsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(speedsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jLabel2)
+                .addComponent(jLabel3)
+                .addComponent(zSpeedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(xySpeedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         plotExtruderCheck.setText("Plot using Extruder #");
@@ -262,42 +261,42 @@ public class XYZTabPanel extends javax.swing.JPanel {
         extruderToPlotWith.setColumns(1);
         extruderToPlotWith.setText("0");
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
-                        .add(nudgePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(2, 2, 2)
-                        .add(speedsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(plotExtruderCheck)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(extruderToPlotWith, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(235, 235, 235))
-                    .add(motorsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(nudgePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)
+                        .addComponent(speedsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(plotExtruderCheck)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(extruderToPlotWith, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(235, 235, 235))
+                    .addComponent(motorsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(motorsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(nudgePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(layout.createSequentialGroup()
-                        .add(14, 14, 14)
-                        .add(speedsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 43, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(layout.createSequentialGroup()
-                        .add(18, 18, 18)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(extruderToPlotWith, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(plotExtruderCheck))))
+                .addComponent(motorsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nudgePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(speedsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(extruderToPlotWith, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(plotExtruderCheck))))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents

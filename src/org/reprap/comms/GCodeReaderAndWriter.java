@@ -11,8 +11,20 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javafx.geometry.Point3D;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Sphere;
 
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
@@ -22,205 +34,219 @@ import org.reprap.geometry.LayerRules;
 
 public class GCodeReaderAndWriter
 {
-	// Codes for responses from the machine
-	// A positive number returned is a request for that line number
-	// to be resent.
-	
-	private static final long shutDown = -3;
-	private static final long allSentOK = -1;
-	private double eTemp;
-	private double bTemp;
-	private String[] sdFiles = new String[0];
-	private double x, y, z, e;
-	private RrGraphics simulationPlot = null;
-	private String lastResp;
-	private boolean nonRunningWarn;
-	/**
-	 * Stop sending a file (if we are).
-	 */
-	private boolean paused = false;
-	
-	private boolean iAmPaused = false;
-	
-	/**
-	 * Not quite sure why this is needed...
-	 */
-	private boolean alreadyReversed = false;
-	
-	/**
-	 * The name of the port talking to the RepRap machine
-	 */
-	String portName;
-	
-	/**
-	 * Flag to tell it we've finished
-	 */
-	private boolean exhaustBuffer = false;
-	
-	/**
-	* this is for doing easy serial writes
-	*/
-	private PrintStream serialOutStream = null;
-	
-	/**
-	 * this is our read handle on the serial port
-	 */
-	private InputStream serialInStream = null;
-	
-	/**
-	 * The root file name for output (without ".gcode" on the end)
-	 */
-	private String opFileName;
-			
-	private String layerFileNames;
-	
-	/**
-	 * How does the first file name in a multiple set end?
-	 */
-	private static final String gcodeExtension = ".gcode";
-	
-	/**
-	 * How does the first file name in a multiple set end?
-	 */
-	private static final String firstEnding = "_prologue";
-	
-	/**
-	 * How does the last file name in a multiple set end?
-	 */
-	private static final String lastEnding = "_epilogue";
-	
-	/**
-	 * Flag for temporary files
-	 */
-	private static final String tmpString = "_TeMpOrArY_";
-		
-	/**
-	 * This is used for file input
-	 */
-	private BufferedReader fileInStream = null;
-	
-	/**
-	 * How long is our G-Code input file (if any).
-	 */
-	private long fileInStreamLength = -1;
-	
-	/**
-	 * This is for file output
-	 */
-	private PrintStream fileOutStream = null;
-	
-	/**
-	 * The current linenumber
-	 */
-	private long lineNumber;
-	
-	/**
-	 * The ring buffer that stores the commands for 
-	 * possible resend requests.
-	 */
-	private int head, tail;
-	private static final int buflen = 10; // No too long, or pause doesn't work well
-	private String[] ringBuffer;
-	private long[] ringLines;
-	
-	/**
-	 * The transmission to the RepRap machine is handled by
-	 * a separate thread.  These control that.
-	 */
-	private Thread bufferThread = null;
-	private int myPriority;
-	
-	/**
-	 * Some commands (at the moment just M105 - get temperature and M114 - get coords) generate
-	 * a response.  Return that as a string.
-	 */
-	private int responsesExpected = 0;
-			
-	public GCodeReaderAndWriter()
-	{
-		init();
-	}
-	
-	/**
-	 * constructor for when we definitely want to send GCodes to a known file
-	 * @param fos
-	 */
-	public GCodeReaderAndWriter(PrintStream fos)
-	{
-		init();
-		fileOutStream = fos;
-	}
-	
-	private void init()
-	{
-		resetReceived();
-		paused = false;
-		iAmPaused = false;
-		alreadyReversed = false;
-		ringBuffer = new String[buflen];
-		ringLines = new long[buflen];
-		head = 0;
-		tail = 0;
-		nonRunningWarn = true;
-		lineNumber = 0;
-		exhaustBuffer = false;
-		responsesExpected = 0;
+    // Codes for responses from the machine
+    // A positive number returned is a request for that line number
+    // to be resent.
 
-		lastResp = "";
-                
-		portName = "/dev/ttyUSB0";
-		
-		openSerialConnection(portName);
+    private static final long shutDown = -3;
+    private static final long allSentOK = -1;
+    private double eTemp;
+    private double bTemp;
+    private String[] sdFiles = new String[0];
+    private double x, y, z, e;
+    private RrGraphics simulationPlot = null;
+    private String lastResp;
+    private boolean nonRunningWarn;
+    /**
+     * Stop sending a file (if we are).
+     */
+    private boolean paused = false;
 
-		myPriority = Thread.currentThread().getPriority();
+    private boolean iAmPaused = false;
 
-		bufferThread = null;
-	}
-	
-	private void nonRunningWarning(String s)
-	{
-		nonRunningWarn = false;		
-	}
+    /**
+     * Not quite sure why this is needed...
+     */
+    private boolean alreadyReversed = false;
 
-	
-	public boolean buildingFromFile()
-	{
-		return fileInStream != null;
-	}
-	
-	public boolean savingToFile()
-	{
-		return fileOutStream != null;
-	}
+    /**
+     * The name of the port talking to the RepRap machine
+     */
+    String portName;
 
-	/**
-	 * Stop the printer building.
-	 * This _shouldn't_ also stop it being controlled interactively.
-	 */
-	public void pause()
-	{
-		paused = true;
-	}
-	
-	/**
-	 * Resume building.
-	 *
-	 */
-	public void resume()
-	{
-		paused = false;
-	}
-	
+    /**
+     * Flag to tell it we've finished
+     */
+    private boolean exhaustBuffer = false;
 
+    /**
+    * this is for doing easy serial writes
+    */
+    private PrintStream serialOutStream = null;
+
+    /**
+     * this is our read handle on the serial port
+     */
+    private InputStream serialInStream = null;
+
+    /**
+     * The root file name for output (without ".gcode" on the end)
+     */
+    private String opFileName;
+
+    private String layerFileNames;
 	
-	/**
-	 * Are we paused?
-	 * @return
-	 */
-	public boolean iAmPaused()
-	{
-		return iAmPaused;
-	}
+    /**
+     * How does the first file name in a multiple set end?
+     */
+    private static final String gcodeExtension = ".gcode";
+
+    /**
+     * How does the first file name in a multiple set end?
+     */
+    private static final String firstEnding = "_prologue";
+
+    /**
+     * How does the last file name in a multiple set end?
+     */
+    private static final String lastEnding = "_epilogue";
+
+    /**
+     * Flag for temporary files
+     */
+    private static final String tmpString = "_TeMpOrArY_";
+
+    /**
+     * This is used for file input
+     */
+    private BufferedReader fileInStream = null;
+
+    /**
+     * How long is our G-Code input file (if any).
+     */
+    private long fileInStreamLength = -1;
+
+    /**
+     * This is for file output
+     */
+    private PrintStream fileOutStream = null;
+
+    /**
+     * The current linenumber
+     */
+    private long lineNumber;
+	
+    /**
+     * The ring buffer that stores the commands for 
+     * possible resend requests.
+     */
+    private int head, tail;
+    private static final int buflen = 10; // No too long, or pause doesn't work well
+    private String[] ringBuffer;
+    private long[] ringLines;
+    private List<Point3D> points = new ArrayList<>();
+    
+    /**
+     * The transmission to the RepRap machine is handled by
+     * a separate thread.  These control that.
+     */
+    private Thread bufferThread = null;
+    private int myPriority;
+
+    /**
+     * Some commands (at the moment just M105 - get temperature and M114 - get coords) generate
+     * a response.  Return that as a string.
+     */
+    private int responsesExpected = 0;
+
+    public static void main(String[] arg){
+        try {
+            GCodeReaderAndWriter reader = new GCodeReaderAndWriter("/Users/xuyi/Pictures/test.gcode");
+            reader.viewer();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GCodeReaderAndWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public GCodeReaderAndWriter(String fis) throws FileNotFoundException{
+        init();
+        fileInStream = new BufferedReader(new FileReader(fis));
+    }
+    
+    public GCodeReaderAndWriter()
+    {
+        init();
+    }
+
+    /**
+     * constructor for when we definitely want to send GCodes to a known file
+     * @param fos
+     */
+    public GCodeReaderAndWriter(PrintStream fos)
+    {
+        init();
+        fileOutStream = fos;
+    }
+	
+    private void init()
+    {
+        resetReceived();
+        paused = false;
+        iAmPaused = false;
+        alreadyReversed = false;
+        ringBuffer = new String[buflen];
+        ringLines = new long[buflen];
+        head = 0;
+        tail = 0;
+        nonRunningWarn = true;
+        lineNumber = 0;
+        exhaustBuffer = false;
+        responsesExpected = 0;
+
+        lastResp = "";
+
+        portName = "/dev/ttyUSB0";
+
+        openSerialConnection(portName);
+
+        myPriority = Thread.currentThread().getPriority();
+
+        bufferThread = null;
+    }
+
+    private void nonRunningWarning(String s)
+    {
+        nonRunningWarn = false;		
+    }
+
+
+    public boolean buildingFromFile()
+    {
+        return fileInStream != null;
+    }
+	
+    public boolean savingToFile()
+    {
+        return fileOutStream != null;
+    }
+
+    /**
+     * Stop the printer building.
+     * This _shouldn't_ also stop it being controlled interactively.
+     */
+    public void pause()
+    {
+        paused = true;
+    }
+
+    /**
+     * Resume building.
+     *
+     */
+    public void resume()
+    {
+        paused = false;
+    }
+
+
+    /**
+     * Are we paused?
+     * @return
+     */
+    public boolean iAmPaused()
+    {
+        return iAmPaused;
+    }
 	
 	/**
 	 * Send a GCode file to the machine if that's what we have to do, and
@@ -751,7 +777,7 @@ public class GCodeReaderAndWriter
 	/**
 	 * Send a G-code command to the machine or into a file.
 	 * @param cmd
-     * @throws java.lang.Exception
+         * @throws java.lang.Exception
 	 */
 	public void queue(String cmd) throws Exception
 	{
@@ -772,7 +798,7 @@ public class GCodeReaderAndWriter
 	
 	/**
 	 * Copy a file of G Codes straight to output - generally used for canned cycles
-     * @param fileName
+         * @param fileName
 	 */
 	public void copyFile(String fileName)
 	{
@@ -807,40 +833,39 @@ public class GCodeReaderAndWriter
 	
 	public String loadGCodeFileForMaking()
 	{
-		JFileChooser chooser = new JFileChooser();
-        FileFilter filter;
-        filter = new ExtensionFileFilter("G Code file to be read", new String[] { "gcode" });
-        chooser.setFileFilter(filter);
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            JFileChooser chooser = new JFileChooser();
+            FileFilter filter;
+            filter = new ExtensionFileFilter("G Code file to be read", new String[] { "gcode" });
+            chooser.setFileFilter(filter);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-		int result = chooser.showOpenDialog(null);
-		if (result == JFileChooser.APPROVE_OPTION)
-		{
-			String name = chooser.getSelectedFile().getAbsolutePath();
-			try
-			{
-				Debug.d("opening: " + name);
-				fileInStreamLength = chooser.getSelectedFile().length();
-				fileInStream = new BufferedReader(new FileReader(chooser.getSelectedFile()));
-				return chooser.getSelectedFile().getName();
-			} catch (FileNotFoundException e) 
-			{
-				Debug.e("Can't read file " + name);
-				fileInStream = null;
-				return null;
-			}
-		} else
-		{
-			Debug.e("Can't read file.");
-			fileInStream = null;
-		}
+            int result = chooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION)
+            {
+                String name = chooser.getSelectedFile().getAbsolutePath();
+                try
+                {
+                    Debug.d("opening: " + name);
+                    fileInStreamLength = chooser.getSelectedFile().length();
+                    fileInStream = new BufferedReader(new FileReader(chooser.getSelectedFile()));
+                    return chooser.getSelectedFile().getName();
+                } catch (FileNotFoundException e) 
+                {
+                    Debug.e("Can't read file " + name);
+                    fileInStream = null;
+                    return null;
+                }
+            } else
+            {
+                Debug.e("Can't read file.");
+                fileInStream = null;
+            }
 
-		return null;
+            return null;
 	}
 	
 	public String setGCodeFileForOutput(boolean topDown, String fileRoot)
 	{
-
 		File defaultFile = new File(fileRoot + ".gcode");
 		JFileChooser chooser = new JFileChooser();
 		chooser.setSelectedFile(defaultFile);
@@ -949,12 +974,10 @@ public class GCodeReaderAndWriter
 	
 
 	
-
-
 	/**
 	 * All done.
 	 *
-     * @param lc
+         * @param lc
 	 */
 	public void finish(LayerRules lc)
 	{
@@ -980,4 +1003,59 @@ public class GCodeReaderAndWriter
 	{
 		return opFileName + gcodeExtension;
 	}
+
+    public Scene viewer() {
+        Group root = new Group();
+        String line;
+        try {
+            while ((line = fileInStream.readLine()) != null)
+            {
+                if(line.startsWith("G0 ")){
+                    double x = 0, y = 0, z = 0;
+                    for(String command:line.split(" ")){
+                        if(command.startsWith("X")){
+                            x = Double.parseDouble(command.substring(1));
+                        }
+                        if(command.startsWith("Y")){
+                            y = Double.parseDouble(command.substring(1));
+                        }
+                        if(command.startsWith("Z")){
+                            z = Double.parseDouble(command.substring(1));
+                        }
+                    }
+                    Point3D point = new Point3D(x,y,z);
+                    points.add(point);
+                }
+                if(line.startsWith("G1 ")){
+                    double x = 0, y = 0, z = 0;
+                    for(String command:line.split(" ")){
+                        if(command.startsWith("X")){
+                            x = Double.parseDouble(command.substring(1));
+                        }
+                        if(command.startsWith("Y")){
+                            y = Double.parseDouble(command.substring(1));
+                        }
+                        if(command.startsWith("Z")){
+                            z = Double.parseDouble(command.substring(1));
+                        }
+                    }
+                    Point3D point = new Point3D(x,y,z);
+                    points.add(point);
+                }
+            }
+            for(Point3D p:points){
+                Sphere ball = new Sphere(0.01);
+                ball.translateXProperty().set(p.getX());
+                ball.translateYProperty().set(p.getY());
+                ball.translateZProperty().set(p.getZ());
+                root.getChildren().add(ball);
+            }
+            Scene scene = new Scene(root, 800, 600, true, SceneAntialiasing.BALANCED);
+            scene.setFill(Color.GREEN);
+            return scene;
+        } catch (IOException ex) {
+            Logger.getLogger(GCodeReaderAndWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }

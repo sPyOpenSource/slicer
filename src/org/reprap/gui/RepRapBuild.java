@@ -92,17 +92,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-import org.jogamp.java3d.AmbientLight;
-import org.jogamp.java3d.Background;
-import org.jogamp.java3d.Bounds;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.Canvas3D;
-import org.jogamp.java3d.DirectionalLight;
-import org.jogamp.java3d.Group;
-import org.jogamp.java3d.Node;
-import org.jogamp.java3d.TransformGroup;
-import org.jogamp.java3d.ViewPlatform;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -116,13 +106,16 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 
+import javafx.geometry.Bounds;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.PickResult;
+import javafx.scene.layout.Background;
+
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3d;
-
-import org.jogamp.java3d.utils.picking.PickCanvas;
-import org.jogamp.java3d.utils.picking.PickResult;
-import org.jogamp.java3d.utils.picking.PickTool;
-import java.io.IOException;
 
 import org.reprap.Attributes;
 import org.reprap.Printer;
@@ -151,23 +144,23 @@ class MaterialRadioButtons extends JPanel {
 	
 	private MaterialRadioButtons(double volume)
 	{
-		super(new BorderLayout());
-		JPanel radioPanel;
-		ButtonGroup bGroup = new ButtonGroup();
-		String[] names;
-		radioPanel = new JPanel(new GridLayout(0, 1));
-		radioPanel.setSize(300,200);
-		
-		JLabel jLabel0 = new JLabel();
+            super(new BorderLayout());
+            JPanel radioPanel;
+            ButtonGroup bGroup = new ButtonGroup();
+            String[] names;
+            radioPanel = new JPanel(new GridLayout(0, 1));
+            radioPanel.setSize(300,200);
+
+            JLabel jLabel0 = new JLabel();
 	    radioPanel.add(jLabel0);
 	    jLabel0.setText("Volume of object: " + Math.round(volume) + " mm^3");
-		jLabel0.setHorizontalAlignment(SwingConstants.CENTER);
+            jLabel0.setHorizontalAlignment(SwingConstants.CENTER);
 		
 	    JLabel jLabel2 = new JLabel();
 	    radioPanel.add(jLabel2);
 	    jLabel2.setText(" Number of copies of the object just loaded to print: ");
-		jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
-		copies = new JTextField("1");
+            jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
+            copies = new JTextField("1");
 	    copies.setSize(20, 10);
 		copies.setHorizontalAlignment(SwingConstants.CENTER);
 		radioPanel.add(copies);
@@ -397,9 +390,6 @@ class ScaleXYZ extends JPanel {
 
 public class RepRapBuild extends Panel3D implements MouseListener {
 	
-
-	
-	
 	private static final long serialVersionUID = 1L;
 	private MouseObject mouse = null;
 	private PickCanvas pickCanvas = null; // The thing picked by a mouse click
@@ -431,15 +421,15 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 
         @Override
-	protected BranchGroup createViewBranchGroup(TransformGroup[] tgArray,
+	protected Group createViewBranchGroup(Group[] tgArray,
 			ViewPlatform vp) {
-		BranchGroup vpBranchGroup = new BranchGroup();
+		Group vpBranchGroup = new Group();
 
 		if (tgArray != null && tgArray.length > 0) {
 			Group parentGroup = vpBranchGroup;
-			TransformGroup curTg;
+			Group curTg;
 
-                    for (TransformGroup tgArray1 : tgArray) {
+                    for (Group tgArray1 : tgArray) {
                         curTg = tgArray1;
                         parentGroup.addChild(curTg);
                         parentGroup = curTg;
@@ -455,10 +445,10 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	// Set up the RepRap working volume
 
         @Override
-	protected BranchGroup createSceneBranchGroup() throws Exception {
-		sceneBranchGroup = new BranchGroup();
+	protected Group createSceneBranchGroup() throws Exception {
+		sceneBranchGroup = new Group();
 
-		BranchGroup objRoot = sceneBranchGroup;
+		Group objRoot = sceneBranchGroup;
 
 		Bounds lightBounds = getApplicationBounds();
 
@@ -676,7 +666,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 
         @Override
-	protected void addCanvas3D(Canvas3D c3d) {
+	protected void addCanvas3D(Canvas c3d) {
 		setLayout(new BorderLayout());
 		add(c3d, BorderLayout.CENTER);
 		doLayout();

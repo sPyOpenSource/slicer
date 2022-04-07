@@ -56,22 +56,10 @@ This version: 14 April 2006
 
 package org.reprap.geometry.polyhedra;
 
-import org.jogamp.java3d.loaders.IncorrectFormatException;
-import org.jogamp.java3d.loaders.ParsingErrorException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.BoundingBox;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.GeometryArray;
-import org.jogamp.java3d.Group;
-import org.jogamp.java3d.Node;
-import org.jogamp.java3d.SceneGraphObject;
-import org.jogamp.java3d.Shape3D;
-import org.jogamp.java3d.Transform3D;
-import org.jogamp.java3d.TransformGroup;
 import org.jogamp.vecmath.AxisAngle4d;
 import org.jogamp.vecmath.Matrix3d;
 import org.jogamp.vecmath.Matrix4d;
@@ -79,13 +67,18 @@ import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Tuple3d;
 import org.jogamp.vecmath.Vector3d;
 
-import org.jogamp.java3d.loaders.Scene;
-import org.jogamp.java3d.utils.picking.PickTool;
-import java.io.FileNotFoundException;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+
+import javafx.collections.ObservableList;
+import javafx.geometry.BoundingBox;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.shape.Shape3D;
+import javafx.scene.transform.Transform;
 
 import org.reprap.utilities.StlFile;
 import org.reprap.Attributes;
@@ -106,53 +99,53 @@ import org.reprap.utilities.Debug;
 public class STLObject
 {
 	
-	/**
-	 * Little class to hold offsets of loaded STL objects
-	 */
-	class Offsets
-	{
-		private Vector3d centreToOrigin;
-		private Vector3d bottomLeftShift;
-	}
-	
-	/**
-	 * Little class to hold tripples of the parts of this STLObject loaded.
-	 *
-	 */
-	class Contents
-	{
-	    private String sourceFile = null;   // The STL file I was loaded from
-	    private BranchGroup stl = null;     // The actual STL geometry
-	    private CSG3D csg = null;           // CSG if available
-	    private Attributes att = null;		// The attributes associated with it
-	    private final double volume;				// Useful to know
-	    private int unique = 0;
-	    
-	    Contents(String s, BranchGroup st, CSG3D c, Attributes a, double v)
-	    {
-	    	sourceFile = s;
-	    	stl = st;
-	    	csg = c;
-	    	att = a;
-	    	volume = v;
-	    }
-	    
-	    void setUnique(int i)
-	    {
-	    	unique = i;
-	    }
-	    
-	    int getUnique()
-	    {
-	    	return unique;
-	    }
-	}
+    /**
+     * Little class to hold offsets of loaded STL objects
+     */
+    class Offsets
+    {
+            private Vector3d centreToOrigin;
+            private Vector3d bottomLeftShift;
+    }
+
+    /**
+     * Little class to hold tripples of the parts of this STLObject loaded.
+     *
+     */
+    class Contents
+    {
+        private String sourceFile = null;   // The STL file I was loaded from
+        private Group stl = null;     // The actual STL geometry
+        private CSG3D csg = null;           // CSG if available
+        private Attributes att = null;		// The attributes associated with it
+        private final double volume;				// Useful to know
+        private int unique = 0;
+
+        Contents(String s, Group st, CSG3D c, Attributes a, double v)
+        {
+            sourceFile = s;
+            stl = st;
+            csg = c;
+            att = a;
+            volume = v;
+        }
+
+        void setUnique(int i)
+        {
+            unique = i;
+        }
+
+        int getUnique()
+        {
+            return unique;
+        }
+    }
 	
     private MouseObject mouse = null;   // The mouse, if it is controlling us
-    private BranchGroup top = null;     // The thing that links us to the world
-    private BranchGroup handle = null;  // Internal handle for the mouse to grab
-    private TransformGroup trans = null;// Static transform for when the mouse is away
-    private BranchGroup stl = null;     // The actual STL geometry; a tree duplicated flat in the list contents
+    private Group top = null;     // The thing that links us to the world
+    private Group handle = null;  // Internal handle for the mouse to grab
+    private Group trans = null;// Static transform for when the mouse is away
+    private Group stl = null;     // The actual STL geometry; a tree duplicated flat in the list contents
     private Vector3d extent = null;     // X, Y and Z extent
     private BoundingBox bbox = null;    // Temporary storage for the bounding box while loading
     private Vector3d rootOffset = null; // Offset of the first-loaded STL under stl
@@ -160,7 +153,7 @@ public class STLObject
 
     public STLObject()
     {
-    	stl = new BranchGroup();
+    	stl = new Group();
     	
     	contents = new ArrayList<>();
     	
@@ -171,18 +164,18 @@ public class STLObject
         
         // Set up our bit of the scene graph
         
-        top = new BranchGroup();
-        handle = new BranchGroup();
-        trans = new TransformGroup();
+        top = new Group();
+        handle = new Group();
+        trans = new Group();
         
-        top.setCapability(BranchGroup.ALLOW_DETACH);
+        /*top.setCapability(Group.ALLOW_DETACH);
         top.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         top.setCapability(Group.ALLOW_CHILDREN_WRITE);
         top.setCapability(Group.ALLOW_CHILDREN_READ);
         top.setCapability(Node.ALLOW_AUTO_COMPUTE_BOUNDS_READ);
         top.setCapability(Node.ALLOW_BOUNDS_READ);
         
-        handle.setCapability(BranchGroup.ALLOW_DETACH);
+        handle.setCapability(Group.ALLOW_DETACH);
         handle.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         handle.setCapability(Group.ALLOW_CHILDREN_WRITE);
         handle.setCapability(Group.ALLOW_CHILDREN_READ);
@@ -190,18 +183,18 @@ public class STLObject
         trans.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         trans.setCapability(Group.ALLOW_CHILDREN_WRITE);
         trans.setCapability(Group.ALLOW_CHILDREN_READ);
-        trans.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        trans.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+        trans.setCapability(Group.ALLOW_TRANSFORM_WRITE);
+        trans.setCapability(Group.ALLOW_TRANSFORM_READ);
         
         stl.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         stl.setCapability(Group.ALLOW_CHILDREN_WRITE);
         stl.setCapability(Group.ALLOW_CHILDREN_READ);
-        stl.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        stl.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+        stl.setCapability(Group.ALLOW_TRANSFORM_WRITE);
+        stl.setCapability(Group.ALLOW_TRANSFORM_READ);*/
         
-        trans.addChild(stl);
-        handle.addChild(trans);
-        top.addChild(handle);
+        trans.getChildren().add(stl);
+        handle.getChildren().add(trans);
+        top.getChildren().add(handle);
         
         Attributes nullAtt = new Attributes(null, this, null, null);
         top.setUserData(nullAtt);
@@ -222,7 +215,7 @@ public class STLObject
      * @param lastPicked
      * @return 
      */
-    public Attributes addSTL(String location, Vector3d offset, Appearance app, STLObject lastPicked) 
+    public Attributes addSTL(String location, Vector3d offset, Scene app, STLObject lastPicked) 
     {
     	Attributes att = new Attributes(null, this, null, app);
     	Contents child = loadSingleSTL(location, att, offset, lastPicked);
@@ -250,7 +243,7 @@ public class STLObject
      */
     private Contents loadSingleSTL(String location, Attributes att, Vector3d offset, STLObject lastPicked)
     {
-    	BranchGroup bgResult = null;
+    	Group bgResult = null;
     	CSG3D csgResult = null;
     	
     	StlFile loader = new StlFile();
@@ -260,18 +253,18 @@ public class STLObject
         try 
         {
         	
-        	//location=location.substring(5);
-        	//System.out.println(location);
+            //location=location.substring(5);
+            //System.out.println(location);
             scene = loader.load(location);
-        	CSGReader csgr = new CSGReader(location);
-        	if(csgr.csgAvailable())
-        		csgResult = csgr.csg();
+            CSGReader csgr = new CSGReader(location);
+            if(csgr.csgAvailable())
+                csgResult = csgr.csg();
             if (scene != null) 
             {
                 bgResult = scene.getSceneGroup();
-                bgResult.setCapability(Node.ALLOW_BOUNDS_READ);
+                /*bgResult.setCapability(Node.ALLOW_BOUNDS_READ);
                 bgResult.setCapability(Group.ALLOW_CHILDREN_READ);
-                bgResult.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+                bgResult.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);*/
                 
                 // Recursively add its attribute
                 
@@ -289,9 +282,9 @@ public class STLObject
                     		volume += s3dVolume(value);
                     		bbox = (BoundingBox)value.getBounds();
 
-                    		value.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE );
+                    		//value.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE );
                     		GeometryArray g = (GeometryArray)value.getGeometry();
-                    		g.setCapability(GeometryArray.ALLOW_COORDINATE_WRITE);
+                    		//g.setCapability(GeometryArray.ALLOW_COORDINATE_WRITE);
 
                     		recursiveSetUserData(value, att);
                     	}
@@ -305,20 +298,20 @@ public class STLObject
                 {
                 	// Add this object to lastPicked
                 	csgResult = setOffset(bgResult, csgResult, lastPicked.rootOffset);
-                	lastPicked.stl.addChild(bgResult);
+                	lastPicked.stl.getChildren().add(bgResult);
                 	lastPicked.setAppearance(lastPicked.getAppearance());
                 	lastPicked.updateBox(bbox);
                 } else
                 {
-                	// New independent object.
-                	stl.addChild(bgResult);
-                	off = getOffsets(bgResult, offset);
-                	rootOffset = off.centreToOrigin;
-                	csgResult = setOffset(stl, csgResult, rootOffset);
-                	Transform3D temp_t = new Transform3D();
+                    // New independent object.
+                    stl.getChildren().add(bgResult);
+                    off = getOffsets(bgResult, offset);
+                    rootOffset = off.centreToOrigin;
+                    csgResult = setOffset(stl, csgResult, rootOffset);
+                    Transform temp_t = new Transform3D();
                     temp_t.set(off.bottomLeftShift);
-                	trans.setTransform(temp_t);
-                	restoreAppearance();
+                    trans.setTransform(temp_t);
+                    restoreAppearance();
                 }
             } 
 
@@ -366,17 +359,17 @@ public class STLObject
         
     }
     
-    public BranchGroup top()
+    public Group top()
     {
     	return top;
     }
     
-    public TransformGroup trans()
+    public Group trans()
     {
     	return trans;
     }
     
-    public BranchGroup handle()
+    public Group handle()
     {
     	return handle;
     }
@@ -402,8 +395,8 @@ public class STLObject
     public String toSCAD()
     {
     	String result = " multmatrix(m = [ [";
-    	Transform3D t1 = new Transform3D();
-    	Transform3D t2 = new Transform3D();
+    	Transform t1 = new Transform3D();
+    	Transform t2 = new Transform3D();
     	trans.getTransform(t1);
     	t2.set(1.0, rootOffset);
     	t1.mul(t2);
@@ -431,8 +424,8 @@ public class STLObject
     	
     	for(int i = 0; i < contents.size(); i++)
     	{
-    		result += "      import_stl(\"";
-    		result += fileItCameFrom(i) + "\", convexity = 10);\n";
+            result += "      import_stl(\"";
+            result += fileItCameFrom(i) + "\", convexity = 10);\n";
     	}
     	result += "   }\n";
     	
@@ -444,7 +437,7 @@ public class STLObject
     	return contents.get(i).att;
     }
     
-    public BranchGroup branchGroup(int i)
+    public Group branchGroup(int i)
     {
     	return contents.get(i).stl;
     } 
@@ -472,7 +465,7 @@ public class STLObject
      * @param child
      * @param offset
      */
-    private Offsets getOffsets(BranchGroup child, Vector3d userOffset) 
+    private Offsets getOffsets(Group child, Vector3d userOffset) 
     {
     	Offsets result = new Offsets();
     	Vector3d offset = null;
@@ -487,15 +480,14 @@ public class STLObject
             bbox.getUpper(p1);
             
             // If no offset requested, set it to bottom-left-at-origin
-            
 
-            	if(offset == null) 
-            	{
-            		offset = new Vector3d();
-            		offset.x = -p0.x;
-            		offset.y = -p0.y;
-            		offset.z = -p0.z;
-            	} 
+            if(offset == null) 
+            {
+                    offset = new Vector3d();
+                    offset.x = -p0.x;
+                    offset.y = -p0.y;
+                    offset.z = -p0.z;
+            } 
  
             // How big?
             
@@ -529,14 +521,14 @@ public class STLObject
      * @param s
      * @param n
      */
-    public STLObject(BranchGroup s, String n) 
+    public STLObject(Group s, String n) 
     {
     	this();
   
-        stl.addChild(s);
+        stl.getChildren().add(s);
         extent = new Vector3d(1, 1, 1);  // Should never be needed.
         
-        Transform3D temp_t = new Transform3D();
+        Transform temp_t = new Transform3D();
         trans.setTransform(temp_t); 
     }
 
@@ -561,10 +553,10 @@ public class STLObject
                 Group g = (Group) sg;
                 
                 // recurse on child nodes
-                Iterator<Node> enumKids = g.getAllChildren( );
+                ObservableList<Node> enumKids = g.getChildren( );
                 
-                while(enumKids.hasNext( ))
-                    recursiveSetUserData( enumKids.next( ), me );
+                for(Node ob:enumKids)
+                    recursiveSetUserData( ob, me );
             } else if ( sg instanceof Shape3D ) 
             {
                 ((Shape3D)sg).setUserData(me);
@@ -575,12 +567,12 @@ public class STLObject
     
     // Move the object by p permanently (i.e. don't just apply a transform).
     
-    private void recursiveSetOffset(Object value, Vector3d p) 
+    private void recursiveSetOffset(Object sg, Vector3d p) 
     {
-        if( value instanceof SceneGraphObject != false ) 
-        {
+        //if( value instanceof SceneGraphObject != false ) 
+        //{
             // set the user data for the item
-            SceneGraphObject sg = (SceneGraphObject) value;
+            //SceneGraphObject sg = (SceneGraphObject) value;
             
             // recursively process group
             if( sg instanceof Group ) 
@@ -588,18 +580,18 @@ public class STLObject
                 Group g = (Group) sg;
                 
                 // recurse on child nodes
-                Iterator<Node> enumKids = g.getAllChildren( );
+                ObservableList<Node> enumKids = g.getChildren( );
                 
-                while(enumKids.hasNext( ))
-                    recursiveSetOffset( enumKids.next( ), p );
+                for(Node ob:enumKids)
+                    recursiveSetOffset( ob, p );
             } else if (sg instanceof Shape3D) 
             {
                     s3dOffset((Shape3D)sg, p);
             }
-        }
+        //}
     }
     
-    private CSG3D setOffset(BranchGroup bg, CSG3D c, Vector3d p)
+    private CSG3D setOffset(Group bg, CSG3D c, Vector3d p)
     {
     	recursiveSetOffset(bg, p);
     	if(c == null)
@@ -640,11 +632,11 @@ public class STLObject
      */
     public void translate(Vector3d p)
     {
-		Transform3D t3d1 = getTransform();
-		Transform3D t3d2 = new Transform3D();
-		t3d2.set(p);
-		t3d1.mul(t3d2);
-		setTransform(t3d1);
+        Transform t3d1 = getTransform();
+        Transform t3d2 = new Transform3D();
+        t3d2.set(p);
+        t3d1.mul(t3d2);
+        setTransform(t3d1);
     }
     
     // Shift a Shape3D permanently by p
@@ -666,12 +658,12 @@ public class STLObject
     
     // Scale the object by s permanently (i.e. don't just apply a transform).
     
-    private void recursiveSetScale(Object value, double x, double y, double z, boolean zOnly) 
+    private void recursiveSetScale(Object sg, double x, double y, double z, boolean zOnly) 
     {
-        if( value instanceof SceneGraphObject != false ) 
-        {
+        //if( value instanceof SceneGraphObject != false ) 
+        //{
             // set the user data for the item
-            SceneGraphObject sg = (SceneGraphObject) value;
+            //SceneGraphObject sg = (SceneGraphObject) value;
             
             // recursively process group
             if( sg instanceof Group ) 
@@ -679,15 +671,15 @@ public class STLObject
                 Group g = (Group) sg;
                 
                 // recurse on child nodes
-                Iterator<Node> enumKids = g.getAllChildren( );
+                ObservableList<Node> enumKids = g.getChildren( );
                 
-                while(enumKids.hasNext( ))
-                    recursiveSetScale( enumKids.next( ), x, y, z, zOnly );
+                for(Node ob:enumKids)
+                    recursiveSetScale( ob, x, y, z, zOnly );
             } else if ( sg instanceof Shape3D ) 
             {
                     s3dScale((Shape3D)sg, x, y, z, zOnly);
             }
-        }
+        //}
     }
     
    // Scale a Shape3D permanently by s
@@ -718,28 +710,28 @@ public class STLObject
 
     // Set my transform
     
-    public void setTransform(Transform3D t3d)
+    public void setTransform(Transform t3d)
     {
         trans.setTransform(t3d);
     }
     
     // Get my transform
     
-    public Transform3D getTransform()
+    public Transform getTransform()
     {
-    	Transform3D result = new Transform3D();
+    	Transform result = new Transform3D();
         trans.getTransform(result);
         return result;
     }
     
     // Get one of the the actual objects
     
-    public BranchGroup getSTL()
+    public Group getSTL()
     {
     	return stl;
     }
     
-    public BranchGroup getSTL(int i)
+    public Group getSTL(int i)
     {
     	return contents.get(i).stl;
     }
@@ -771,18 +763,18 @@ public class STLObject
     
     // Change colour etc. - recursive private call to walk the tree
     
-    private static void setAppearance_r(Object gp, Appearance a) 
+    private static void setAppearance_r(Object gp, Scene a) 
     {
         if( gp instanceof Group ) 
         {
             Group g = (Group) gp;
             
             // recurse on child nodes
-            Iterator<Node> enumKids = g.getAllChildren( );
+            ObservableList<Node> enumKids = g.getChildren( );
             
-            while(enumKids.hasNext( )) 
+            for(Node child:enumKids) 
             {
-                Object child = enumKids.next( );
+                //Object child = enumKids.next( );
                 if(child instanceof Shape3D) 
                 {
                     Shape3D lf = (Shape3D) child;
@@ -795,7 +787,7 @@ public class STLObject
     
     // Change colour etc. - call the internal fn to do the work.
     
-    public void setAppearance(Appearance a)
+    public void setAppearance(Scene a)
     {
         setAppearance_r(stl, a);     
     }
@@ -805,18 +797,18 @@ public class STLObject
      * @param gp
      * @return
      */
-    private static Appearance getAppearance_r(Object gp) 
+    private static Scene getAppearance_r(Object gp) 
     {
         if( gp instanceof Group ) 
         {
             Group g = (Group) gp;
             
             // recurse on child nodes
-            Iterator<Node> enumKids = g.getAllChildren( );
+            ObservableList<Node> enumKids = g.getChildren( );
             
-            while(enumKids.hasNext( )) 
+            for(Node child:enumKids) 
             {
-                Object child = enumKids.next( );
+                //Object child = enumKids.next( );
                 if(child instanceof Shape3D) 
                 {
                     Shape3D lf = (Shape3D) child;
@@ -825,10 +817,10 @@ public class STLObject
                     return getAppearance_r(child);
             }
         }
-        return new Appearance();
+        return new Scene();
     }
     
-    public Appearance getAppearance()
+    public Scene getAppearance()
     {
     	return getAppearance_r(stl);
     }
@@ -838,14 +830,14 @@ public class STLObject
      */
     public void restoreAppearance()
     {
-    	    Iterator<Node> enumKids = stl.getAllChildren( );
+        ObservableList<Node> enumKids = stl.getChildren( );
         
-        while(enumKids.hasNext( ))
+        for(Node b:enumKids)
         {
-        	Object b = enumKids.next();
-        	if(b instanceof BranchGroup)
+        	//Object b = enumKids.next();
+        	if(b instanceof Group)
         	{
-        		Attributes att = (Attributes)((BranchGroup)b).getUserData();
+        		Attributes att = (Attributes)((Group)b).getUserData();
         		if(att != null)
         			setAppearance_r(b, att.getAppearance());
         		else
@@ -894,14 +886,14 @@ public class STLObject
     // which should be set in t.  This can only be done if we're being controlled
     // by the mouse, making us the active object.
     
-    private void rClick(Transform3D t)
+    private void rClick(Transform t)
     {
         if(mouse == null)
             return;
         
         // Get the mouse transform and split it into a rotation and a translation
         
-        Transform3D mtrans = new Transform3D();
+        Transform mtrans = new Transform3D();
         mouse.getTransform(mtrans);
         Vector3d mouseTranslation = new Vector3d();
         Matrix3d mouseRotation = new Matrix3d();
@@ -920,7 +912,7 @@ public class STLObject
         
         // Apply the new rotation to the existing one
         
-        Transform3D spin = new Transform3D();
+        Transform spin = new Transform3D();
         spin.setRotation(mouseRotation);
         t.mul(spin);
         
@@ -932,7 +924,7 @@ public class STLObject
         
         // Then slide us back where we were
         
-        Transform3D fromZeroT = new Transform3D();
+        Transform fromZeroT = new Transform3D();
         fromZeroT.setTranslation(mouseTranslation);
 
         fromZeroT.mul(t);
@@ -954,7 +946,7 @@ public class STLObject
     	
         // Get the mouse transform and split it into a rotation and a translation
         
-        Transform3D mtrans = new Transform3D();
+        Transform mtrans = new Transform3D();
         if(mouse != null)
         {
         	mouse.getTransform(mtrans);
@@ -974,7 +966,7 @@ public class STLObject
         // Rescale the box
         
         if(zOnly)
-        	extent.z = z*extent.z;
+        	extent.z = z * extent.z;
         else
         {
         	extent.x *= x;
@@ -993,7 +985,7 @@ public class STLObject
 
         	// Then slide us back where we were
 
-        	Transform3D fromZeroT = new Transform3D();
+        	Transform fromZeroT = new Transform3D();
         	fromZeroT.setTranslation(mouseTranslation);
 
         	// Apply the whole new transformation
@@ -1003,10 +995,10 @@ public class STLObject
 
         // Rescale the object
  
-        Iterator<Node> things = stl.getAllChildren();
-        while(things.hasNext()) 
+        ObservableList<Node> things = stl.getChildren();
+        for(Node value:things) 
         {
-        	Object value = things.next();
+        	//Object value = things.next();
         	recursiveSetScale(value, x, y, z, zOnly);
         }
 
@@ -1026,7 +1018,7 @@ public class STLObject
         if(mouse == null)
             return;
         
-        Transform3D x90 = new Transform3D();
+        Transform x90 = new Transform3D();
         x90.set(new AxisAngle4d(1, 0, 0, 0.5*Math.PI));
         
         rClick(x90);
@@ -1037,7 +1029,7 @@ public class STLObject
         if(mouse == null)
             return;
         
-        Transform3D y90 = new Transform3D();
+        Transform y90 = new Transform3D();
         y90.set(new AxisAngle4d(0, 1, 0, 0.5*Math.PI));
         
         rClick(y90);
@@ -1050,8 +1042,8 @@ public class STLObject
         if(mouse == null)
             return;
         
-        Transform3D zAngle = new Transform3D();
-        zAngle.set(new AxisAngle4d(0, 0, 1, angle*Math.PI/180.0));
+        Transform zAngle = new Transform3D();
+        zAngle.set(new AxisAngle4d(0, 0, 1, angle * Math.PI / 180.0));
         
         rClick(zAngle);
     } 

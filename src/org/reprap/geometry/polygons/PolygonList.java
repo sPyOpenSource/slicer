@@ -56,6 +56,7 @@
 
 package org.reprap.geometry.polygons;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,33 +161,33 @@ class PolPoint
  */
 class chPair
 {
-	/**
-	 * 
-	 */
-	public int polygon;
-	
-	/**
-	 * 
-	 */
-	public int vertex;
-	
-	/**
-	 * Destroy me and all I point to
-	 */
-	public void destroy()
-	{
-		// I don't point to anything
-	}
-	
-	/**
-	 * @param p
-	 * @param v
-	 */
-	chPair(int p, int v)
-	{
-		polygon = p;
-		vertex = v;
-	}
+    /**
+     * 
+     */
+    public int polygon;
+
+    /**
+     * 
+     */
+    public int vertex;
+
+    /**
+     * Destroy me and all I point to
+     */
+    public void destroy()
+    {
+        // I don't point to anything
+    }
+
+    /**
+     * @param p
+     * @param v
+     */
+    chPair(int p, int v)
+    {
+        polygon = p;
+        vertex = v;
+    }
 }
 
 /**
@@ -440,6 +441,11 @@ public class PolygonList extends ArrayList<Polygon>
 	{
 		box = new Rectangle();
 	}
+        
+        public PolygonList(String svg){
+            File file = new File(svg);
+            box = null;
+        }
 	
 	/**
 	 * @return the current enclosing box
@@ -454,53 +460,57 @@ public class PolygonList extends ArrayList<Polygon>
 		this.box = box;
 	}
         
-        /**
-	 * Deep copy
+        public static void main(String[] arg){
+            PolygonList list = new PolygonList("/Users/xuyi/.svg");
+        }
+        
+    /**
+     * Deep copy
      * @param t
      * @return 
-	 */
-	@SuppressWarnings("unchecked")
+     */
+    @SuppressWarnings("unchecked")
     public static  PolygonList clone(PolygonList t) {
         PolygonList polygons = new PolygonList(new Rectangle(t.box));
         t.forEach((i) -> polygons.add(new Polygon(i)));
         return polygons;
     }
 
-	/**
-	 * Put a new list on the end
-	 * @param lst list to append to existing polygon list
-	 */
-	public void add(PolygonList lst)
-	{
-		if(lst.isEmpty())
-			return;
-		lst.forEach((i) -> add(new Polygon(i)));
-		box.expand(lst.box);
-	}
-	
-	/**
-	 * Add one new polygon to the list
-	 * @param p polygon to add to the list
+    /**
+     * Put a new list on the end
+     * @param lst list to append to existing polygon list
+     */
+    public void add(PolygonList lst)
+    {
+            if(lst.isEmpty())
+                    return;
+            lst.forEach((i) -> add(new Polygon(i)));
+            box.expand(lst.box);
+    }
+
+    /**
+     * Add one new polygon to the list
+     * @param p polygon to add to the list
      * @return 
-	 */
-        @Override
-	public boolean add(Polygon p)
-	{
-		box.expand(p.getBox());
-                return super.add(p);
-	}
+     */
+    @Override
+    public boolean add(Polygon p)
+    {
+            box.expand(p.getBox());
+            return super.add(p);
+    }
 	
-	/**
-	 * Add one new polygon to the list at location i
+    /**
+     * Add one new polygon to the list at location i
      * @param i
-	 * @param p polygon to add to the list
-	 */
-        @Override
-	public void add(int i, Polygon p)
-	{
-		super.add(i, p);
-		box.expand(p.getBox());
-	}
+     * @param p polygon to add to the list
+     */
+    @Override
+    public void add(int i, Polygon p)
+    {
+            super.add(i, p);
+            box.expand(p.getBox());
+    }
 	
 	/**
 	 * Swap two in the list
@@ -581,32 +591,32 @@ public class PolygonList extends ArrayList<Polygon>
 		return result;
 	}
 	
-	/**
-	 * Turn into SVG xml
+    /**
+     * Turn into SVG xml
      * @return 
-	 */
-	public String svg()
-	{
-		String result = "<?xml version=\"1.0\" standalone=\"no\"?>" +
-		"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"" +
-		"\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" +
-		"<svg" +
-		" width=\"" + Double.toString(box.x().length()) + "mm\"" +
-		" height=\""  + Double.toString(box.y().length()) +  "mm\"" +
-		" viewBox=\"" + Double.toString(box.x().low()) +
-		" " + Double.toString(box.y().low()) +
-		" " + Double.toString(box.x().high()) +
-		" " + Double.toString(box.y().high()) + "\"" +
-		" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" +
-		" <desc>RepRap polygon list - http://reprap.org</desc>";
-		
-		int leng = size();
-		for(int i = 0; i < leng; i++)
-			result += get(i).svg();
-		
-		result += "</svg>";
-		return result;
-	}
+     */
+    public String svg()
+    {
+            String result = "<?xml version=\"1.0\" standalone=\"no\"?>" +
+            "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"" +
+            "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" +
+            "<svg" +
+            " width=\"" + Double.toString(box.x().length()) + "mm\"" +
+            " height=\""  + Double.toString(box.y().length()) +  "mm\"" +
+            " viewBox=\"" + Double.toString(box.x().low()) +
+            " " + Double.toString(box.y().low()) +
+            " " + Double.toString(box.x().high()) +
+            " " + Double.toString(box.y().high()) + "\"" +
+            " xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" +
+            " <desc>RepRap polygon list - http://reprap.org</desc>";
+
+            int leng = size();
+            for(int i = 0; i < leng; i++)
+                    result += get(i).svg();
+
+            result += "</svg>";
+            return result;
+    }
 	
 	/**
 	 * Simplify all polygons by length d

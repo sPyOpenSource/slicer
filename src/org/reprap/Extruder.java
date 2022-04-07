@@ -1,8 +1,8 @@
 package org.reprap;
 
 import java.io.IOException;
+import javafx.scene.Scene;
 import org.reprap.devices.ExtruderState;
-import org.jogamp.java3d.Appearance;
 
 public interface Extruder
 {
@@ -296,7 +296,7 @@ public interface Extruder
     /**
      * @return the appearance (colour) to use in the simulation window for this material
      */
-    public Appearance getAppearance();  
+    public Scene getAppearance();  
 
     /**
      * Each logical extruder has a unique ID
