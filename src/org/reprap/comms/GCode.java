@@ -32,7 +32,7 @@ import org.reprap.utilities.ExtensionFileFilter;
 import org.reprap.Preferences;
 import org.reprap.geometry.LayerRules;
 
-public class GCodeReaderAndWriter
+public class GCode
 {
     // Codes for responses from the machine
     // A positive number returned is a request for that line number
@@ -151,19 +151,19 @@ public class GCodeReaderAndWriter
 
     public static void main(String[] arg){
         try {
-            GCodeReaderAndWriter reader = new GCodeReaderAndWriter("/Users/xuyi/Pictures/test.gcode");
-            reader.viewer();
+            GCode reader = new GCode("/Users/xuyi/Pictures/test.gcode");
+            //reader.viewer();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(GCodeReaderAndWriter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GCode.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public GCodeReaderAndWriter(String fis) throws FileNotFoundException{
+    public GCode(String fis) throws FileNotFoundException{
         init();
         fileInStream = new BufferedReader(new FileReader(fis));
     }
     
-    public GCodeReaderAndWriter()
+    public GCode()
     {
         init();
     }
@@ -172,7 +172,7 @@ public class GCodeReaderAndWriter
      * constructor for when we definitely want to send GCodes to a known file
      * @param fos
      */
-    public GCodeReaderAndWriter(PrintStream fos)
+    public GCode(PrintStream fos)
     {
         init();
         fileOutStream = fos;
@@ -419,7 +419,7 @@ public class GCodeReaderAndWriter
 		{
 			int l = Integer.parseInt(cmd.substring(cmd.indexOf(" ") + 1, cmd.indexOf("/")));
 			int o = Integer.parseInt(cmd.substring(cmd.indexOf("/") + 1));
-			setFractionDone(-1, l, o+1);
+			setFractionDone(-1, l, o + 1);
 		}
 		return false;
 	}
@@ -678,32 +678,32 @@ public class GCodeReaderAndWriter
 		long startWait = timer.getTime();
 		long timeNow;
 		long increment = 2000;
-		long longWait = 10*60*1000; // 10 mins...
+		long longWait = 10 * 60 * 1000; // 10 mins...
 		
 		for(;;)
 		{
 			timeNow = timer.getTime() - startWait;
 			if(timeNow > increment)
 			{
-				Debug.d("GCodeReaderAndWriter().waitForResponse(): waited for " + timeNow/1000 + " seconds.");
-				increment = 2*increment;
+				Debug.d("GCodeReaderAndWriter().waitForResponse(): waited for " + timeNow / 1000 + " seconds.");
+				increment = 2 * increment;
 			}
 			
 			if(timeNow > longWait)
 			{
-				Debug.e("GCodeReaderAndWriter().waitForResponse(): waited for " + timeNow/1000 + " seconds.");
+				Debug.e("GCodeReaderAndWriter().waitForResponse(): waited for " + timeNow / 1000 + " seconds.");
 				try {
 					queue("M0 ;shut RepRap down");
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					ex.printStackTrace();
 				}
 			}
 			
 			try
 			{
 				i = serialInStream.read();
-			} catch (IOException e)
+			} catch (IOException ex)
 			{
 				i = -1;
 			}
@@ -818,7 +818,7 @@ public class GCodeReaderAndWriter
 				queue(s);
 			}
 			fr.close();
-		} catch (Exception e) 
+		} catch (Exception ex) 
 		{
 			Debug.e("GCodeReaderAndWriter().copyFile: exception reading file " + fileName);
 		}
@@ -829,7 +829,6 @@ public class GCodeReaderAndWriter
 	{
 	}
 	
-
 	
 	public String loadGCodeFileForMaking()
 	{
@@ -849,7 +848,7 @@ public class GCodeReaderAndWriter
                     fileInStreamLength = chooser.getSelectedFile().length();
                     fileInStream = new BufferedReader(new FileReader(chooser.getSelectedFile()));
                     return chooser.getSelectedFile().getName();
-                } catch (FileNotFoundException e) 
+                } catch (FileNotFoundException ex) 
                 {
                     Debug.e("Can't read file " + name);
                     fileInStream = null;
@@ -909,7 +908,7 @@ public class GCodeReaderAndWriter
 				rfod.deleteOnExit();
 				layerFileNames += File.separator;
 				return shortName;
-			} catch (FileNotFoundException e) 
+			} catch (FileNotFoundException ex) 
 			{
 				Debug.e("Can't write to file '" + opFileName);
 				opFileName = null;
@@ -954,7 +953,7 @@ public class GCodeReaderAndWriter
 			fl.deleteOnExit();
 			FileOutputStream fileStream = new FileOutputStream(fl);
 			fileOutStream = new PrintStream(fileStream);
-		} catch (FileNotFoundException e)
+		} catch (FileNotFoundException ex)
 		{
 			Debug.e("Can't write to file " + lc.getLayerFileName());
 		}
@@ -995,7 +994,7 @@ public class GCodeReaderAndWriter
 			if (fileInStream != null)
 				fileInStream.close();
 
-		} catch (IOException e) {}
+		} catch (IOException ex) {}
 
 	}
 	
@@ -1004,7 +1003,7 @@ public class GCodeReaderAndWriter
 		return opFileName + gcodeExtension;
 	}
 
-    public Scene viewer() {
+    public Scene buildScene() {
         Group root = new Group();
         String line;
         try {
@@ -1028,6 +1027,7 @@ public class GCodeReaderAndWriter
                 }
                 if(line.startsWith("G1 ")){
                     double x = 0, y = 0, z = 0;
+                    line = line.split(";")[0];
                     for(String command:line.split(" ")){
                         if(command.startsWith("X")){
                             x = Double.parseDouble(command.substring(1));
@@ -1042,19 +1042,20 @@ public class GCodeReaderAndWriter
                     Point3D point = new Point3D(x,y,z);
                     points.add(point);
                 }
+                System.out.println(line);
             }
-            for(Point3D p:points){
-                Sphere ball = new Sphere(0.01);
-                ball.translateXProperty().set(p.getX());
-                ball.translateYProperty().set(p.getY());
-                ball.translateZProperty().set(p.getZ());
+            for(Point3D p : points){
+                Sphere ball = new Sphere(5);
+                ball.translateXProperty().set(p.getX() * 50);
+                ball.translateYProperty().set(p.getY() * 50);
+                ball.translateZProperty().set(p.getZ() * 50);
                 root.getChildren().add(ball);
             }
             Scene scene = new Scene(root, 800, 600, true, SceneAntialiasing.BALANCED);
             scene.setFill(Color.GREEN);
             return scene;
         } catch (IOException ex) {
-            Logger.getLogger(GCodeReaderAndWriter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GCode.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }

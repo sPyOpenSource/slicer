@@ -108,21 +108,21 @@ public class Preferences {
 		// Construct location of user's properties file
 		File mainDir = new File(getUsersRootDir());
 		// If it's not there copy the system one
-		if(!mainDir.exists())
-			copySystemConfigurations(mainDir);
+		/*if(!mainDir.exists())
+			copySystemConfigurations(mainDir);*/
 		 
 		
 		mainPreferences = new Properties();
 
 		// Construct URL of user properties file
-		String path = getPropertiesPath();
+		String path = "/Users/xuyi/reprap.properties";//getPropertiesPath();
 		File mainFile = new File(path);
 		URL mainUrl = mainFile.toURI().toURL();
 		
 		if (mainFile.exists())
 		{
                     mainPreferences.load(mainUrl.openStream());
-                    comparePreferences();
+                    //comparePreferences();
 		} else
 		{
                     File file = new File("/Users/xuyi/reprap.properties");

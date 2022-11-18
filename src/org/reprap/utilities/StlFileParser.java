@@ -1,3 +1,4 @@
+
 package org.reprap.utilities;
 
 import java.io.StreamTokenizer;
@@ -63,7 +64,7 @@ public class StlFileParser extends StreamTokenizer
     // All printable ascii characters
     wordChars('!', '~');
 
-    whitespaceChars(' ', ' ');
+    whitespaceChars(' ',  ' ');
     whitespaceChars('\n', '\n');
     whitespaceChars('\r', '\r');
     whitespaceChars('\t', '\t');
@@ -84,7 +85,7 @@ public class StlFileParser extends StreamTokenizer
 	if (ttype != TT_WORD){
 	    throw new IOException("Expected number on line " + lineno());
         }
-	nval =  (Double.valueOf(sval));
+	nval =  (Double.parseDouble(sval));
     } catch (IOException | NumberFormatException e) {
         System.err.println(e.getMessage());
         return false;

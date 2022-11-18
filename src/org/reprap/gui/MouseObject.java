@@ -56,7 +56,10 @@ This version: 14 April 2006
 
 package org.reprap.gui;
 
+import java.util.List;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import org.reprap.geometry.polyhedra.STLObject;
 
@@ -65,7 +68,7 @@ import org.reprap.geometry.polyhedra.STLObject;
 
 public class MouseObject
 {
-    private Group top = null;        // Attach this to the rest of the tree
+    private Group top = null;     // Attach this to the rest of the tree
     private Group free = null;    // Mouse transform with no restrictions
     private Group slide = null;   // Mouse transform that only does XY sliding
     private Group trans = null;   // Set to one of the two above   
@@ -79,32 +82,32 @@ public class MouseObject
         // Set up the free transform that allows all movements
         
         free = new Group( );
-        free.setCapability( Group.ALLOW_TRANSFORM_READ );
-        free.setCapability( Group.ALLOW_TRANSFORM_WRITE );
+        //free.setCapability( Group.ALLOW_TRANSFORM_READ );
+        //free.setCapability( Group.ALLOW_TRANSFORM_WRITE );
         
-        MouseRotate mr = new MouseRotate( free );
+        Rotate mr = new Rotate( free );
         mr.setSchedulingBounds( behaviorBounds );
         free.addChild( mr );
         
         MouseTranslate mt = new MouseTranslate( free );
         mt.setSchedulingBounds( behaviorBounds );
-        mt.setFactor(mouse_tf*mt.getXFactor(), mouse_tf*mt.getYFactor());
+        mt.setFactor(mouse_tf * mt.getXFactor(), mouse_tf * mt.getYFactor());
         free.addChild( mt );
                 
         MouseZoom mz = new MouseZoom( free );
         mz.setSchedulingBounds( behaviorBounds );
-        mz.setFactor(mouse_zf*mz.getFactor());
+        mz.setFactor(mouse_zf * mz.getFactor());
         free.addChild( mz );
         
         // Set up the slide transform that only allows XY movement
         
         slide = new Group( );
-        slide.setCapability( TransformGroup.ALLOW_TRANSFORM_READ );
-        slide.setCapability( TransformGroup.ALLOW_TRANSFORM_WRITE );
+        //slide.setCapability( TransformGroup.ALLOW_TRANSFORM_READ );
+        //slide.setCapability( TransformGroup.ALLOW_TRANSFORM_WRITE );
         
         MouseTranslate mts = new MouseTranslate( slide );
         mts.setSchedulingBounds( behaviorBounds );
-        mts.setFactor(mouse_tf*mts.getXFactor(), mouse_tf*mts.getYFactor());
+        mts.setFactor(mouse_tf * mts.getXFactor(), mouse_tf * mts.getYFactor());
         slide.addChild( mts );
         
         // Set up the thing to attach and detach
@@ -117,7 +120,7 @@ public class MouseObject
         
         // ALLOW_EVERYTHING would be useful...
         
-        top.setCapability(Group.ALLOW_DETACH);
+        /*top.setCapability(Group.ALLOW_DETACH);
         top.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         top.setCapability(Group.ALLOW_CHILDREN_WRITE); 
         
@@ -129,11 +132,11 @@ public class MouseObject
         slide.setCapability(Group.ALLOW_CHILDREN_EXTEND);
         slide.setCapability(Group.ALLOW_CHILDREN_WRITE);        
         slide.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        slide.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+        slide.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);*/
         
         // Set the default action as unrestricted movement
         
-        top.addChild(free);
+        top.getChildren().add(free);
         trans = free;
     }
     
@@ -156,7 +159,7 @@ public class MouseObject
         {
             movingThing.setTransform(t3d);
             movingThing.handle().detach();
-            movingThing.top().addChild(movingThing.handle());
+            movingThing.top().getChildren().add(movingThing.handle());
             movingThing.setMouse(null);
         }
         
@@ -166,7 +169,7 @@ public class MouseObject
         
         // Remove the current mouse transform from top...
         
-        top.removeChild(0);
+        top.getChildren().remove(0);
         
         // ... and add the one selected by slideOnly.
         
@@ -175,7 +178,7 @@ public class MouseObject
         else
             trans = free;
         
-        top.addChild(trans);
+        top.getChildren().add(trans);
         
         // Get the current transform of the thing being moved...
         
@@ -189,13 +192,13 @@ public class MouseObject
         
         // ...and set the mouse transform to that of the thing being moved.
         
-        trans.setTransform(t3d);
+        trans.getTransforms().add(t3d);
         
         // Put us in the path to the thing being moved.
         
         movingThing.handle().detach();
-        trans.addChild(movingThing.handle());
-        movingThing.top().addChild(top); 
+        trans.getChildren().add(movingThing.handle());
+        movingThing.top().getChildren().add(top); 
         
         top.setUserData(movingThing);
         trans.setUserData(movingThing);
@@ -209,21 +212,18 @@ public class MouseObject
     
     public void mul(Transform t3d)
     {
-        Transform current = new Transform3D();
-        trans.getTransform(current);
-        current.mul(t3d);
-        trans.setTransform(current);
+        trans.getTransforms().add(t3d);
     }
     
     // Get and set our transform
     
-    public void getTransform(Transform t3d)
+    public List<Transform> getTransforms()
     {
-        trans.getTransform(t3d);
+        return trans.getTransforms();
     }
+    
     public void setTransform(Transform t3d)
     {
-        trans.setTransform(t3d);
+        trans.getTransforms().add(t3d);
     }
 }
-

@@ -72,7 +72,6 @@ import java.util.logging.Logger;
 
 import javafx.scene.Scene;
 import javafx.scene.paint.Material;
-
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
@@ -96,10 +95,10 @@ import org.jogamp.vecmath.Color3f;
  */
 public class RrGraphics 
 {
-	static final Color background = Color.white;
-	static final Color boxes = Color.blue;
-	static final Color polygon1 = Color.red;
-	static final Color polygon0 = Color.black;	
+	static final Color background   = Color.white;
+	static final Color boxes        = Color.blue;
+	static final Color polygon1     = Color.red;
+	static final Color polygon0     = Color.black;	
 	static final Color infill = Color.pink;
 	static final Color hatch1 = Color.magenta;
 	static final Color hatch0 = Color.orange;
@@ -272,12 +271,14 @@ public class RrGraphics
 		if(waitTillDone)
 		{
 			StatusMessage statusWindow = new StatusMessage(new JFrame());
-			statusWindow.setMessage("Left mouse - magnify\n" +
-					"Middle mouse - evaluate\n" +
-					"Right mouse - full image\n" +
-					"b - toggle boxes\n" + 
-					"s - toggle solid shading\n\n" 
-			);
+			statusWindow.setMessage("""
+                                                Left mouse - magnify
+                                                Middle mouse - evaluate
+                                                Right mouse - full image
+                                                b - toggle boxes
+                                                s - toggle solid shading
+                                                
+                                                """);
 			statusWindow.setLocation(new Point(frameWidth + 20, 0));
 			statusWindow.setVisible(true);
 
@@ -437,9 +438,9 @@ public class RrGraphics
 	private void setColour(Attributes at)
 	{
 		Scene ap = at.getAppearance();
-		Material mt = ap.getMaterial();
+		//Material mt = ap.getMaterial();
 		Color3f col = new Color3f();
-		mt.getDiffuseColor(col);
+		//mt.getDiffuseColor(col);
 		//g2d.setColor(col.get());		
 	}
 	
@@ -449,10 +450,10 @@ public class RrGraphics
 	 */
 	private void plot(Polygon p)
 	{
-		if(p.size() <= 0)
-			return;
-		if(Rectangle.intersection(p.getBox(), scaledBox).empty())
-			return;
+            if(p.size() <= 0)
+                return;
+            if(Rectangle.intersection(p.getBox(), scaledBox).empty())
+                return;
 	    if(p.getAttributes().getAppearance() == null)
 	    {
 	    	Debug.e("RrGraphics: polygon with size > 0 has null appearance.");
@@ -460,14 +461,14 @@ public class RrGraphics
 	    }
 	    
 	    setColour(p.getAttributes());
-		move(p.point(0));
-		for(int i = 1; i < p.size(); i++)	
-				plot(p.point(i));
-		if(p.isClosed())
-		{
-			g2d.setColor(Color.RED);
-			plot(p.point(0));
-		}
+            move(p.point(0));
+            for(int i = 1; i < p.size(); i++)	
+                plot(p.point(i));
+            if(p.isClosed())
+            {
+                g2d.setColor(Color.RED);
+                plot(p.point(0));
+            }
 	}	
 
 	

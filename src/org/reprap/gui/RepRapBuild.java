@@ -86,7 +86,6 @@
 package org.reprap.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -107,19 +106,21 @@ import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 
 import javafx.geometry.Bounds;
-import javafx.scene.AmbientLight;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 
-import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3d;
 
 import org.reprap.Attributes;
 import org.reprap.Printer;
-import org.reprap.RFO;
+import org.reprap.utilities.RFO;
 import org.reprap.Preferences;
 import org.reprap.geometry.polygons.Point2D;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
@@ -228,6 +229,7 @@ class MaterialRadioButtons extends JPanel {
     	att = a;
     	rrb = r;
     	stlIndex = index;
+        
         //Create and set up the window.
     	JFrame f = new JFrame();
     	dialog = new JDialog(f, "Material selector");
@@ -281,65 +283,65 @@ class ScaleXYZ extends JPanel {
 	
 	private ScaleXYZ(double xi, double yi, double zi)
 	{
-		super(new BorderLayout());
-		if(!called)
-		{
-			x = xi;
-			y = yi;
-			z = zi;
-			called = true;
-		}
-		JPanel radioPanel;
-		radioPanel = new JPanel(new GridLayout(0, 1));
-		radioPanel.setSize(300,200);
-		
-		JLabel jLabel0 = new JLabel();
+            super(new BorderLayout());
+            if(!called)
+            {
+                x = xi;
+                y = yi;
+                z = zi;
+                called = true;
+            }
+            JPanel radioPanel;
+            radioPanel = new JPanel(new GridLayout(0, 1));
+            radioPanel.setSize(300,200);
+
+            JLabel jLabel0 = new JLabel();
 	    radioPanel.add(jLabel0);
 	    jLabel0.setText("Rescale selected object (NB Meshlab is quicker)");
-		jLabel0.setHorizontalAlignment(SwingConstants.CENTER);
+            jLabel0.setHorizontalAlignment(SwingConstants.CENTER);
 		
 	    JLabel jLabel2 = new JLabel();
 	    radioPanel.add(jLabel2);
 	    jLabel2.setText(" X ");
-		jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
-		xv = new JTextField(""+x);
+            jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
+            xv = new JTextField("" + x);
 	    xv.setSize(20, 10);
-		xv.setHorizontalAlignment(SwingConstants.CENTER);
-		radioPanel.add(xv);
+            xv.setHorizontalAlignment(SwingConstants.CENTER);
+            radioPanel.add(xv);
 		
 	    JLabel jLabel3 = new JLabel();
 	    radioPanel.add(jLabel3);
 	    jLabel3.setText(" Y ");
-		jLabel3.setHorizontalAlignment(SwingConstants.CENTER);
-		yv = new JTextField(""+y);
+            jLabel3.setHorizontalAlignment(SwingConstants.CENTER);
+            yv = new JTextField("" + y);
 	    yv.setSize(20, 10);
-		yv.setHorizontalAlignment(SwingConstants.CENTER);
-		radioPanel.add(yv);
+            yv.setHorizontalAlignment(SwingConstants.CENTER);
+            radioPanel.add(yv);
 		
 	    JLabel jLabel4 = new JLabel();
 	    radioPanel.add(jLabel4);
 	    jLabel4.setText(" Z ");
-		jLabel4.setHorizontalAlignment(SwingConstants.CENTER);
-		zv = new JTextField(""+z);
+            jLabel4.setHorizontalAlignment(SwingConstants.CENTER);
+            zv = new JTextField("" + z);
 	    zv.setSize(20, 10);
-		zv.setHorizontalAlignment(SwingConstants.CENTER);
-		radioPanel.add(zv);
-		
-		JButton okButton = new JButton();
-		radioPanel.add(okButton);
-		okButton.setText("OK");
-		okButton.addActionListener((ActionEvent evt) -> {
-                    OKHandler();
-                });
-		JButton cancelButton = new JButton();
-		radioPanel.add(cancelButton);
-		cancelButton.setText("Cancel");
-		cancelButton.addActionListener((ActionEvent evt) -> {
-                    cancelHandler();
-                });
-		
-		add(radioPanel, BorderLayout.LINE_START);
-		setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+            zv.setHorizontalAlignment(SwingConstants.CENTER);
+            radioPanel.add(zv);
+
+            JButton okButton = new JButton();
+            radioPanel.add(okButton);
+            okButton.setText("OK");
+            okButton.addActionListener((ActionEvent evt) -> {
+                OKHandler();
+            });
+            JButton cancelButton = new JButton();
+            radioPanel.add(cancelButton);
+            cancelButton.setText("Cancel");
+            cancelButton.addActionListener((ActionEvent evt) -> {
+                cancelHandler();
+            });
+
+            add(radioPanel, BorderLayout.LINE_START);
+            setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 	}
 	
 	public static double x() { return x; }
@@ -348,17 +350,17 @@ class ScaleXYZ extends JPanel {
 	
 	public static void OKHandler()
 	{
-		x = Double.parseDouble(xv.getText().trim());
-		y = Double.parseDouble(yv.getText().trim());
-		z = Double.parseDouble(zv.getText().trim());
-		dialog.dispose();
+            x = Double.parseDouble(xv.getText().trim());
+            y = Double.parseDouble(yv.getText().trim());
+            z = Double.parseDouble(zv.getText().trim());
+            dialog.dispose();
 	}
 	public static void cancelHandler()
 	{
-		x = 1;
-		y = 1;
-		z = 1;
-		dialog.dispose();
+            x = 1;
+            y = 1;
+            z = 1;
+            dialog.dispose();
 	}
     
     public static void createAndShowGUI() 
@@ -392,52 +394,56 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	
 	private static final long serialVersionUID = 1L;
 	private MouseObject mouse = null;
-	private PickCanvas pickCanvas = null; // The thing picked by a mouse click
-	private STLObject lastPicked = null; // The last thing picked
+	//private PickCanvas pickCanvas = null; // The thing picked by a mouse click
+	private STLObject lastPicked = null;  // The last thing picked
 	private final AllSTLsToBuild stls;
 	private boolean reordering;
 	private RrGraphics graphics;
 
 	// Constructors
 	public RepRapBuild() throws Exception {
-		initialise();
-		stls = new AllSTLsToBuild();
-		reordering = false;
-		graphics = null;
-		setPreferredSize(new Dimension(600, 400));
+            initialise();
+            stls = new AllSTLsToBuild();
+            reordering = false;
+            graphics = null;
+            setPreferredSize(new Dimension(600, 400));
 	}
 	
 	public AllSTLsToBuild getSTLs()
 	{
-		return stls;
+            return stls;
 	}
 	
 	// Set bg light grey
         @Override
 	protected Background createBackground() {
-		Background back = new Background(bgColour);
-		back.setApplicationBounds(createApplicationBounds());
-		return back;
+            Background back = new Background(new BackgroundFill(/*bgColour*/
+                    Color.RED,
+                    CornerRadii.EMPTY, 
+                    Insets.EMPTY)
+            );
+            //back.setApplicationBounds(createApplicationBounds());
+            return back;
 	}
 
         @Override
-	protected Group createViewBranchGroup(Group[] tgArray,
-			ViewPlatform vp) {
+	protected Group createViewBranchGroup(Group[] tgArray) {
 		Group vpBranchGroup = new Group();
 
 		if (tgArray != null && tgArray.length > 0) {
-			Group parentGroup = vpBranchGroup;
-			Group curTg;
+                    Group parentGroup = vpBranchGroup;
+                    Group curTg;
 
                     for (Group tgArray1 : tgArray) {
                         curTg = tgArray1;
-                        parentGroup.addChild(curTg);
+                        parentGroup.getChildren().add(curTg);
                         parentGroup = curTg;
                     }
 
-			tgArray[tgArray.length - 1].addChild(vp);
-		} else
-			vpBranchGroup.addChild(vp);
+                    //tgArray[tgArray.length - 1].addChild(vp);
+		} else {
+                    //vpBranchGroup.getChildren().add(vp);
+                }
 
 		return vpBranchGroup;
 	}
@@ -452,20 +458,23 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
 		Bounds lightBounds = getApplicationBounds();
 
-		AmbientLight ambLight = new AmbientLight(true, new Color3f(1.0f, 1.0f,
-				1.0f));
+		/*AmbientLight ambLight = new AmbientLight(true, new Color3f(
+                        1.0f, 
+                        1.0f,
+			1.0f)
+                );
 		ambLight.setInfluencingBounds(lightBounds);
-		objRoot.addChild(ambLight);
+		objRoot.getChildren().add(ambLight);
 
 		DirectionalLight headLight = new DirectionalLight();
 		headLight.setInfluencingBounds(lightBounds);
-		objRoot.addChild(headLight);
+		objRoot.addChild(headLight);*/
 
 		mouse = new MouseObject(getApplicationBounds(), mouse_tf, mouse_zf);
 
-		wv_and_stls.setCapability(Group.ALLOW_CHILDREN_EXTEND);
+		/*wv_and_stls.setCapability(Group.ALLOW_CHILDREN_EXTEND);
 		wv_and_stls.setCapability(Group.ALLOW_CHILDREN_WRITE);
-		wv_and_stls.setCapability(Group.ALLOW_CHILDREN_READ);
+		wv_and_stls.setCapability(Group.ALLOW_CHILDREN_READ);*/
 
 		// Load the STL file for the working volume
 
@@ -475,12 +484,12 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
 		workingVolume = new STLObject();
 		workingVolume.addSTL(stlFile, wv_offset, wv_app, null);
-		wv_and_stls.addChild(workingVolume.top());
+		wv_and_stls.getChildren().add(workingVolume.top());
 
 		// Set the mouse to move everything
 
 		mouse.move(world, false);
-		objRoot.addChild(world.top());
+		objRoot.getChildren().add(world.top());
 
 		return objRoot;
 	}
@@ -489,14 +498,14 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
         @Override
 	public void mouseClicked(MouseEvent e) {
-		pickCanvas.setShapeLocation(e);
+		//pickCanvas.setShapeLocation(e);
 
-		PickResult pickResult = pickCanvas.pickClosest();
+		PickResult pickResult = null;//pickCanvas.pickClosest();
 		STLObject picked;
 
 		if (pickResult != null) // Got anything?
 		{
-			Node actualNode = pickResult.getObject();
+			Node actualNode = null;//pickResult.getObject();
 
 			Attributes att = (Attributes)actualNode.getUserData();
 			picked = att.getParent();
@@ -504,9 +513,9 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			{
 				if (picked != workingVolume) // STL object picked?
 				{
-					//picked = findSTL(name);
+					picked = findSTL(name);
 					if (picked != null) {
-						picked.setAppearance(picked_app); // Highlight it
+						//picked.setAppearance(picked_app); // Highlight it
 						if (lastPicked != null  && !reordering)
 							lastPicked.restoreAppearance(); // lowlight
 						// the last
@@ -526,10 +535,10 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	
 	public void mouseToWorld()
 	{
-		if (lastPicked != null)
-			lastPicked.restoreAppearance();
-		mouse.move(world, false); // ...switch the mouse to moving the world
-		lastPicked = null;
+            if (lastPicked != null)
+                lastPicked.restoreAppearance();
+            mouse.move(world, false); // ...switch the mouse to moving the world
+            lastPicked = null;
 	}
 
 	// Find the stl object in the scene with the given name
@@ -571,7 +580,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 				stl.translate(offset);
 				if(stl.numChildren() > 0)
 				{
-					wv_and_stls.addChild(stl.top());
+					wv_and_stls.getChildren().add(stl.top());
 					stls.add(stl);
 				}
 			}
@@ -595,8 +604,8 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			Vector3d v = new Vector3d(middle.x(), middle.y(), 0);
 			Vector3d e = stl.extent();
 			e.z = 0;
-			e.x = -0.5*e.x;
-			e.y = -0.5*e.y;
+			e.x = -0.5 * e.x;
+			e.y = -0.5 * e.y;
 			v.add(e);
 			stl.translate(v);
 		}
@@ -605,7 +614,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			// New separate object, or just appended to lastPicked?
 			if(stl.numChildren() > 0)
 			{
-				wv_and_stls.addChild(stl.top());
+				wv_and_stls.getChildren().add(stl.top());
 				stls.add(stl);
 			}
 
@@ -623,7 +632,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		// New separate object, or just appended to lastPicked?
 		if(stl.numChildren() > 0)
 		{
-			wv_and_stls.addChild(stl.top());
+			wv_and_stls.getChildren().add(stl.top());
 			stls.add(index, stl);
 		}
 	}
@@ -641,10 +650,10 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	{
 		if (s == null)
 			return;
-		//deleteAllSTLs();
+		deleteAllSTLs();
 		AllSTLsToBuild newStls = RFO.load(s);
 		for(int i = 0; i < newStls.size(); i++)
-			wv_and_stls.addChild(newStls.get(i).top());
+			wv_and_stls.getChildren().add(newStls.get(i).top());
 		stls.add(newStls);
 	}
 	
@@ -661,17 +670,17 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
 
 	public void start() throws Exception {
-		if (pickCanvas == null)
+		//if (pickCanvas == null)
 			initialise();
 	}
 
-        @Override
+        //@Override
 	protected void addCanvas3D(Canvas c3d) {
 		setLayout(new BorderLayout());
-		add(c3d, BorderLayout.CENTER);
+		//add(c3d, BorderLayout.CENTER);
 		doLayout();
 
-		if (sceneBranchGroup != null) {
+		/*if (sceneBranchGroup != null) {
 			c3d.addMouseListener(this);
 
 			pickCanvas = new PickCanvas(c3d, sceneBranchGroup);
@@ -679,7 +688,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			pickCanvas.setTolerance(4.0f);
 		}
 
-		c3d.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		c3d.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));*/
 	}
 
 	// Callbacks for when the user rotates the selected object
@@ -737,7 +746,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			return;
 		for(int i = 0; i < stls.size(); i++)
 			stls.get(i).restoreAppearance();
-		//mouseToWorld();		
+		mouseToWorld();		
 		lastPicked = null;
 		reordering = false;
 	}
@@ -753,7 +762,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			lastPicked.restoreAppearance();
 			lastPicked = stls.getNextOne(lastPicked);
 		}
-		lastPicked.setAppearance(picked_app);
+		//lastPicked.setAppearance(picked_app);
 		mouse.move(lastPicked, true);
 	}
 	
@@ -775,9 +784,9 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		if (index >= 0) 
 		{
 			stls.remove(index);
-			index = wv_and_stls.indexOfChild(lastPicked.top());
+			index = wv_and_stls.getChildren().indexOf(lastPicked.top());
 			mouseToWorld();
-			wv_and_stls.removeChild(index);
+			wv_and_stls.getChildren().remove(index);
 			lastPicked = null;
 		}
 	}
@@ -788,8 +797,8 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		{
 			STLObject s = stls.get(i);
 			stls.remove(i);
-			int index = wv_and_stls.indexOfChild(s.top());
-			wv_and_stls.removeChild(index);
+			int index = wv_and_stls.getChildren().indexOf(s.top());
+			wv_and_stls.getChildren().remove(index);
 		}
 		mouseToWorld();
 		lastPicked = null;

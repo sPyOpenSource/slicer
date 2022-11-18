@@ -52,7 +52,7 @@ package org.reprap.geometry.polygons;
 
 import java.util.ArrayList;
 
-import org.reprap.CSGOp;
+import org.reprap.comms.CSGOp;
 import org.reprap.geometry.polyhedra.CSG3D;
 import org.reprap.geometry.polyhedra.Point3D;
 import org.reprap.utilities.Debug;

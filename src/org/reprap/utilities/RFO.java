@@ -8,7 +8,8 @@
  * 
  * This is the class that handles .rfo files.
  */
-package org.reprap;
+
+package org.reprap.utilities;
 // http://www.devx.com/tips/Tip/14049
 
 import java.io.*;
@@ -29,10 +30,10 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 
 import org.jogamp.vecmath.Matrix4d;
+import org.reprap.Preferences;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 import org.reprap.geometry.polyhedra.CSGReader;
 import org.reprap.geometry.polyhedra.STLObject;
-import org.reprap.utilities.Debug;
 
 public class RFO 
 {
@@ -245,6 +246,7 @@ public class RFO
 		/**
 		 * Begin the XML document - no action needed.
 		 */
+                @Override
 		public void startDocument ()
 		{
 			//Debug.a("Start document");
@@ -254,6 +256,7 @@ public class RFO
 		/**
 		 * End the XML document - no action needed.
 		 */
+                @Override
 		public void endDocument ()
 		{
 			//Debug.a("End document");
@@ -263,6 +266,7 @@ public class RFO
 		/**
 		 * Start an element
 		 */
+                @Override
 		public void startElement (String uri, String name,
 				String qName, org.xml.sax.Attributes atts)
 		{
@@ -307,6 +311,7 @@ public class RFO
 		/**
 		 * End an element
 		 */
+                @Override
 		public void endElement (String uri, String name, String qName)
 		{
 			if (uri.equals(""))
@@ -351,6 +356,7 @@ public class RFO
 		/**
 		 * Nothing to do for characters in between.
 		 */
+                @Override
 		public void characters (char ch[], int start, int length)
 		{
 //			for (int i = start; i < start + length; i++) 
@@ -474,7 +480,7 @@ public class RFO
 	{
 		try
 		{
-			FileChannel inChannel = new	FileInputStream(in).getChannel();
+			FileChannel inChannel = new FileInputStream(in).getChannel();
 			FileChannel outChannel = new FileOutputStream(out).getChannel();
 			inChannel.transferTo(0, inChannel.size(), outChannel);
 			inChannel.close();
@@ -565,15 +571,15 @@ public class RFO
 	 */
 	private void writeTransform(Group trans)
 	{
-		Transform t = new Transform3D();
+		List<Transform> t;
 		Matrix4d m = new Matrix4d();
-		trans.getTransform(t);
+		t = trans.getTransforms();
 		t.get(m);
 		xml.push("transform3D");
-		 xml.write("row m00=\"" + m.m00 + "\" m01=\"" + m.m01 + "\" m02=\"" + m.m02 + "\" m03=\"" + m.m03 + "\"");
-		 xml.write("row m10=\"" + m.m10 + "\" m11=\"" + m.m11 + "\" m12=\"" + m.m12 + "\" m13=\"" + m.m13 + "\"");
-		 xml.write("row m20=\"" + m.m20 + "\" m21=\"" + m.m21 + "\" m22=\"" + m.m22 + "\" m23=\"" + m.m23 + "\"");
-		 xml.write("row m30=\"" + m.m30 + "\" m31=\"" + m.m31 + "\" m32=\"" + m.m32 + "\" m33=\"" + m.m33 + "\"");
+		xml.write("row m00=\"" + m.m00 + "\" m01=\"" + m.m01 + "\" m02=\"" + m.m02 + "\" m03=\"" + m.m03 + "\"");
+		xml.write("row m10=\"" + m.m10 + "\" m11=\"" + m.m11 + "\" m12=\"" + m.m12 + "\" m13=\"" + m.m13 + "\"");
+		xml.write("row m20=\"" + m.m20 + "\" m21=\"" + m.m21 + "\" m22=\"" + m.m22 + "\" m23=\"" + m.m23 + "\"");
+		xml.write("row m30=\"" + m.m30 + "\" m31=\"" + m.m31 + "\" m32=\"" + m.m32 + "\" m33=\"" + m.m33 + "\"");
 		xml.pop();
 	}
 	
@@ -592,16 +598,16 @@ public class RFO
 		for(int i = 0; i < astl.size(); i++)
 		{
 			xml.push("object name=\"object-" + i + "\"");
-			 xml.push("files");
-			  STLObject stlo = astl.get(i);
-			  for(int subObj = 0; subObj < stlo.size(); subObj++)
-			  {
-				  xml.push("file location=\"" + uNames.get(stlo.getUnique(subObj)) + "\" filetype=\"application/sla\" material=\"" + 
+			xml.push("files");
+			STLObject stlo = astl.get(i);
+			for(int subObj = 0; subObj < stlo.size(); subObj++)
+			{
+				xml.push("file location=\"" + uNames.get(stlo.getUnique(subObj)) + "\" filetype=\"application/sla\" material=\"" + 
 						  stlo.attributes(subObj).getMaterial() + "\"");
-				  xml.pop();
-			  }
-			 xml.pop();
-			 writeTransform(stlo.trans());
+				xml.pop();
+			}
+			xml.pop();
+			writeTransform(stlo.trans());
 			xml.pop();
 		}
 		xml.close();
@@ -647,7 +653,7 @@ public class RFO
 	 */
 	public static boolean checkFile(String pth, String nm)
 	{
-		File file= new File(pth + nm);
+		File file = new File(pth + nm);
 		if(file.exists())
 		{
 			String[] options = { "OK", "Cancel" };

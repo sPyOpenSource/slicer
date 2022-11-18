@@ -189,7 +189,7 @@ public class GerberGCode {
 		pcb = pcb.offset(-0.5*penWidth);
 		PolygonList pol = pcb.allPerimiters(pcb.attribute());
 		
-		while(pol.size() > 0)
+		while(!pol.isEmpty())
 		{
 			result.add(pol);
 			pcb = pcb.offset(-penWidth);

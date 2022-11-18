@@ -9,6 +9,7 @@ package org.reprap.gui.botConsole;
 import java.io.IOException;
 import org.reprap.Printer;
 import org.reprap.utilities.Debug;
+
 /**
  *
  * @author  ensab

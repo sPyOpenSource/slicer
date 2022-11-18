@@ -1,3 +1,4 @@
+
 package org.reprap.gui;
 
 import java.awt.BorderLayout;
@@ -11,9 +12,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Iterator;
+
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.layout.Background;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Transform;
 
@@ -66,8 +70,8 @@ abstract public class Panel3D extends JPanel {
 	//--------------------------------------------------------------
 	
 	protected static final Color3f black = new Color3f(0, 0, 0);	
-	protected Appearance picked_app = null; // Colour for the selected part
-	protected Appearance wv_app = null; // Colour for the working volume
+	protected Material picked_app = null; // Colour for the selected part
+	protected Material wv_app = null; // Colour for the working volume
 	protected Group wv_and_stls = new Group(); // Where in the scene
 
 	// the
@@ -78,7 +82,7 @@ abstract public class Panel3D extends JPanel {
 	protected STLObject workingVolume = null; // The RepRap machine itself.
 	
 	// The world in the Applet
-	protected VirtualUniverse universe = null;
+	protected Scene universe = null;
 	protected Group sceneBranchGroup = null;
 	protected Bounds applicationBounds = null;
 
@@ -89,7 +93,8 @@ abstract public class Panel3D extends JPanel {
 	abstract protected Background createBackground();
 
 	abstract protected Group createViewBranchGroup(
-			Group[] tgArray, ViewPlatform vp);
+			Group[] tgArray//, ViewPlatform vp
+        );
 	
 	public void refreshPreferences()
 	{
@@ -99,7 +104,7 @@ abstract public class Panel3D extends JPanel {
 		// All this needs to go into Preferences.java
 		try
 		{
-			wv_location = Preferences.getBasePath();
+                    wv_location = Preferences.getBasePath();
 
 		// Translate and zoom scaling factors
 		
@@ -146,13 +151,10 @@ abstract public class Panel3D extends JPanel {
 	{
 		
 		refreshPreferences();
-		
 
-		picked_app = new Appearance();
-		picked_app.setMaterial(new PhongMaterial(selectedColour, black, selectedColour, black, 0f));
+		picked_app = new PhongMaterial(selectedColour, black, selectedColour, black, 0f);
 				
-		wv_app = new Appearance();
-		wv_app.setMaterial(new PhongMaterial(machineColour, black, machineColour, black, 0f));
+		wv_app = new PhongMaterial(machineColour, black, machineColour, black, 0f);
 
 		initJava3d();
 
@@ -200,7 +202,7 @@ abstract public class Panel3D extends JPanel {
 
 	// Return handles on big things above where we are interested
 
-	public VirtualUniverse getVirtualUniverse() {
+	public Scene getVirtualUniverse() {
 		return universe;
 	}
 
@@ -364,7 +366,7 @@ abstract public class Panel3D extends JPanel {
 
 		// set the view transform
 
-		tgArray[0].setTransform(viewTrans);
+		tgArray[0].getTransforms().add(viewTrans);
 
 		return tgArray;
 	}

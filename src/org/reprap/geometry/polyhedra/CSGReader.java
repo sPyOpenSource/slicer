@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import org.jogamp.vecmath.Matrix4d;
 
-import org.reprap.CSGOp;
+import org.reprap.comms.CSGOp;
 import org.reprap.utilities.Debug;
 
 /**
@@ -217,7 +217,7 @@ public class CSGReader
 			}
 			String i = model.substring(0, c);
 			subString(c+1);
-			return Integer.valueOf(i);
+			return Integer.parseInt(i);
 		}
 		
 		/**
@@ -234,7 +234,7 @@ public class CSGReader
 			}
 			String d = model.substring(0, c);
 			subString(c+1);
-			return Double.valueOf(d);
+			return Double.parseDouble(d);
 		}
 		
 		/**
@@ -251,7 +251,7 @@ public class CSGReader
 			}
 			String d = model.substring(0, c);
 			subString(c+1);
-			return Double.valueOf(d);
+			return Double.parseDouble(d);
 		}
 		
 		/**
@@ -268,7 +268,7 @@ public class CSGReader
 			}
 			String d = model.substring(0, c);
 			subString(c+1);
-			return Double.valueOf(d);
+			return Double.parseDouble(d);
 		}
 		
 		/**

@@ -1,19 +1,19 @@
 package org.reprap.devices;
 
-import org.reprap.comms.GCodeReaderAndWriter;
+import org.reprap.comms.GCode;
 import org.reprap.utilities.Debug;
 import org.reprap.Printer;
 import org.reprap.Preferences;
 
 public class GCodeExtruder extends GenericExtruder
 {
-	GCodeReaderAndWriter gcode;
+	GCode gcode;
 	
 	/**
 	 * @param p
 	 * @param extruderId
 	 */
-	public GCodeExtruder(GCodeReaderAndWriter writer, int extruderId, Printer p)
+	public GCodeExtruder(GCode writer, int extruderId, Printer p)
 	{
 		super(extruderId, p);
 		es.setSpeed(0);

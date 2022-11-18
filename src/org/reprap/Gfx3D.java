@@ -21,8 +21,9 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 
-import org.reprap.comms.GCodeReaderAndWriter;
+import org.reprap.comms.GCode;
 import org.reprap.utilities.StlFile;
+import org.reprap.utilities.SvgFileParser;
 
 public class Gfx3D extends Application {
     private static double zTrans = -3500;
@@ -44,10 +45,13 @@ public class Gfx3D extends Application {
         camera.setFarClip(Integer.MAX_VALUE);
         camera.setNearClip(0.1);
 
-        StlFile file = new StlFile();
         try {
-            GCodeReaderAndWriter reader = new GCodeReaderAndWriter("/Users/xuyi/Pictures/test.gcode");
-            Scene scene = reader.viewer();// file.load("/Users/xuyi/Pictures/edf/files/edf120.stl");
+            StlFile file = new StlFile();
+            GCode reader = new GCode("/Users/xuyi/Source/GCode/test.gcode");
+            SvgFileParser parser = new SvgFileParser();
+            //Scene scene = reader.viewer();
+            //Scene scene = file.load("/Users/xuyi/Pictures/edf/files/edf120.stl");
+            Scene scene = parser.buildScene("/Users/xuyi/Pictures/3D/edf/slice/Edf12051.svg");
             scene.setCamera(camera);
             scene.setOnScroll((ScrollEvent event) -> {
                 zTrans += event.getDeltaY() * (zTrans / -50);

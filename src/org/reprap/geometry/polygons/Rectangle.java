@@ -289,6 +289,7 @@ public class Rectangle
 	/**
 	 * Convert to a string
 	 */
+        @Override
 	public String toString()
 	{
 		if(empty)
@@ -443,4 +444,3 @@ public class Rectangle
 		return new Rectangle(Interval.union(a.x, b.x), Interval.union(a.y, b.y));	
 	}
 }
-

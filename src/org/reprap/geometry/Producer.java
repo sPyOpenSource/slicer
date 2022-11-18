@@ -200,7 +200,7 @@ public class Producer {
                 lastExtruder = thisExtruder;
             }
         }
-		
+	
         PolygonList allPolygons[] = new PolygonList[totalPhysicalExtruders];
         PolygonList tempBorderPolygons[] = new PolygonList[totalPhysicalExtruders];
         PolygonList tempFillPolygons[] = new PolygonList[totalPhysicalExtruders];
@@ -253,23 +253,23 @@ public class Producer {
                 });
 
                 for(int physicalExtruder = 0; physicalExtruder < allPolygons.length; physicalExtruder++) {
-                    if(tempBorderPolygons[physicalExtruder].size() > 0) {
+                    if(!tempBorderPolygons[physicalExtruder].isEmpty()) {
                         double linkUp = tempBorderPolygons[physicalExtruder].get(0).getAttributes().getExtruder().getExtrusionSize();
                         linkUp = 4 * linkUp * linkUp;
                         tempBorderPolygons[physicalExtruder].radicalReOrder(linkUp);
                         tempBorderPolygons[physicalExtruder] = tempBorderPolygons[physicalExtruder].nearEnds(startNearHere, false, -1);
-                        if(tempBorderPolygons[physicalExtruder].size() > 0) {
+                        if(!tempBorderPolygons[physicalExtruder].isEmpty()) {
                             Polygon last = tempBorderPolygons[physicalExtruder].get(tempBorderPolygons[physicalExtruder].size() - 1);
                             startNearHere = last.point(last.size() - 1);
                         }
                         allPolygons[physicalExtruder].add(tempBorderPolygons[physicalExtruder]);
                     }
-                    if(tempFillPolygons[physicalExtruder].size() > 0) {
+                    if(!tempFillPolygons[physicalExtruder].isEmpty()) {
                         double linkUp = tempFillPolygons[physicalExtruder].get(0).getAttributes().getExtruder().getExtrusionSize();
                         linkUp = 4 * linkUp * linkUp;
                         tempFillPolygons[physicalExtruder].radicalReOrder(linkUp);
                         tempFillPolygons[physicalExtruder] = tempFillPolygons[physicalExtruder].nearEnds(startNearHere, false, -1);
-                        if(tempFillPolygons[physicalExtruder].size() > 0) {
+                        if(!tempFillPolygons[physicalExtruder].isEmpty()) {
                             Polygon last = tempFillPolygons[physicalExtruder].get(tempFillPolygons[physicalExtruder].size() - 1);
                             startNearHere = last.point(last.size() - 1);
                         }

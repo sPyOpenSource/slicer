@@ -31,7 +31,7 @@ import org.reprap.Preferences;
 import org.reprap.geometry.polygons.*;
 import org.reprap.utilities.RrGraphics;
 import org.reprap.utilities.Debug;
-import org.reprap.comms.GCodeReaderAndWriter;
+import org.reprap.comms.GCode;
 import org.reprap.devices.GCodeExtruder;
 import org.reprap.machines.Simulator;
 
@@ -147,7 +147,7 @@ public class PCB {
     File outputGCodes;
     Extruder pcbPen;
     PolygonList penPaths;
-    GCodeReaderAndWriter gcode;
+    GCode gcode;
 
     /**
      * @param itp
@@ -176,7 +176,7 @@ public class PCB {
         penPaths = penPaths.nearEnds(new Point2D(0, 0), true, 1.5*penWidth);
 
 
-        if(Preferences.simulate() && penPaths.size() > 0)
+        if(Preferences.simulate() && !penPaths.isEmpty())
         {
             RrGraphics simulationPlot2 = new RrGraphics("PCB pen plotlines");
             simulationPlot2.init(penPaths.getBox(), false, "0");
@@ -189,15 +189,15 @@ public class PCB {
 
     public static void main(String[] arg){
         try {
-            GCodeReaderAndWriter reader = new GCodeReaderAndWriter("/Users/xuyi/Source/KiCad/minikame/gerber.gcode");
+            GCode reader = new GCode("/Users/xuyi/Source/KiCad/minikame/gerber.gcode");
             PCB pcb = new PCB(
                 new File("/Users/xuyi/Source/KiCad/minikame/gerber/minikame-Edge.Cuts.gbr"), 
-                new File("/Users/xuyi/Source/KiCad/minikame.drl"), 
+                new File("/Users/xuyi/Source/KiCad/minikame/gerber/minikame.drl"), 
                 new File("/Users/xuyi/Source/KiCad/minikame/gerber.gcode"), 
                 new GCodeExtruder(reader, 0, new Simulator())
             );
             pcb.writeGCodes();
-            reader.viewer();
+            //reader.viewer();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
@@ -306,7 +306,7 @@ public class PCB {
 	public void writeGCodes()
 	{
 		try {
-			gcode = new GCodeReaderAndWriter(new PrintStream(outputGCodes));
+			gcode = new GCode(new PrintStream(outputGCodes));
 		} catch (FileNotFoundException e) {
 			Logger.getLogger(PCB.class.getName()).log(Level.SEVERE, null, e);
 			return;
@@ -498,21 +498,21 @@ public class PCB {
 												d = 3;
 												line = line.substring(1);
 												splitline = line.split("Y");
-												while(splitline[0].length() < 6)
+												/*while(splitline[0].length() < 6)
 													splitline[0] = "0" + splitline[0];
 												while(splitline[1].length() < 6)
-													splitline[1] = "0" + splitline[1];
+													splitline[1] = "0" + splitline[1];*/
 											} else {
 												splitline[0] = line.substring(1, line.indexOf("Y"));
-												splitline[1] = line.substring(line.indexOf("Y")+1, line.indexOf("D"));
-												d = Integer.valueOf(line.substring(line.indexOf("D")+1, line.indexOf("D")+3));
+												splitline[1] = line.substring(line.indexOf("Y") + 1, line.indexOf("D"));
+												d = Integer.valueOf(line.substring(line.indexOf("D") + 1, line.indexOf("D") + 3));
 											}
 							
-											int divFactorX = (int)Math.pow(10.0,Integer.parseInt(formatX.substring(1)));
-											int divFactorY = (int)Math.pow(10.0,Integer.parseInt(formatY.substring(1)));
+											int divFactorX = (int)Math.pow(10.0, Integer.parseInt(formatX.substring(1)));
+											int divFactorY = (int)Math.pow(10.0, Integer.parseInt(formatY.substring(1)));
 
-											x = scale*Double.valueOf(splitline[0])/divFactorX;
-											y = scale*Double.valueOf(splitline[1])/divFactorY;
+											x = scale * Double.valueOf(splitline[0]) / divFactorX;
+											y = scale * Double.valueOf(splitline[1]) / divFactorY;
 
 											x += offsetX;
 											y += offsetY;

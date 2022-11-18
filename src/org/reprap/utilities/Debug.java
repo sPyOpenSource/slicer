@@ -29,14 +29,14 @@ public class Debug {
 		if(db == null)
 			db = new Debug();
 		db.gCodeMessage = null;
-		try {
+		/*try {
 			// Try to load debug setting from properties file
 			db.debug = Preferences.loadGlobalBool("Debug");
 		} catch (IOException ex) {
 			// Fall back to non-debug mode if no setting is available
 			db.debug = false;
-		}
-		
+		}*/
+		db.debug = true;
 		db.commsDebug = false;
 	}
 	

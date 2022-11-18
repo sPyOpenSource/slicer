@@ -54,7 +54,7 @@ import java.util.ArrayList;
 
 import org.jogamp.vecmath.Matrix4d;
 
-import org.reprap.CSGOp;
+import org.reprap.comms.CSGOp;
 import org.reprap.utilities.Debug;
 import org.reprap.geometry.polygons.Interval;
 

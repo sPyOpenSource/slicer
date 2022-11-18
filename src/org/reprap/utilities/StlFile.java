@@ -26,8 +26,6 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.TriangleMesh;
 
 import org.jogamp.vecmath.Vector3f;
@@ -81,7 +79,7 @@ public class StlFile
   private final ArrayList normList = new ArrayList();		// Holds Vector3f
 
   // GeometryInfo needs Arrays
-  private List<Point3D> coordArray = new ArrayList<>();
+  private final List<Point3D> coordArray = new ArrayList<>();
   private Vector3f[] normArray = null;
 
   // Needed because TRIANGLE_STRIP_ARRAY
@@ -102,7 +100,7 @@ public class StlFile
             StlFileParser st = new StlFileParser(reader);
 
             // Initialize data
-            file.setAscii(true);      // Default ascii
+            file.setAscii(true); // Default ascii
             file.readFile(st);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(StlFile.class.getName()).log(Level.SEVERE, null, ex);
@@ -239,7 +237,7 @@ public class StlFile
   {
     float x, y, z;
 
-    if(!(parser.ttype==StlFileParser.TT_WORD && parser.sval.equals("vertex")))
+    if(!(parser.ttype == StlFileParser.TT_WORD && parser.sval.equals("vertex")))
     {
       System.err.println("Format Error:expecting 'vertex' on line " + parser.lineno());
     } else {
@@ -730,7 +728,7 @@ public class StlFile
         float[] texCoords = {0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f};
         int[] faces = {0, 0, 2, 2, 1, 1, 0, 0, 1, 1, 2, 2};
         int i = 0;
-        for(Point3D p:coordArray){
+        for(Point3D p : coordArray){
             /*Sphere ball = new Sphere(0.5);
             ball.translateXProperty().set(p.getX());
             ball.translateYProperty().set(p.getY());

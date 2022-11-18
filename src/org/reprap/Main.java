@@ -2,6 +2,7 @@
  * Created on Mar 29, 2006
  *
  */
+
 package org.reprap;
 
 import java.awt.Dimension;
@@ -36,6 +37,7 @@ import org.reprap.utilities.ExtensionFileFilter;
 import org.reprap.utilities.RrDeleteOnExit;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
+
 /**
  *
  * mainpage RepRap Host Controller Software
@@ -331,7 +333,7 @@ public class Main {
         };
         t.start();
     }
-	
+
     public File onOpen(String description, String[] extensions, String defaultRoot) 
     {
         String result;
@@ -501,7 +503,6 @@ public class Main {
         });
 
     }
-
 
     public static void setRepRapPresent(boolean a)
     {

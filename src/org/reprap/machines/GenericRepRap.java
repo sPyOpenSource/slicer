@@ -297,20 +297,20 @@ public abstract class GenericRepRap implements CartesianPrinter
 
 			// TODO This should be from calibration
 			
-			double xNE = Preferences.loadGlobalDouble("WorkingX(mm)");
-			double yNE = Preferences.loadGlobalDouble("WorkingY(mm)");
+			double xNE = 300;//Preferences.loadGlobalDouble("WorkingX(mm)");
+			double yNE = 300;//Preferences.loadGlobalDouble("WorkingY(mm)");
 			bedNorthEast = new Point2D(xNE, yNE);
 
 			// Load our maximum feedrate variables
-			double maxFeedrateX = Preferences.loadGlobalDouble("MaximumFeedrateX(mm/minute)");
-			double maxFeedrateY = Preferences.loadGlobalDouble("MaximumFeedrateY(mm/minute)");
-			maxFeedrateZ = Preferences.loadGlobalDouble("MaximumFeedrateZ(mm/minute)");
+			double maxFeedrateX = 0;//Preferences.loadGlobalDouble("MaximumFeedrateX(mm/minute)");
+			double maxFeedrateY = 0;//Preferences.loadGlobalDouble("MaximumFeedrateY(mm/minute)");
+			maxFeedrateZ = 0;//Preferences.loadGlobalDouble("MaximumFeedrateZ(mm/minute)");
 			
-			maxXYAcceleration = Preferences.loadGlobalDouble("MaxXYAcceleration(mm/mininute/minute)");
-			slowXYFeedrate = Preferences.loadGlobalDouble("SlowXYFeedrate(mm/minute)");
+			maxXYAcceleration = 0;//Preferences.loadGlobalDouble("MaxXYAcceleration(mm/mininute/minute)");
+			slowXYFeedrate = 0;//Preferences.loadGlobalDouble("SlowXYFeedrate(mm/minute)");
 			
-			maxZAcceleration = Preferences.loadGlobalDouble("MaxZAcceleration(mm/mininute/minute)");
-			slowZFeedrate = Preferences.loadGlobalDouble("SlowZFeedrate(mm/minute)");
+			maxZAcceleration = 0;//Preferences.loadGlobalDouble("MaxZAcceleration(mm/mininute/minute)");
+			slowZFeedrate = 0;//Preferences.loadGlobalDouble("SlowZFeedrate(mm/minute)");
 			
 			//set our standard feedrates.
 			fastXYFeedrate = Math.min(maxFeedrateX, maxFeedrateY);
@@ -318,12 +318,12 @@ public abstract class GenericRepRap implements CartesianPrinter
 			
 			idleZ = true;
 			
-			fanLayer = Preferences.loadGlobalInt("FanLayer");
+			fanLayer = 0;//Preferences.loadGlobalInt("FanLayer");
 			
-			foundationLayers = Preferences.loadGlobalInt("FoundationLayers");
+			foundationLayers = 0;//Preferences.loadGlobalInt("FoundationLayers");
 						
-			bedTemperatureTarget = Preferences.loadGlobalDouble("BedTemperature(C)");
-			int extruderCount = Preferences.loadGlobalInt("NumberOfExtruders");
+			bedTemperatureTarget = 100;//Preferences.loadGlobalDouble("BedTemperature(C)");
+			int extruderCount = 1;//Preferences.loadGlobalInt("NumberOfExtruders");
 			if (extruderCount < 1)
 				throw new Exception("A Reprap printer must contain at least one extruder.");
 
@@ -340,7 +340,7 @@ public abstract class GenericRepRap implements CartesianPrinter
                 extruder1.refreshPreferences();
             }
 		
-		Debug.refreshPreferences();
+		//Debug.refreshPreferences();
 	}
 	
 	/**

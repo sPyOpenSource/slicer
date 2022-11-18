@@ -251,7 +251,7 @@ public class LayerRules
 			}
 		}
 		
-		long thick = Math.round(thickestZStep*1000.0);
+		long thick = Math.round(thickestZStep * 1000.0);
 		for(int i = 0; i < es.length; i++)
 		{
 			long thin = Math.round(es[i].getExtrusionHeight()*1000.0);

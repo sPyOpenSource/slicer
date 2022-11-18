@@ -12,7 +12,7 @@ package org.reprap.machines;
 
 import org.reprap.Extruder;
 import org.reprap.Preferences;
-import org.reprap.comms.GCodeReaderAndWriter;
+import org.reprap.comms.GCode;
 import org.reprap.utilities.Debug;
 import org.reprap.devices.GCodeExtruder;
 import org.reprap.geometry.LayerRules;
@@ -33,7 +33,7 @@ public class GCodeRepRap extends GenericRepRap {
     /**
     * our class to send gcode instructions
     */
-    GCodeReaderAndWriter gcode;
+    GCode gcode;
 
     /**
      * @throws Exception
@@ -41,7 +41,7 @@ public class GCodeRepRap extends GenericRepRap {
     public GCodeRepRap() throws Exception {
         super();
 
-        gcode = new GCodeReaderAndWriter();
+        gcode = new GCode();
         String s = "M110";
         if(Debug.d())
             s += " ; Reset the line numbers";

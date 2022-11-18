@@ -1,3 +1,4 @@
+
 package org.reprap.geometry.polyhedra;
 
 import java.io.File;
@@ -26,10 +27,11 @@ import org.reprap.geometry.polygons.Point2D;
 import org.reprap.geometry.polygons.Polygon;
 import org.reprap.geometry.polygons.PolygonList;
 import org.reprap.geometry.polygons.Rectangle;
+
 import org.reprap.Attributes;
 import org.reprap.Extruder;
 import org.reprap.Preferences;
-import org.reprap.RFO;
+import org.reprap.utilities.RFO;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
 
@@ -789,9 +791,9 @@ public class AllSTLsToBuild
 		PolygonList pp = new PolygonList();
 		Scene black = new Scene();
 		Material b = new PhongMaterial();
-		b.setDiffuseColor(new Color3f(0,0,0));
+		b.setDiffuseColor(new Color3f(0, 0, 0));
 		black.setMaterial(b);
-		Attributes a = new Attributes(null,null,null,black);
+		Attributes a = new Attributes(null, null, null, black);
 		for(int i = 0; i < edges.size(); i++)
 		{
 			Polygon p = new Polygon(a, false);
@@ -1310,8 +1312,7 @@ public class AllSTLsToBuild
 		{
 			s.translate(new Vector3d(-0.5 * shieldSize.x, -0.5 * shieldSize.y, 0));
 			Transform t3d1 = s.getTransform();
-			Transform t3d2 = new Transform3D();
-			t3d2.rotate(0, 0, 0.5 * Math.PI);
+			Transform t3d2 = Transform.rotate(0, 0, 0.5 * Math.PI);
 			t3d1.mul(t3d2);
 			s.setTransform(t3d1);
 			s.translate(new Vector3d(yOff, -xOff, zOff));
@@ -1373,7 +1374,7 @@ public class AllSTLsToBuild
 		// If we've got polygons to plot, maybe amend them so they start in the middle 
 		// of a hatch (this gives cleaner boundaries).  
 		
-		if(borderPolygons != null && borderPolygons.size() > 0)
+		if(borderPolygons != null && !borderPolygons.isEmpty())
 		{
 			borderPolygons.middleStarts(hatchedPolygons, layerRules, slice);
 		}
@@ -1476,11 +1477,11 @@ public class AllSTLsToBuild
 
 				// Deal with STL-generated edges
 
-				if(edges[extruderID].size() > 0)
+				if(!edges[extruderID].isEmpty())
 				{
 					pgl = simpleCull(edges[extruderID]);
 
-					if(pgl.size() > 0)
+					if(!pgl.isEmpty())
 					{
 						// Remove wrinkles
 
@@ -1583,19 +1584,17 @@ public class AllSTLsToBuild
 		
 		even1.sub((Tuple3d)odd);
 		even2.sub((Tuple3d)odd);
-		double t = (z - odd.z)/even1.z;	
-		Point2D e1 = new Point2D(odd.x + t*even1.x, odd.y + t*even1.y);	
+		double t = (z - odd.z) / even1.z;	
+		Point2D e1 = new Point2D(odd.x + t * even1.x, odd.y + t * even1.y);	
 		e1 = new Point2D(e1.x(), e1.y());
-		t = (z - odd.z)/even2.z;
-		Point2D e2 = new Point2D(odd.x + t*even2.x, odd.y + t*even2.y);
+		t = (z - odd.z) / even2.z;
+		Point2D e2 = new Point2D(odd.x + t * even2.x, odd.y + t * even2.y);
 		e2 = new Point2D(e2.x(), e2.y());
 		
 		// Too short?
 		//if(!Point2D.same(e1, e2, Preferences.lessGridSquare()))
 			edges[att.getExtruder().getID()].add(new LineSegment(e1, e2, att));
 	}
-	
-
 	
     /**
      * Run through a Shape3D and set edges from it at plane z
@@ -1614,7 +1613,7 @@ public class AllSTLsToBuild
         Point3d q2 = new Point3d();
         Point3d q3 = new Point3d();
         
-        if(g.getVertexCount()%3 != 0)
+        if(g.getVertexCount() % 3 != 0)
         {
         	Debug.e("addAllEdges(): shape3D with vertices not a multiple of 3!");
         }
@@ -1623,8 +1622,8 @@ public class AllSTLsToBuild
             for(int i = 0; i < g.getVertexCount(); i += 3) 
             {
                 g.getCoordinate(i, p1);
-                g.getCoordinate(i+1, p2);
-                g.getCoordinate(i+2, p3);
+                g.getCoordinate(i + 1, p2);
+                g.getCoordinate(i + 2, p3);
                 trans.transform(p1, q1);
                 trans.transform(p2, q2);
                 trans.transform(p3, q3);
@@ -1641,20 +1640,15 @@ public class AllSTLsToBuild
      */
     private void recursiveSetEdges(Object sg, Transform trans, double z, Attributes att, ArrayList<LineSegment> edges[]) 
     {
-        //if(value instanceof SceneGraphObject) 
-        //{
-            //SceneGraphObject sg = (SceneGraphObject)value;
-            if(sg instanceof Group) 
-            {
-                Group g = (Group)sg;
-                ObservableList<Node> enumKids = g.getChildren( );
-                for(Node ob:enumKids)
-                    recursiveSetEdges(ob, trans, z, att, edges);
-            } else if (sg instanceof Shape3D) 
-            {
-                addAllEdges((Shape3D)sg, trans, z, att, edges);
-            }
-        //}
+        if(sg instanceof Group g) 
+        {
+            ObservableList<Node> enumKids = g.getChildren( );
+            for(Node ob:enumKids)
+                recursiveSetEdges(ob, trans, z, att, edges);
+        } else if (sg instanceof Shape3D shape3D) 
+        {
+            addAllEdges(shape3D, trans, z, att, edges);
+        }
     }
 
 }
