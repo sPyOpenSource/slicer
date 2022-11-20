@@ -20,6 +20,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Transform;
+import javafx.stage.Stage;
 
 import javax.swing.JPanel;
 import org.jogamp.vecmath.Color3f;
@@ -206,8 +207,8 @@ abstract public class Panel3D extends JPanel {
 		return universe;
 	}
 
-	protected View createView(ViewPlatform vp) {
-		View view = new View();
+	protected Scene createView(Stage vp) {
+		Scene view = new Scene();
 
 		PhysicalBody pb = createPhysicalBody();
 		PhysicalEnvironment pe = createPhysicalEnvironment();
@@ -223,7 +224,7 @@ abstract public class Panel3D extends JPanel {
 		view.setPhysicalBody(pb);
 
 		if (vp != null)
-			view.attachViewPlatform(vp);
+			vp.setScene(view);
 
 		view.setBackClipDistance(getBackClipDistance());
 		view.setFrontClipDistance(getFrontClipDistance());
@@ -272,7 +273,7 @@ abstract public class Panel3D extends JPanel {
 
 		Group sceneBranchGroup = createSceneBranchGroup();
 
-		ViewPlatform vp = createViewPlatform();
+		Stage vp = createViewPlatform();
 		Group viewBranchGroup = createViewBranchGroup(
 				getViewTransformGroupArray(), vp);
 
@@ -306,8 +307,8 @@ abstract public class Panel3D extends JPanel {
 		return new PhysicalEnvironment();
 	}
 
-	protected ViewPlatform createViewPlatform() {
-		ViewPlatform vp = new ViewPlatform();
+	protected Stage createViewPlatform() {
+		Stage vp = new Stage();
 		vp.setViewAttachPolicy(View.RELATIVE_TO_FIELD_OF_VIEW);
 		vp.setActivationRadius(getViewPlatformActivationRadius());
 

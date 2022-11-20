@@ -60,7 +60,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 
-import org.jogamp.vecmath.AxisAngle4d;
 import org.jogamp.vecmath.Matrix3d;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Point3d;
@@ -71,6 +70,7 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
@@ -79,6 +79,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.shape.Shape3D;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
 import org.reprap.utilities.StlFile;
@@ -395,11 +396,10 @@ public class STLObject
     public String toSCAD()
     {
     	String result = " multmatrix(m = [ [";
-    	Transform t1 = new Transform3D();
+    	List<Transform> t1 = trans.getTransforms();
     	Transform t2 = new Transform3D();
-    	trans.getTransform(t1);
     	t2.set(1.0, rootOffset);
-    	t1.mul(t2);
+    	t1.add(t2);
     	Matrix4d m = new Matrix4d();
     	t1.get(m);
     	result += new BigDecimal(Double.toString(m.m00)).toPlainString() + ", ";
@@ -553,7 +553,7 @@ public class STLObject
             } else if ( value instanceof Shape3D shape3D ) 
             {
                 shape3D.setUserData(me);
-                PickTool.setCapabilities( (Node) value, PickTool.INTERSECT_FULL );
+                //PickTool.setCapabilities( (Node) value, PickTool.INTERSECT_FULL );
             }
         
     }
@@ -620,10 +620,10 @@ public class STLObject
      */
     public void translate(Vector3d p)
     {
-        Transform t3d1 = getTransform();
+        List<Transform> t3d1 = getTransforms();
         Transform t3d2 = new Transform3D();
         t3d2.set(p);
-        t3d1.mul(t3d2);
+        t3d1.add(t3d2);
         setTransform(t3d1);
     }
     
@@ -701,11 +701,9 @@ public class STLObject
     
     // Get my transform
     
-    public Transform getTransform()
+    public List<Transform> getTransforms()
     {
-    	Transform result = new Transform3D();
-        trans.getTransforms().add(result);
-        return result;
+        return trans.getTransforms();
     }
     
     // Get one of the the actual objects
@@ -956,8 +954,7 @@ public class STLObject
         if(mouse == null)
             return;
         
-        Transform x90 = new Transform3D();
-        x90.set(new AxisAngle4d(1, 0, 0, 0.5 * Math.PI));
+        Transform x90 = new Rotate(1, 0, 0, 0.5 * Math.PI);
         
         rClick(x90);
     }
@@ -967,8 +964,7 @@ public class STLObject
         if(mouse == null)
             return;
         
-        Transform y90 = new Transform3D();
-        y90.set(new AxisAngle4d(0, 1, 0, 0.5*Math.PI));
+        Transform y90 = new Rotate(0, 1, 0, 0.5 * Math.PI);
         
         rClick(y90);
     }
@@ -980,8 +976,7 @@ public class STLObject
         if(mouse == null)
             return;
         
-        Transform zAngle = new Transform3D();
-        zAngle.set(new AxisAngle4d(0, 0, 1, angle * Math.PI / 180.0));
+        Transform zAngle = new Rotate(0, 0, 1, angle * Math.PI / 180.0);
         
         rClick(zAngle);
     } 

@@ -231,9 +231,9 @@ public class RFO
 				for(int column = 0; column < 4; column++)
 				{
 					if(rowNumber == column)
-						mElements[rowNumber*4 + column] = 1;
+						mElements[rowNumber * 4 + column] = 1;
 					else
-						mElements[rowNumber*4 + column] = 0;
+						mElements[rowNumber * 4 + column] = 0;
 				}
 			transform = new Transform3D(mElements);
 			rowNumber = 0;

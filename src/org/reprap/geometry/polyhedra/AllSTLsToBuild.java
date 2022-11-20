@@ -93,10 +93,10 @@ public class AllSTLsToBuild
 		private Rectangle XYbox;
 		private Interval Zint;
 		
-		public BoundingBox(Point3d p0)
+		public BoundingBox(javafx.geometry.Point3D p0)
 		{	
-			Zint = new Interval(p0.z, p0.z);
-			XYbox = new Rectangle(new Interval(p0.x, p0.x), new Interval(p0.y, p0.y));
+			Zint = new Interval(p0.getZ(), p0.getZ());
+			XYbox = new Rectangle(new Interval(p0.getX(), p0.getX()), new Interval(p0.getY(), p0.getY()));
 		}
 		
 		public BoundingBox(BoundingBox b)
@@ -105,10 +105,10 @@ public class AllSTLsToBuild
 			XYbox = new Rectangle(b.XYbox);
 		}
 		
-		public void expand(Point3d p0)
+		public void expand(javafx.geometry.Point3D p0)
 		{
-			Zint.expand(p0.z);
-			XYbox.expand(new Point2D(p0.x, p0.y));
+			Zint.expand(p0.getZ());
+			XYbox.expand(new Point2D(p0.getX(), p0.getY()));
 		}
 		
 		public void expand(BoundingBox b)
@@ -518,7 +518,7 @@ public class AllSTLsToBuild
 		for(int i = 0; i < stls.size(); i++)
 		{
 			STLObject stl = stls.get(i);
-			Transform trans = stl.getTransform();
+			List<Transform> trans = stl.getTransforms();
 			
 			Group bg = stl.getSTL();
 			
@@ -582,23 +582,23 @@ public class AllSTLsToBuild
      * @param trans
      * @param z
      */
-    private BoundingBox BBoxPoints(Shape3D shape, Transform trans)
+    private BoundingBox BBoxPoints(Shape3D shape, List<Transform> trans)
     {
         BoundingBox b = null;
         GeometryArray g = (GeometryArray)shape.getGeometry();
-        Point3d p1 = new Point3d();
-        Point3d q1 = new Point3d();
+        javafx.geometry.Point3D p1 = new javafx.geometry.Point3D(0,0,0);
         
         if(g != null)
         {
             for(int i = 0; i < g.getVertexCount(); i++) 
             {
                 g.getCoordinate(i, p1);
-                trans.transform(p1, q1);
+                for (Transform tran : trans)
+                    p1 = tran.transform(p1);
                 if(b == null)
-                	b = new BoundingBox(q1);
+                	b = new BoundingBox(p1);
                 else
-                	b.expand(q1);
+                	b.expand(p1);
             }
         }
         return b;
@@ -610,7 +610,7 @@ public class AllSTLsToBuild
 	 * @param trans
 	 * @param z
 	 */
-	private BoundingBox BBox(Object sg, Transform trans) 
+	private BoundingBox BBox(Object sg, List<Transform> trans) 
     {
 		BoundingBox b = null;
 		BoundingBox s;
@@ -1311,13 +1311,13 @@ public class AllSTLsToBuild
 		if(!layerRules.purgeXOriented())
 		{
 			s.translate(new Vector3d(-0.5 * shieldSize.x, -0.5 * shieldSize.y, 0));
-			Transform t3d1 = s.getTransform();
+			List<Transform> t3d1 = s.getTransforms();
 			Transform t3d2 = Transform.rotate(0, 0, 0.5 * Math.PI);
-			t3d1.mul(t3d2);
+			t3d1.add(t3d2);
 			s.setTransform(t3d1);
 			s.translate(new Vector3d(yOff, -xOff, zOff));
 		} else {
-			xOff -= 0.5*shieldSize.x;
+			xOff -= 0.5 * shieldSize.x;
 			yOff -= shieldSize.y;
 			s.translate(new Vector3d(xOff, yOff, zOff));
 		}
@@ -1441,7 +1441,7 @@ public class AllSTLsToBuild
 		// Generate all the edges for STLObject i at this z
 		
 		STLObject stlObject = stls.get(stlIndex);
-		Transform trans = stlObject.getTransform();
+		List<Transform> trans = stlObject.getTransforms();
 		Matrix4d m4 = new Matrix4d();
 		trans.get(m4);
 		
@@ -1524,16 +1524,16 @@ public class AllSTLsToBuild
 	 * @param r
 	 * @param z
 	 */
-	private void addEdge(Point3d p, Point3d q, Point3d r, double z, Attributes att, ArrayList<LineSegment> edges[])
+	private void addEdge(javafx.geometry.Point3D p, javafx.geometry.Point3D q, javafx.geometry.Point3D r, double z, Attributes att, ArrayList<LineSegment> edges[])
 	{
-		Point3d odd = null, even1 = null, even2 = null;
+		javafx.geometry.Point3D odd = null, even1 = null, even2 = null;
 		int pat = 0;
 		
-		if(p.z < z)
+		if(p.getZ() < z)
 			pat = pat | 1;
-		if(q.z < z)
+		if(q.getZ() < z)
 			pat = pat | 2;
-		if(r.z < z)
+		if(r.getZ() < z)
 			pat = pat | 4;
 		
 		switch(pat)
@@ -1582,13 +1582,13 @@ public class AllSTLsToBuild
 		
 		// Work out the intersection line segment (e1 -> e2) between the z plane and the triangle
 		
-		even1.sub((Tuple3d)odd);
-		even2.sub((Tuple3d)odd);
-		double t = (z - odd.z) / even1.z;	
-		Point2D e1 = new Point2D(odd.x + t * even1.x, odd.y + t * even1.y);	
+		even1.subtract(odd);
+		even2.subtract(odd);
+		double t = (z - odd.getZ()) / even1.getZ();	
+		Point2D e1 = new Point2D(odd.getX() + t * even1.getX(), odd.getY() + t * even1.getY());	
 		e1 = new Point2D(e1.x(), e1.y());
-		t = (z - odd.z) / even2.z;
-		Point2D e2 = new Point2D(odd.x + t * even2.x, odd.y + t * even2.y);
+		t = (z - odd.getZ()) / even2.getZ();
+		Point2D e2 = new Point2D(odd.getX() + t * even2.getX(), odd.getY() + t * even2.getY());
 		e2 = new Point2D(e2.x(), e2.y());
 		
 		// Too short?
@@ -1603,15 +1603,12 @@ public class AllSTLsToBuild
      * @param trans
      * @param z
      */
-    private void addAllEdges(Shape3D shape, Transform trans, double z, Attributes att, ArrayList<LineSegment> edges[])
+    private void addAllEdges(Shape3D shape, List<Transform> trans, double z, Attributes att, ArrayList<LineSegment> edges[])
     {
         GeometryArray g = (GeometryArray)shape.getGeometry();
-        Point3d p1 = new Point3d();
-        Point3d p2 = new Point3d();
-        Point3d p3 = new Point3d();
-        Point3d q1 = new Point3d();
-        Point3d q2 = new Point3d();
-        Point3d q3 = new Point3d();
+        javafx.geometry.Point3D p1 = new javafx.geometry.Point3D(0,0,0);
+        javafx.geometry.Point3D p2 = new javafx.geometry.Point3D(0,0,0);
+        javafx.geometry.Point3D p3 = new javafx.geometry.Point3D(0,0,0);
         
         if(g.getVertexCount() % 3 != 0)
         {
@@ -1624,10 +1621,12 @@ public class AllSTLsToBuild
                 g.getCoordinate(i, p1);
                 g.getCoordinate(i + 1, p2);
                 g.getCoordinate(i + 2, p3);
-                trans.transform(p1, q1);
-                trans.transform(p2, q2);
-                trans.transform(p3, q3);
-                addEdge(q1, q2, q3, z, att, edges);
+                for(Transform tran : trans){
+                    p1 = tran.transform(p1);
+                    p2 = tran.transform(p2);
+                    p3 = tran.transform(p3);
+                }
+                addEdge(p1, p2, p3, z, att, edges);
             }
         }
     }
@@ -1638,7 +1637,7 @@ public class AllSTLsToBuild
      * @param trans
      * @param z
      */
-    private void recursiveSetEdges(Object sg, Transform trans, double z, Attributes att, ArrayList<LineSegment> edges[]) 
+    private void recursiveSetEdges(Object sg, List<Transform> trans, double z, Attributes att, ArrayList<LineSegment> edges[]) 
     {
         if(sg instanceof Group g) 
         {
