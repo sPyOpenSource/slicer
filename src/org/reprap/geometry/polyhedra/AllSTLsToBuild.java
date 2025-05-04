@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Shape3D;
@@ -37,8 +38,6 @@ import org.reprap.utilities.RrGraphics;
 
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Matrix4d;
-import org.jogamp.vecmath.Point3d;
-import org.jogamp.vecmath.Tuple3d;
 import org.jogamp.vecmath.Vector3d;
 
 /**
@@ -321,6 +320,7 @@ public class AllSTLsToBuild
 	
 	/**
 	 * Add a new STLObject somewhere in the list
+         * @param index
 	 * @param s
 	 */
 	public void add(int index, STLObject s)
@@ -508,8 +508,8 @@ public class AllSTLsToBuild
 	 */
 	public void setBoxes()
 	{
-		rectangles = new ArrayList<>();
-                stls.forEach((_item) -> {
+            rectangles = new ArrayList<>();
+            stls.forEach((_item) -> {
                     rectangles.add(null);
             });
 		
@@ -585,7 +585,7 @@ public class AllSTLsToBuild
     private BoundingBox BBoxPoints(Shape3D shape, List<Transform> trans)
     {
         BoundingBox b = null;
-        GeometryArray g = (GeometryArray)shape.getGeometry();
+        /*GeometryArray g = (GeometryArray)shape.getGeometry();
         javafx.geometry.Point3D p1 = new javafx.geometry.Point3D(0,0,0);
         
         if(g != null)
@@ -600,7 +600,7 @@ public class AllSTLsToBuild
                 else
                 	b.expand(p1);
             }
-        }
+        }*/
         return b;
     }
 	
@@ -789,11 +789,10 @@ public class AllSTLsToBuild
 		RrGraphics rg = layerRules.getPrinter().getGraphics();
 		if(rg == null) return;
 		PolygonList pp = new PolygonList();
-		Scene black = new Scene();
-		Material b = new PhongMaterial();
-		b.setDiffuseColor(new Color3f(0, 0, 0));
-		black.setMaterial(b);
-		Attributes a = new Attributes(null, null, null, black);
+		//Scene black = new Scene();
+		Material b = new PhongMaterial(Color.BLACK);
+		//black.setMaterial(b);
+		Attributes a = new Attributes(null, null, null, null);
 		for(int i = 0; i < edges.size(); i++)
 		{
 			Polygon p = new Polygon(a, false);
@@ -1311,10 +1310,8 @@ public class AllSTLsToBuild
 		if(!layerRules.purgeXOriented())
 		{
 			s.translate(new Vector3d(-0.5 * shieldSize.x, -0.5 * shieldSize.y, 0));
-			List<Transform> t3d1 = s.getTransforms();
 			Transform t3d2 = Transform.rotate(0, 0, 0.5 * Math.PI);
-			t3d1.add(t3d2);
-			s.setTransform(t3d1);
+			s.setTransform(t3d2);
 			s.translate(new Vector3d(yOff, -xOff, zOff));
 		} else {
 			xOff -= 0.5 * shieldSize.x;
@@ -1443,7 +1440,7 @@ public class AllSTLsToBuild
 		STLObject stlObject = stls.get(stlIndex);
 		List<Transform> trans = stlObject.getTransforms();
 		Matrix4d m4 = new Matrix4d();
-		trans.get(m4);
+		//trans.get(m4);
 		
 		for(int i = 0; i < stlObject.getCount(); i++)
 		{
@@ -1605,7 +1602,7 @@ public class AllSTLsToBuild
      */
     private void addAllEdges(Shape3D shape, List<Transform> trans, double z, Attributes att, ArrayList<LineSegment> edges[])
     {
-        GeometryArray g = (GeometryArray)shape.getGeometry();
+        /*GeometryArray g = (GeometryArray)shape.getGeometry();
         javafx.geometry.Point3D p1 = new javafx.geometry.Point3D(0,0,0);
         javafx.geometry.Point3D p2 = new javafx.geometry.Point3D(0,0,0);
         javafx.geometry.Point3D p3 = new javafx.geometry.Point3D(0,0,0);
@@ -1628,7 +1625,7 @@ public class AllSTLsToBuild
                 }
                 addEdge(p1, p2, p3, z, att, edges);
             }
-        }
+        }*/
     }
 	
     /**

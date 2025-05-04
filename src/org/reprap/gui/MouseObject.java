@@ -61,6 +61,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 import org.reprap.geometry.polyhedra.STLObject;
 
 
@@ -85,30 +86,30 @@ public class MouseObject
         //free.setCapability( Group.ALLOW_TRANSFORM_READ );
         //free.setCapability( Group.ALLOW_TRANSFORM_WRITE );
         
-        Rotate mr = new Rotate( free );
+        /*Rotate mr = new Rotate( free );
         mr.setSchedulingBounds( behaviorBounds );
         free.addChild( mr );
         
-        MouseTranslate mt = new MouseTranslate( free );
+        Translate mt = new Translate( free );
         mt.setSchedulingBounds( behaviorBounds );
         mt.setFactor(mouse_tf * mt.getXFactor(), mouse_tf * mt.getYFactor());
         free.addChild( mt );
                 
-        MouseZoom mz = new MouseZoom( free );
+        Translate mz = new Translate( free );
         mz.setSchedulingBounds( behaviorBounds );
         mz.setFactor(mouse_zf * mz.getFactor());
-        free.addChild( mz );
+        free.addChild( mz );*/
         
         // Set up the slide transform that only allows XY movement
         
-        slide = new Group( );
+        slide = new Group();
         //slide.setCapability( TransformGroup.ALLOW_TRANSFORM_READ );
         //slide.setCapability( TransformGroup.ALLOW_TRANSFORM_WRITE );
         
-        MouseTranslate mts = new MouseTranslate( slide );
+        /*Translate mts = new Translate( slide );
         mts.setSchedulingBounds( behaviorBounds );
         mts.setFactor(mouse_tf * mts.getXFactor(), mouse_tf * mts.getYFactor());
-        slide.addChild( mts );
+        slide.addChild( mts );*/
         
         // Set up the thing to attach and detach
         
@@ -145,20 +146,20 @@ public class MouseObject
     
     public void move(STLObject stl, boolean slideOnly)
     {
-        Transform t3d = new Transform3D();
-        trans.getTransform(t3d);
+        //Transform t3d = new Transform();
+        //trans.getTransform(t3d);
         
         // Detach us from whatever we were stuck to
         
-        top.detach();
+        //top.detach();
         
         // Take the thing we were moving, set its transform to a fixed version
         // of what we are now, and tell it we aren't controlling it any more.
         
         if(movingThing != null)
         {
-            movingThing.setTransform(t3d);
-            movingThing.handle().detach();
+            //movingThing.setTransform(t3d);
+            //movingThing.handle().detach();
             movingThing.top().getChildren().add(movingThing.handle());
             movingThing.setMouse(null);
         }
@@ -182,21 +183,21 @@ public class MouseObject
         
         // Get the current transform of the thing being moved...
         
-        t3d = new Transform3D();
-        movingThing.trans().getTransform(t3d);
+        //t3d = new Transform();
+        //movingThing.trans().getTransform(t3d);
         
         // ...set that thing's static transform to the identity...
         
-        Transform identity = new Transform3D();
-        movingThing.setTransform(identity);
+        //Transform identity = new Transform();
+        //movingThing.setTransform(identity);
         
         // ...and set the mouse transform to that of the thing being moved.
         
-        trans.getTransforms().add(t3d);
+        //trans.getTransforms().add(t3d);
         
         // Put us in the path to the thing being moved.
         
-        movingThing.handle().detach();
+        //movingThing.handle().detach();
         trans.getChildren().add(movingThing.handle());
         movingThing.top().getChildren().add(top); 
         

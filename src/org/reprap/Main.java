@@ -217,7 +217,7 @@ public class Main {
         builderFrame.add(new JLabel("Arrange items to print on the build bed"));
         builder = new RepRapBuild();
         builderFrame.setMinimumSize(new Dimension(0,0));
-        builderFrame.add(builder);
+        //builderFrame.add(builder);
 
         panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); 
         panel.setPreferredSize(Utility.getDefaultAppSize());

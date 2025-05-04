@@ -32,7 +32,7 @@ public class GenericExtruderTabPanel extends javax.swing.JPanel {
     private double startTime = -1;
     private boolean ramping = false;
     private double startTemp = -1;
-	private BotConsoleFrame parentBotConsoleFrame = null;
+    private BotConsoleFrame parentBotConsoleFrame = null;
     private Extruder extruder;
     private String prefix;
  
@@ -110,10 +110,10 @@ public class GenericExtruderTabPanel extends javax.swing.JPanel {
     public void selectExtruder()
     {
     	try {
-			org.reprap.Main.gui.getPrinter().selectExtruder(extruderID, true, false, null);
-		} catch (Exception e) {
-			parentBotConsoleFrame.handleException(e);
-		}
+                org.reprap.Main.gui.getPrinter().selectExtruder(extruderID, true, false, null);
+        } catch (Exception e) {
+                parentBotConsoleFrame.handleException(e);
+        }
     }
     
     /** This method is called from within the constructor to
@@ -468,18 +468,17 @@ private void heatButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     		rampOff();
     		try {
     			extruder.setTemperature(0, false);
-    		}
-    		catch (Exception ex) {
+    		} catch (Exception ex) {
     			JOptionPane.showMessageDialog(null, "Exception setting temperature: " + ex);
     		}
     		heatButton.setText("Switch heater on");
     		heatPushed = false;
-    	}
-    	else {
+    	} else {
     		try {
     			extruder.setTemperature(Integer.parseInt(targetTempField.getText()), false);
-    		}
-    		catch (Exception ex) {
+    		} 
+                catch (Exception ex) {
+                    
     			JOptionPane.showMessageDialog(null, "Exception setting temperature: " + ex);
     		}
     		heatButton.setText("Switch heater off");
@@ -513,20 +512,20 @@ private void setExtruderSpeed() {
         selectExtruder();
         setExtruderSpeed();
         if(extruder.get5D() && extruding)
-		{
-			try {
-				extruder.getPrinter().machineWait(5000, false, true);
-			} catch (Exception e) {
-				parentBotConsoleFrame.handleException(e);
-			}
-			extruding = false;
-			setExtruderSpeed();
+        {
+            try {
+                    extruder.getPrinter().machineWait(5000, false, true);
+            } catch (Exception e) {
+                    parentBotConsoleFrame.handleException(e);
+            }
+            extruding = false;
+            setExtruderSpeed();
             extrudeButton.setText("Extrude");
-		}
+        }
         parentBotConsoleFrame.resumePolling();
     }//GEN-LAST:event_extrudeButtonActionPerformed
 
-    private void homeXYbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeXYbuttonActionPerformed
+    private void nozzleWipeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeXYbuttonActionPerformed
     	BotConsoleFrame.getXYZTabPanel().homeXY();
     }//GEN-LAST:event_homeXYbuttonActionPerformed
 
@@ -563,12 +562,12 @@ private void RampButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     else 
     {
     	heatButton.setText("Switch heat off");
-		startTime = Timer.elapsed();
-		try {
-			startTemp = extruder.getTemperature() - 1;
-		} catch (Exception e) {
-			parentBotConsoleFrame.handleException(e);
-		} // Start a bit below where we are for safety
+        startTime = Timer.elapsed();
+        try {
+                startTemp = extruder.getTemperature() - 1;
+        } catch (Exception e) {
+                parentBotConsoleFrame.handleException(e);
+        } // Start a bit below where we are for safety
     	RampButton.setText("Ramping");
         ramping = true;
     }
@@ -578,7 +577,7 @@ private void homeAllButtonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:ev
 	BotConsoleFrame.getXYZTabPanel().homeAll();
 }//GEN-LAST:event_homeAllButtonAction
 
-private void moveToDumpPointAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveToSwapPointAction
+private void moveToSwapPointAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveToSwapPointAction
 	double z = BotConsoleFrame.getXYZTabPanel().getPrinter().getZ();
 	if(z < 0.1)
 	{
@@ -589,7 +588,6 @@ private void moveToDumpPointAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:
 	BotConsoleFrame.getXYZTabPanel().goTo(BotConsoleFrame.getXYZTabPanel().getPrinter().getDumpX(),
 			BotConsoleFrame.getXYZTabPanel().getPrinter().getDumpY(), z);
 }//GEN-LAST:event_moveToSwapPointAction
-
 
     public double getExtruderSpeed()
     {
@@ -622,10 +620,10 @@ private void moveToDumpPointAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:
     
     public void refreshTemperature() {
         try {
-			currentTemp = (int)Math.round(extruder.getTemperature());
-		} catch (Exception e) {
-			parentBotConsoleFrame.handleException(e);
-		}
+                currentTemp = (int)Math.round(extruder.getTemperature());
+        } catch (Exception e) {
+                parentBotConsoleFrame.handleException(e);
+        }
         currentTempLabel.setText("" + currentTemp);
         tempProgress.setMinimum(0);
         tempProgress.setMaximum(Integer.parseInt(targetTempField.getText()));

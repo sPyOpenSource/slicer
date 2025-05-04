@@ -765,8 +765,8 @@ public class StlFile
 
     gi.setCoordinates(coordArray);
     gi.setStripCounts(stripCounts); 
-    NormalGenerator ng = new NormalGenerator();  // Added by AB
-    ng.generateNormals(gi);						 // Added by AB
+    NormalGenerator ng = new NormalGenerator(); // Added by AB
+    ng.generateNormals(gi);			// Added by AB
 
     // Put geometry into Shape3d
     Shape3D shape = new Shape3D();

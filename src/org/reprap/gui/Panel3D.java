@@ -12,18 +12,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Iterator;
+import javafx.application.Application;
+import javafx.geometry.BoundingBox;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Background;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
-import javax.swing.JPanel;
-import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
@@ -31,7 +34,7 @@ import org.reprap.Preferences;
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
 
-abstract public class Panel3D extends JPanel {
+abstract public class Panel3D extends Application {
 	private static final long serialVersionUID = 1L;
 	//-------------------------------------------------------------
 	
@@ -61,16 +64,16 @@ abstract public class Panel3D extends JPanel {
 
 	// The background, and other colours
 
-	protected Color3f bgColour = new Color3f(0.9f, 0.9f, 0.9f);
-	protected Color3f selectedColour = new Color3f(0.6f, 0.2f, 0.2f);
-	protected Color3f machineColour = new Color3f(0.7f, 0.7f, 0.7f);
-	protected Color3f unselectedColour = new Color3f(0.3f, 0.3f, 0.3f);
+	protected Color bgColour = Color.color(0.9f, 0.9f, 0.9f);
+	protected Color selectedColour = Color.color(0.6f, 0.2f, 0.2f);
+	protected Color machineColour = Color.color(0.7f, 0.7f, 0.7f);
+	protected Color unselectedColour = Color.color(0.3f, 0.3f, 0.3f);
 	
 	// That's the end of the configuration file data
 	
 	//--------------------------------------------------------------
 	
-	protected static final Color3f black = new Color3f(0, 0, 0);	
+	protected static final Color black = Color.color(0, 0, 0);	
 	protected Material picked_app = null; // Colour for the selected part
 	protected Material wv_app = null; // Colour for the working volume
 	protected Group wv_and_stls = new Group(); // Where in the scene
@@ -103,9 +106,9 @@ abstract public class Panel3D extends JPanel {
 		
 		// Set everything up from the properties file
 		// All this needs to go into Preferences.java
-		try
-		{
-                    wv_location = Preferences.getBasePath();
+            try
+            {
+                //wv_location = Preferences.getBasePath();
 
 		// Translate and zoom scaling factors
 		
@@ -117,9 +120,9 @@ abstract public class Panel3D extends JPanel {
 		FrontFactor = 0.001;
 		BoundFactor = 3.0;
 
-		xwv = Preferences.loadGlobalDouble("WorkingX(mm)"); // The RepRap machine...
-		ywv = Preferences.loadGlobalDouble("WorkingY(mm)"); // ...working volume in mm.
-		zwv = Preferences.loadGlobalDouble("WorkingZ(mm)");
+		xwv = 400;//Preferences.loadGlobalDouble("WorkingX(mm)"); // The RepRap machine...
+		ywv = 400;//Preferences.loadGlobalDouble("WorkingY(mm)"); // ...working volume in mm.
+		zwv = 400;//Preferences.loadGlobalDouble("WorkingZ(mm)");
 
 		// Factors for front and back clipping planes and so on
 		
@@ -130,17 +133,17 @@ abstract public class Panel3D extends JPanel {
 
 		// The background, and other colours
 		
-		bgColour = new Color3f((float)0.9, (float)0.9, (float)0.9);
+		bgColour = Color.color(0.9, 0.9, 0.9);
 		
-		selectedColour = new Color3f((float)0.6, (float)0.2, (float)0.2);
+		selectedColour = Color.color((float)0.6, (float)0.2, (float)0.2);
 
-		machineColour = new Color3f((float)0.3, (float)0.3, (float)0.3);
+		machineColour = Color.color((float)0.3, (float)0.3, (float)0.3);
 		
-		unselectedColour = new Color3f((float)0.3, (float)0.3, (float)0.3);
-		} catch (IOException ex)
-		{
-			Debug.e("Refresh Panel3D preferences: " + ex.toString());
-		}
+		unselectedColour = Color.color((float)0.3, (float)0.3, (float)0.3);
+            } catch (Exception ex)
+            {
+		Debug.e("Refresh Panel3D preferences: " + ex.toString());
+            }
 				
 		// End of stuff from the preferences file
 		
@@ -148,16 +151,16 @@ abstract public class Panel3D extends JPanel {
 	}
 
 
-	protected void initialise() throws Exception 
+	protected void initialise(Stage primaryStage) throws Exception 
 	{
 		
 		refreshPreferences();
 
-		picked_app = new PhongMaterial(selectedColour, black, selectedColour, black, 0f);
+		picked_app = new PhongMaterial(selectedColour);//, black, selectedColour, black, 0f);
 				
-		wv_app = new PhongMaterial(machineColour, black, machineColour, black, 0f);
+		wv_app = new PhongMaterial(machineColour);//, black, machineColour, black, 0f);
 
-		initJava3d();
+		initJava3d(primaryStage);
 
 	}
 
@@ -173,8 +176,8 @@ abstract public class Panel3D extends JPanel {
 	
 	// Set up the size of the world
 	protected Bounds createApplicationBounds() {
-		applicationBounds = new BoundingSphere(new Point3d(xwv * 0.5,
-				ywv * 0.5, zwv * 0.5), BoundFactor
+		applicationBounds = new BoundingBox(xwv * 0.5,
+				ywv * 0.5, zwv * 0.5, BoundFactor
 				* getViewPlatformActivationRadius());
 		return applicationBounds;
 	}
@@ -184,7 +187,7 @@ abstract public class Panel3D extends JPanel {
 		return (float) (RadiusFactor * Math.sqrt(xwv * xwv + ywv * ywv + zwv * zwv));
 	}
 
-	public Color3f getObjectColour()
+	public Color getObjectColour()
 	{
 		return unselectedColour;
 	}
@@ -208,40 +211,36 @@ abstract public class Panel3D extends JPanel {
 	}
 
 	protected Scene createView(Stage vp) {
-		Scene view = new Scene();
+		Group pe = createPhysicalEnvironment();
 
-		PhysicalBody pb = createPhysicalBody();
-		PhysicalEnvironment pe = createPhysicalEnvironment();
-
-		AudioDevice audioDevice = createAudioDevice(pe);
+		/*AudioDevice audioDevice = createAudioDevice(pe);
 
 		if (audioDevice != null) {
 			pe.setAudioDevice(audioDevice);
 			audioDevice.initialize();
-		}
+		}*/
 
-		view.setPhysicalEnvironment(pe);
-		view.setPhysicalBody(pb);
+		Scene view = new Scene(pe);
 
 		if (vp != null)
 			vp.setScene(view);
 
-		view.setBackClipDistance(getBackClipDistance());
-		view.setFrontClipDistance(getFrontClipDistance());
+		//view.setBackClipDistance(getBackClipDistance());
+		//view.setFrontClipDistance(getFrontClipDistance());
 
-		Canvas3D c3d = createCanvas3D();
-		view.addCanvas3D(c3d);
-		addCanvas3D(c3d);
+		//Canvas c3d = createCanvas3D();
+		//pe.getChildren().add(c3d);
+		//addCanvas3D(c3d);
 
 		return view;
 	}
 
-	protected Canvas3D createCanvas3D() {
-		GraphicsConfigTemplate3D gc3D = new GraphicsConfigTemplate3D();
+	/*protected Canvas createCanvas3D() {
+		GraphicsContext gc3D = new GraphicsContext();
 		gc3D.setSceneAntialiasing(GraphicsConfigTemplate.PREFERRED);
 		GraphicsDevice gd[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		
-		Canvas3D c3d = new Canvas3D(gd[0].getBestConfiguration(gc3D));
+		Canvas c3d = new Canvas(gd[0].getBestConfiguration(gc3D));
 
 		return c3d;
 	}
@@ -253,7 +252,7 @@ abstract public class Panel3D extends JPanel {
 			return (org.jogamp.java3d.Locale) en.next();
 
 		return null;
-	}
+	}*/
 
 	// The size of the world
 
@@ -266,62 +265,55 @@ abstract public class Panel3D extends JPanel {
 
 	// Fire up Java3D
 
-	public void initJava3d() throws Exception {
-		universe = createVirtualUniverse();
+	public void initJava3d(Stage vp) throws Exception {
+		//universe = createVirtualUniverse();
 
-		org.jogamp.java3d.Locale locale = createLocale(universe);
+		//org.jogamp.java3d.Locale locale = createLocale(universe);
 
 		Group sceneBranchGroup = createSceneBranchGroup();
 
-		Stage vp = createViewPlatform();
-		Group viewBranchGroup = createViewBranchGroup(
-				getViewTransformGroupArray(), vp);
+		//Stage vp = createViewPlatform();
+		//Group viewBranchGroup = createViewBranchGroup(getViewTransformGroupArray());
 
 		createView(vp);
 
 		Background background = createBackground();
 
-		if (background != null)
+		/*if (background != null)
 			sceneBranchGroup.addChild(background);
 
 		locale.addBranchGraph(sceneBranchGroup);
-		addViewBranchGroup(locale, viewBranchGroup);
-
+		addViewBranchGroup(locale, viewBranchGroup);*/
 	}
 
-
-	protected PhysicalBody createPhysicalBody() {
-		return new PhysicalBody();
-	}
-
-	protected AudioDevice createAudioDevice(PhysicalEnvironment pe) {
+	/*protected AudioDevice createAudioDevice(PhysicalEnvironment pe) {
 		JavaSoundMixer javaSoundMixer = new JavaSoundMixer(pe);
 
 		if (javaSoundMixer == null)
 			Debug.e("create of audiodevice failed");
 
 		return javaSoundMixer;
-	}
+	}*/
 
-	protected PhysicalEnvironment createPhysicalEnvironment() {
-		return new PhysicalEnvironment();
+	protected Group createPhysicalEnvironment() {
+		return new Group();
 	}
 
 	protected Stage createViewPlatform() {
 		Stage vp = new Stage();
-		vp.setViewAttachPolicy(View.RELATIVE_TO_FIELD_OF_VIEW);
-		vp.setActivationRadius(getViewPlatformActivationRadius());
+		//vp.setViewAttachPolicy(View.RELATIVE_TO_FIELD_OF_VIEW);
+		//vp.setActivationRadius(getViewPlatformActivationRadius());
 
 		return vp;
 	}
 
 	// These two are probably wrong.
 
-	protected int getCanvas3dWidth(Canvas3D c3d) {
+	/*protected int getCanvas3dWidth(Canvas c3d) {
 		return getWidth();
 	}
 
-	protected int getCanvas3dHeight(Canvas3D c3d) {
+	protected int getCanvas3dHeight(Canvas c3d) {
 		return getHeight();
 	}
 
@@ -342,18 +334,20 @@ abstract public class Panel3D extends JPanel {
 		Group[] tgArray = new Group[1];
 		tgArray[0] = new Group();
 
-		Transform viewTrans = new Transform3D();
-		Transform eyeTrans = new Transform3D();
+		Transform viewTrans = new Transform();
+		Transform eyeTrans = new Transform();
 
-		BoundingSphere sceneBounds = (BoundingSphere) sceneBranchGroup
+		BoundingBox sceneBounds = (BoundingBox) sceneBranchGroup
 				.getBounds();
 
 		// point the view at the center of the object
 
 		Point3d center = new Point3d();
-		sceneBounds.getCenter(center);
+		//sceneBounds.getCenter(center);
 		double radius = sceneBounds.getRadius();
-		Vector3d temp = new Vector3d(center);
+		Vector3d temp = new Vector3d(sceneBounds.getCenterX(),
+                        sceneBounds.getCenterY(),
+                        sceneBounds.getCenterZ());
 		viewTrans.set(temp);
 
 		// pull the eye back far enough to see the whole object
@@ -372,12 +366,12 @@ abstract public class Panel3D extends JPanel {
 		return tgArray;
 	}
 
-	protected void addCanvas3D(Canvas3D c3d) {
+	protected void addCanvas3D(Canvas c3d) {
 		setLayout(new BorderLayout());
 		add(c3d, BorderLayout.CENTER);
 		doLayout();
 		c3d.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	}
+	}*/
 	
 	protected double getScale() {
 		return 1.0;

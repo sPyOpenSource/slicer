@@ -66,7 +66,7 @@ import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Tuple3d;
 import org.jogamp.vecmath.Vector3d;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
@@ -81,6 +81,7 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 
 import org.reprap.utilities.StlFile;
 import org.reprap.Attributes;
@@ -100,6 +101,14 @@ import org.reprap.utilities.Debug;
 
 public class STLObject
 {
+
+    private void setAppearance(Scene appearance) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void setAppearance(Node b, Scene appearance) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 	
     /**
      * Little class to hold offsets of loaded STL objects
@@ -263,25 +272,25 @@ public class STLObject
                 csgResult = csgr.csg();
             if (scene != null) 
             {
-                bgResult = scene.getSceneGroup();
+                //bgResult = scene.getSceneGroup();
                 /*bgResult.setCapability(Node.ALLOW_BOUNDS_READ);
                 bgResult.setCapability(Group.ALLOW_CHILDREN_READ);
                 bgResult.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);*/
                 
                 // Recursively add its attribute
                 
-                Hashtable<?,?> namedObjects = scene.getNamedObjects( );
-                java.util.Enumeration<?> enumValues = namedObjects.elements( );
+                HashMap<?,?> namedObjects;// = scene.getNamedObjects( );
+                java.util.Iterator<?> enumValues = null;// = namedObjects.values( );
                 
                 if( enumValues != null ) 
                 {
-                    while(enumValues.hasMoreElements( )) 
+                    while(enumValues.hasNext()) 
                     {
-                    	Object tt = enumValues.nextElement();
+                    	Object tt = enumValues.next();
                     	if(tt instanceof Shape3D value)
                     	{
                     		volume += s3dVolume(value);
-                    		bbox = (BoundingBox)value.getBounds();
+                    		//bbox = (BoundingBox)value.getBounds();
 
                     		//value.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE );
                     		//GeometryArray g = (GeometryArray)value.getGeometry();
@@ -302,16 +311,14 @@ public class STLObject
                 	lastPicked.stl.getChildren().add(bgResult);
                 	lastPicked.setAppearance(lastPicked.getAppearance());
                 	lastPicked.updateBox(bbox);
-                } else
-                {
+                } else {
                     // New independent object.
                     stl.getChildren().add(bgResult);
                     off = getOffsets(bgResult, offset);
                     rootOffset = off.centreToOrigin;
                     csgResult = setOffset(stl, csgResult, rootOffset);
-                    Transform temp = new Transform3D();
-                    temp.set(off.bottomLeftShift);
-                    trans.setTransform(temp);
+                    Transform temp = new Translate(off.bottomLeftShift.x, off.bottomLeftShift.y, off.bottomLeftShift.z);
+                    //trans.setTransform(temp);
                     restoreAppearance();
                 }
             } 
@@ -330,29 +337,29 @@ public class STLObject
     {
         org.jogamp.vecmath.Point3d pNew = new org.jogamp.vecmath.Point3d();
         org.jogamp.vecmath.Point3d pOld = new org.jogamp.vecmath.Point3d();
-        bb.getLower(pNew);
-        bbox.getLower(pOld);
+        //bb.getLower(pNew);
+        //bbox.getLower(pOld);
         if(pNew.x < pOld.x)
         	pOld.x = pNew.x;
         if(pNew.y < pOld.y)
         	pOld.y = pNew.y;
         if(pNew.z < pOld.z)
         	pOld.z = pNew.z;
-        bbox.setLower(pOld);
+        //bbox.setLower(pOld);
         extent = new Vector3d();
         extent.x = pOld.x;
         extent.y = pOld.y;
         extent.z = pOld.z;       
 
-        bb.getUpper(pNew);
-        bbox.getUpper(pOld);
+        //bb.getUpper(pNew);
+        //bbox.getUpper(pOld);
         if(pNew.x > pOld.x)
         	pOld.x = pNew.x;
         if(pNew.y > pOld.y)
         	pOld.y = pNew.y;
         if(pNew.z > pOld.z)
         	pOld.z = pNew.z;
-        bbox.setUpper(pOld);
+        //bbox.setUpper(pOld);
         
         extent.x = pOld.x - extent.x;
         extent.y = pOld.y - extent.y;
@@ -397,30 +404,28 @@ public class STLObject
     {
     	String result = " multmatrix(m = [ [";
     	List<Transform> t1 = trans.getTransforms();
-    	Transform t2 = new Transform3D();
-    	t2.set(1.0, rootOffset);
+    	Transform t2 = new Translate(rootOffset.x, rootOffset.y, rootOffset.z);
     	t1.add(t2);
-    	Matrix4d m = new Matrix4d();
-    	t1.get(m);
-    	result += new BigDecimal(Double.toString(m.m00)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m01)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m02)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m03)).toPlainString() + "], \n   [";
+    	Transform m = t1.get(0);
+    	result += new BigDecimal(Double.toString(m.getMxx())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getMxy())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getMxz())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getTx())).toPlainString() + "], \n   [";
     	
-    	result += new BigDecimal(Double.toString(m.m10)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m11)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m12)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m13)).toPlainString() + "], \n   [";
+    	result += new BigDecimal(Double.toString(m.getMyx())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getMyy())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getMyz())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getTy())).toPlainString() + "], \n   [";
     	
-    	result += new BigDecimal(Double.toString(m.m20)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m21)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m22)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m23)).toPlainString() + "], \n   [";
+    	result += new BigDecimal(Double.toString(m.getMzx())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getMzx())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getMzz())).toPlainString() + ", ";
+    	result += new BigDecimal(Double.toString(m.getTz())).toPlainString() + "], \n   [";
     	
-    	result += new BigDecimal(Double.toString(m.m30)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m31)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m32)).toPlainString() + ", ";
-    	result += new BigDecimal(Double.toString(m.m33)).toPlainString() + "]]) \n   {\n";
+    	//result += new BigDecimal(Double.toString(m.m30)).toPlainString() + ", ";
+    	//result += new BigDecimal(Double.toString(m.m31)).toPlainString() + ", ";
+    	//result += new BigDecimal(Double.toString(m.m32)).toPlainString() + ", ";
+    	//result += new BigDecimal(Double.toString(m.m33)).toPlainString() + "]]) \n   {\n";
     	
     	for(int i = 0; i < contents.size(); i++)
     	{
@@ -475,8 +480,8 @@ public class STLObject
     	{
             org.jogamp.vecmath.Point3d p0 = new org.jogamp.vecmath.Point3d();
             org.jogamp.vecmath.Point3d p1 = new org.jogamp.vecmath.Point3d();
-            bbox.getLower(p0);
-            bbox.getUpper(p1);
+            //bbox.getLower(p0);
+            //bbox.getUpper(p1);
             
             // If no offset requested, set it to bottom-left-at-origin
 
@@ -527,8 +532,8 @@ public class STLObject
         stl.getChildren().add(s);
         extent = new Vector3d(1, 1, 1);  // Should never be needed.
         
-        Transform temp = new Transform3D();
-        trans.getTransforms().add(temp); 
+        /*Transform temp = new Transform();
+        trans.getTransforms().add(temp);*/ 
     }
 
 
@@ -621,17 +626,16 @@ public class STLObject
     public void translate(Vector3d p)
     {
         List<Transform> t3d1 = getTransforms();
-        Transform t3d2 = new Transform3D();
-        t3d2.set(p);
+        Transform t3d2 = new Translate(p.x, p.y, p.z);
         t3d1.add(t3d2);
-        setTransform(t3d1);
+        setTransform(t3d2);
     }
     
     // Shift a Shape3D permanently by p
     
     private void s3dOffset(Shape3D shape, Tuple3d p)
     {
-        GeometryArray g = (GeometryArray)shape.getGeometry();
+        /*GeometryArray g = (GeometryArray)shape.getGeometry();
         Point3d p3d = new Point3d();
         if(g != null)
         {
@@ -641,7 +645,7 @@ public class STLObject
                 p3d.add(p);
                 g.setCoordinate(i, p3d);
             }
-        }
+        }*/
     }
     
     // Scale the object by s permanently (i.e. don't just apply a transform).
@@ -670,7 +674,7 @@ public class STLObject
     
     private void s3dScale(Shape3D shape, double x, double y, double z, boolean zOnly)
     {
-        GeometryArray g = (GeometryArray)shape.getGeometry();
+        /*GeometryArray g = (GeometryArray)shape.getGeometry();
         Point3d p3d = new Point3d();
         if(g != null)
         {
@@ -687,7 +691,7 @@ public class STLObject
                 }
                 g.setCoordinate(i, p3d);
             }
-        }
+        }*/
     }
     
 
@@ -775,7 +779,7 @@ public class STLObject
         	{
         		Attributes att = (Attributes)group.getUserData();
         		if(att != null)
-        			setAppearance_r(b, att.getAppearance());
+        			setAppearance(b, att.getAppearance());
         		else
         			Debug.e("restoreAppearance(): no Attributes!");
         	}
@@ -829,11 +833,11 @@ public class STLObject
         
         // Get the mouse transform and split it into a rotation and a translation
         
-        Transform mtrans = new Transform3D();
-        mouse.getTransform(mtrans);
+        //Transform mtrans = new Transform();
+        //mouse.getTransform(mtrans);
         Vector3d mouseTranslation = new Vector3d();
         Matrix3d mouseRotation = new Matrix3d();
-        mtrans.get(mouseRotation, mouseTranslation);
+        //mtrans.get(mouseRotation, mouseTranslation);
         
         // Subtract the part of the translation that puts the bottom left corner
         // at the origin.
@@ -843,14 +847,14 @@ public class STLObject
         
         // Click the size record round by t
         
-        t.transform(extent);
+        //t.transform(extent);
         extent = posOct(extent); 
         
         // Apply the new rotation to the existing one
         
-        Transform spin = new Transform3D();
-        spin.setRotation(mouseRotation);
-        t.mul(spin);
+        Transform spin = new Rotate();
+        //spin.setRotation(mouseRotation);
+        t.createConcatenation(spin);
         
         // Add a new translation to put the bottom left corner
         // back at the origin.
@@ -860,10 +864,9 @@ public class STLObject
         
         // Then slide us back where we were
         
-        Transform fromZeroT = new Transform3D();
-        fromZeroT.setTranslation(mouseTranslation);
+        Transform fromZeroT = new Translate(mouseTranslation.x, mouseTranslation.y, mouseTranslation.z);
 
-        fromZeroT.mul(t);
+        fromZeroT.createConcatenation(t);
         
         // Apply the whole new transformation
         
@@ -882,13 +885,16 @@ public class STLObject
     	
         // Get the mouse transform and split it into a rotation and a translation
         
-        Transform mtrans = new Transform3D();
+        Transform mtrans;
         if(mouse != null)
         {
-        	mouse.getTransform(mtrans);
+        	//mouse.getTransform(mtrans);
         	mouseTranslation = new Vector3d();
         	mouseRotation = new Matrix3d();
-        	mtrans.get(mouseRotation, mouseTranslation);
+                mtrans = Transform.affine(
+                        mouseRotation.m00, mouseRotation.m10, mouseRotation.m20, mouseTranslation.x, 
+                        mouseRotation.m01, mouseRotation.m11, mouseRotation.m12, mouseTranslation.y, 
+                        mouseRotation.m02, mouseRotation.m21, mouseRotation.m22, mouseTranslation.z);
         }
         
         // Subtract the part of the translation that puts the bottom left corner
@@ -921,8 +927,7 @@ public class STLObject
 
         	// Then slide us back where we were
 
-        	Transform fromZeroT = new Transform3D();
-        	fromZeroT.setTranslation(mouseTranslation);
+        	Transform fromZeroT = new Translate(mouseTranslation.x, mouseTranslation.y, mouseTranslation.z);
 
         	// Apply the whole new transformation
 
@@ -1028,7 +1033,7 @@ public class STLObject
     private double s3dVolume(Shape3D shape)
     {
         double total = 0;
-        GeometryArray g = (GeometryArray)shape.getGeometry();
+        /*GeometryArray g = (GeometryArray)shape.getGeometry();
         Point3d a = new Point3d();
         Point3d b = new Point3d();
         Point3d c = new Point3d();
@@ -1041,7 +1046,7 @@ public class STLObject
                 g.getCoordinate(i+2, c);
                 total += prismVolume(a, b, c);
             }
-        }
+        }*/
         return Math.abs(total);
     }
     

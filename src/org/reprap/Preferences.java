@@ -45,7 +45,7 @@ public class Preferences {
 	private static final char activeFlag = '*';
 	
 	private static Preferences globalPrefs = null;
-	private static String[] allMachines = null;
+	private static ArrayList<String> allMachines = null;
 	
 	//Properties fallbackPreferences;
 	Properties mainPreferences;
@@ -123,13 +123,14 @@ public class Preferences {
 		{
                     mainPreferences.load(mainUrl.openStream());
                     //comparePreferences();
-		} else
-		{
+		} else {
                     File file = new File("/Users/xuyi/reprap.properties");
                     copySystemConfigurations(file);
                     mainPreferences.load(file.toURI().toURL().openStream());
                     Debug.e("Can't find your RepRap configurations: " + getPropertiesPath());
 		}
+                mainPreferences.setProperty("NumberOfExtruders", "1");
+                mainPreferences.setProperty("Shield", "False");
 
 	}
 	
@@ -180,27 +181,27 @@ public class Preferences {
 	 * List of all the available RepRap machine types
 	 * @return
 	 */
-	private static String[] getAllMachines()
+	private static ArrayList<String> getAllMachines()
 	{
 		File mf = new File(getMachineFilePath());
-		String [] result = null;
+		ArrayList<String> result = new ArrayList<>();
+                result.add("test");
 		try 
 		{
-			result = new String[RepRapUtils.countLines(mf)];
+			//result = new String[RepRapUtils.countLines(mf)];
 			FileInputStream fstream = new FileInputStream(mf);
 			DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			int i = 0;
+			//int i = 0;
 			String s;
 			while ((s = br.readLine()) != null)
 			{
-				result[i] = s;
-				i++;  
+				result.add(s);
 			}
 			in.close();
 		} catch (IOException e) 
 		{
-			Debug.e("Can't read configuration file: " + mf.toString());
+			//Debug.e("Can't read configuration file: " + mf.toString());
 			Logger.getLogger(Preferences.class.getName()).log(Level.SEVERE, null, e);
 		}
 		return result;
@@ -219,7 +220,7 @@ public class Preferences {
 			if(machine.charAt(0) == activeFlag)
 				return machine.substring(1, machine.length());
 		}
-		Debug.e("No active RepRap set (add " + activeFlag + " to the start of a line in the file: " + getMachineFilePath() + ").");
+		//Debug.e("No active RepRap set (add " + activeFlag + " to the start of a line in the file: " + getMachineFilePath() + ").");
 		return "";
 	}
 	
@@ -244,13 +245,13 @@ public class Preferences {
 		{
 			FileWriter outFile = new FileWriter(getMachineFilePath());
 			PrintWriter out = new PrintWriter(outFile);
-			for(int i = 0; i < allMachines.length; i++)
+			for(int i = 0; i < allMachines.size(); i++)
 			{
-				if(allMachines[i].charAt(0) == activeFlag)
-					allMachines[i] = allMachines[i].substring(1, allMachines[i].length());
-				if(allMachines[i].contentEquals(newActiveMachine))
-					allMachines[i] = activeFlag + newActiveMachine;
-				out.println(allMachines[i]);
+				if(allMachines.get(i).charAt(0) == activeFlag)
+					allMachines.set(i, allMachines.get(i).substring(1, allMachines.get(i).length()));
+				if(allMachines.get(i).contentEquals(newActiveMachine))
+					allMachines.set(i, activeFlag + newActiveMachine);
+				out.println(allMachines.get(i));
 				i++;
 			}
 			outFile.close();
@@ -428,7 +429,7 @@ public class Preferences {
 	public String loadString(String name) {
 		if (mainPreferences.containsKey(name))
 			return mainPreferences.getProperty(name);
-		Debug.e("RepRap preference: " + name + " not found in your preference file: " + getPropertiesPath());
+		System.out.println("RepRap preference: " + name + " not found in your preference file: " + getPropertiesPath());
 		return null;
 	}
 	

@@ -1,8 +1,8 @@
 /**
  * A .rfo file is a compressed archive containing multiple objects that are all to
- * be built in a RepRap machine at once.  See this web page:
+ * be built in a RepRap machine at once. See this web page:
  * 
- * http://reprap.org/bin/view/Main/MultipleMaterialsFiles
+ * https://reprap.org/bin/view/Main/MultipleMaterialsFiles
  * 
  * for details.
  * 
@@ -10,7 +10,7 @@
  */
 
 package org.reprap.utilities;
-// http://www.devx.com/tips/Tip/14049
+// https://www.devx.com/tips/Tip/14049
 
 import java.io.*;
 import java.nio.channels.*;
@@ -29,7 +29,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 
-import org.jogamp.vecmath.Matrix4d;
 import org.reprap.Preferences;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 import org.reprap.geometry.polyhedra.CSGReader;
@@ -235,7 +234,7 @@ public class RFO
 					else
 						mElements[rowNumber * 4 + column] = 0;
 				}
-			transform = new Transform3D(mElements);
+			//transform = new Transform(mElements);
 			rowNumber = 0;
 		}
 		////////////////////////////////////////////////////////////////////
@@ -338,17 +337,15 @@ public class RFO
 				location = "";
 				filetype = "";
 				material = "";
-
 			} else if(element.equalsIgnoreCase("transform3D"))
 			{
 				if(rowNumber != 4)
 					Debug.e("XMLIn.endElement(): incomplete Transform3D matrix - last row number is not 4: " + rowNumber);
-				transform = new Transform3D(mElements);
+				//transform = new Transform(mElements);
 			} else if(element.equalsIgnoreCase("row"))
 			{
 				rowNumber++;
-			} else
-			{
+			} else {
 				Debug.e("XMLIn.endElement(): unreconised RFO element: " + element);
 			}
 		}
@@ -572,14 +569,14 @@ public class RFO
 	private void writeTransform(Group trans)
 	{
 		List<Transform> t;
-		Matrix4d m = new Matrix4d();
 		t = trans.getTransforms();
-		t.get(m);
 		xml.push("transform3D");
-		xml.write("row m00=\"" + m.m00 + "\" m01=\"" + m.m01 + "\" m02=\"" + m.m02 + "\" m03=\"" + m.m03 + "\"");
-		xml.write("row m10=\"" + m.m10 + "\" m11=\"" + m.m11 + "\" m12=\"" + m.m12 + "\" m13=\"" + m.m13 + "\"");
-		xml.write("row m20=\"" + m.m20 + "\" m21=\"" + m.m21 + "\" m22=\"" + m.m22 + "\" m23=\"" + m.m23 + "\"");
-		xml.write("row m30=\"" + m.m30 + "\" m31=\"" + m.m31 + "\" m32=\"" + m.m32 + "\" m33=\"" + m.m33 + "\"");
+		xml.write("row m00=\"" + t.get(0).getMxx() + "\" m01=\"" + t.get(0).getMxy() + 
+                        "\" m02=\"" + t.get(0).getMxz() + "\" m03=\"" + t.get(0).getTx() + "\"");
+		xml.write("row m10=\"" + t.get(0).getMyx() + "\" m11=\"" + t.get(0).getMyy() + 
+                        "\" m12=\"" + t.get(0).getMyz() + "\" m13=\"" + t.get(0).getTy() + "\"");
+		xml.write("row m20=\"" + t.get(0).getMzx() + "\" m21=\"" + t.get(0).getMzy() + 
+                        "\" m22=\"" + t.get(0).getMzz() + "\" m23=\"" + t.get(0).getTz() + "\"");
 		xml.pop();
 	}
 	

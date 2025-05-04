@@ -43,8 +43,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     {
         try {
             checkPrefs();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Debug.e("Failure trying to initialise comms in botConsole: " + e);
             JOptionPane.showMessageDialog(null, e.getMessage());
             return;
@@ -81,7 +80,10 @@ public class BotConsoleFrame extends javax.swing.JFrame {
         };
 
         pollThread.start(); 
-        jTabbedPane1.add(printTabFrame);
+        //jTabbedPane1.add(printTabFrame);
+        java.awt.EventQueue.invokeLater(() -> {
+            printTabFrame.setVisible(true);
+        });
     }
     
     public void handleException(Exception e)
@@ -160,6 +162,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
             // This is normal when shutting down, so ignore		
         }
     }
+    
     public void resumePolling()
     {
     	try 
@@ -172,7 +175,6 @@ public class BotConsoleFrame extends javax.swing.JFrame {
     	carryOnPolling = true;
     }
  
-    
     private void checkPrefs() throws Exception {
         
         // ID the number of extruder
@@ -180,6 +182,7 @@ public class BotConsoleFrame extends javax.swing.JFrame {
         if (extruderCount < 1)
             throw new Exception("A Reprap printer must contain at least one extruder");
     }
+    
     private void initialiseExtruderPanels() {
 
     }

@@ -86,7 +86,6 @@
 package org.reprap.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -115,6 +114,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import org.jogamp.vecmath.Vector3d;
 
@@ -402,13 +402,17 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
 	// Constructors
 	public RepRapBuild() throws Exception {
-            initialise();
+            //initialise();
             stls = new AllSTLsToBuild();
             reordering = false;
             graphics = null;
-            setPreferredSize(new Dimension(600, 400));
+            //setPreferredSize(new Dimension(600, 400));
 	}
-	
+        
+	public static void main(String[] args) {
+            launch(args);
+        }
+        
 	public AllSTLsToBuild getSTLs()
 	{
             return stls;
@@ -483,7 +487,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		String stlFile = getStlBackground();
 
 		workingVolume = new STLObject();
-		workingVolume.addSTL(stlFile, wv_offset, wv_app, null);
+		workingVolume.addSTL(stlFile, wv_offset, universe, null);
 		wv_and_stls.getChildren().add(workingVolume.top());
 
 		// Set the mouse to move everything
@@ -513,7 +517,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 			{
 				if (picked != workingVolume) // STL object picked?
 				{
-					picked = findSTL(name);
+					//picked = findSTL(name);
 					if (picked != null) {
 						//picked.setAppearance(picked_app); // Highlight it
 						if (lastPicked != null  && !reordering)
@@ -669,16 +673,16 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	
 
 
-	public void start() throws Exception {
-		//if (pickCanvas == null)
-			initialise();
+        @Override
+	public void start(Stage primaryStage) throws Exception {
+		initialise(primaryStage);
 	}
 
         //@Override
 	protected void addCanvas3D(Canvas c3d) {
-		setLayout(new BorderLayout());
+		//setLayout(new BorderLayout());
 		//add(c3d, BorderLayout.CENTER);
-		doLayout();
+		//doLayout();
 
 		/*if (sceneBranchGroup != null) {
 			c3d.addMouseListener(this);
