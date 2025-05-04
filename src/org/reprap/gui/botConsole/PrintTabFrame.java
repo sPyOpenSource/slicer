@@ -478,7 +478,7 @@ private void saveSCAD(java.awt.event.ActionEvent evt) {
 
 private void displayPaths(boolean disp)
 {
-		org.reprap.Preferences.setSimulate(disp);
+        org.reprap.Preferences.setSimulate(disp);
 }
 
 private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_displayPathsCheckMouseClicked
@@ -564,7 +564,7 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
 	}
 	if(gcodeLoaded)
 	{
-		int response = JOptionPane.showOptionDialog(
+            int response = JOptionPane.showOptionDialog(
                 null                       // Center in window.
                 , "This will abandon the previous G Code file you loaded."        // Message
                 , "Load GCode"               // Title in titlebar
@@ -573,11 +573,11 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
                 , null                       // Icon (none)
                 , new String[] {"OK", "Cancel"}                    // Button text as above.
                 , ""    // Default button's label
-              );
-		if(response == 1){
-			return;
-                }
-		loadedFiles = "";
+            );
+            if(response == 1){
+                    return;
+            }
+            loadedFiles = "";
 	}
 
 	if(sdCard)
@@ -668,7 +668,6 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
         org.reprap.Main.gui.onProduceB();
     }//GEN-LAST:event_jButton3ActionPerformed
 
-
 private void enableSLoad()
 {
 	SLoadOK = true;
@@ -684,7 +683,6 @@ private void enableSLoad()
 		JOptionPane.showMessageDialog(null, e.toString());
 	}
 }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;

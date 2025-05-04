@@ -108,6 +108,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.Background;
@@ -455,7 +456,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	// Set up the RepRap working volume
 
         @Override
-	protected Group createSceneBranchGroup() throws Exception {
+	protected Scene createSceneBranchGroup() throws Exception {
 		sceneBranchGroup = new Group();
 
 		Group objRoot = sceneBranchGroup;
@@ -487,7 +488,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		String stlFile = getStlBackground();
 
 		workingVolume = new STLObject();
-		workingVolume.addSTL(stlFile, wv_offset, universe, null);
+		Attributes at = workingVolume.addSTL(stlFile, wv_offset, universe, null);
 		wv_and_stls.getChildren().add(workingVolume.top());
 
 		// Set the mouse to move everything
@@ -495,7 +496,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		mouse.move(world, false);
 		objRoot.getChildren().add(world.top());
 
-		return objRoot;
+		return at.getAppearance();
 	}
 
 	// Action on mouse click
@@ -675,7 +676,9 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 
         @Override
 	public void start(Stage primaryStage) throws Exception {
-		initialise(primaryStage);
+            initialise(primaryStage);
+            primaryStage.setTitle("3D Printer");
+            primaryStage.show();
 	}
 
         //@Override

@@ -131,14 +131,16 @@ public class STLObject
         private Attributes att = null;      // The attributes associated with it
         private final double volume;        // Useful to know
         private int unique = 0;
+        public Scene scene;
 
-        Contents(String s, Group st, CSG3D c, Attributes a, double v)
+        Contents(String s, Group st, CSG3D c, Attributes a, double v, Scene scene)
         {
             sourceFile = s;
             stl = st;
             csg = c;
             att = a;
             volume = v;
+            this.scene = scene;
         }
 
         void setUnique(int i)
@@ -230,6 +232,7 @@ public class STLObject
     {
     	Attributes att = new Attributes(null, this, null, app);
     	Contents child = loadSingleSTL(location, att, offset, lastPicked);
+        att.setAppearance(child.scene);
     	if(child == null)
     		return null;
     	if(lastPicked == null)
@@ -259,18 +262,17 @@ public class STLObject
     	
     	StlFile loader = new StlFile();
     	
-        Scene scene;
+        Scene scene = null;
         double volume = 0;
         try 
         {
-        	
             //location=location.substring(5);
             //System.out.println(location);
             scene = loader.load(location);
             CSGReader csgr = new CSGReader(location);
             if(csgr.csgAvailable())
                 csgResult = csgr.csg();
-            if (scene != null) 
+            if (scene == null) 
             {
                 //bgResult = scene.getSceneGroup();
                 /*bgResult.setCapability(Node.ALLOW_BOUNDS_READ);
@@ -321,16 +323,14 @@ public class STLObject
                     //trans.setTransform(temp);
                     restoreAppearance();
                 }
-            } 
-
-        } catch ( FileNotFoundException e ) 
-        {
+            }
+        } catch ( FileNotFoundException e ) {
             Debug.e("loadSingelSTL(): Exception loading STL file from: " 
                     + location);
             Logger.getLogger(STLObject.class.getName()).log(Level.SEVERE, null, e);
         }
         
-        return new Contents(location, bgResult, csgResult, att, volume);
+        return new Contents(location, bgResult, csgResult, att, volume, scene);
     }
     
     private void updateBox(BoundingBox bb)

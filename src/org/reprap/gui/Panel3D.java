@@ -16,7 +16,9 @@ import javafx.application.Application;
 import javafx.geometry.BoundingBox;
 
 import javafx.geometry.Bounds;
+import javafx.scene.Camera;
 import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -41,7 +43,7 @@ abstract public class Panel3D extends Application {
 	// What follows are defaults.  These values should be overwritten from
 	// the reprap.properties file.
 	
-	protected String wv_location = null;
+	protected String wv_location = "/Users/xuyi/Pictures/3D/edf/files/edf120.stl";
 
 	// Translate and zoom scaling factors
 	
@@ -91,7 +93,7 @@ abstract public class Panel3D extends Application {
 	protected Bounds applicationBounds = null;
 
 	// Set up the RepRap working volume
-	abstract protected Group createSceneBranchGroup() throws Exception;
+	abstract protected Scene createSceneBranchGroup() throws Exception;
 
 	// Set bg light grey
 	abstract protected Background createBackground();
@@ -140,8 +142,7 @@ abstract public class Panel3D extends Application {
 		machineColour = Color.color((float)0.3, (float)0.3, (float)0.3);
 		
 		unselectedColour = Color.color((float)0.3, (float)0.3, (float)0.3);
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
 		Debug.e("Refresh Panel3D preferences: " + ex.toString());
             }
 				
@@ -269,13 +270,17 @@ abstract public class Panel3D extends Application {
 		//universe = createVirtualUniverse();
 
 		//org.jogamp.java3d.Locale locale = createLocale(universe);
-
-		Group sceneBranchGroup = createSceneBranchGroup();
-
+Camera camera = new PerspectiveCamera(true);
+        camera.setFarClip(Integer.MAX_VALUE);
+        camera.setNearClip(0.1);
+		Scene sceneBranchGroup = createSceneBranchGroup();
+                sceneBranchGroup.setCamera(camera);
+                sceneBranchGroup.getCamera().setTranslateZ(-3500);
+vp.setScene(sceneBranchGroup);
 		//Stage vp = createViewPlatform();
 		//Group viewBranchGroup = createViewBranchGroup(getViewTransformGroupArray());
 
-		createView(vp);
+		//createView(vp);
 
 		Background background = createBackground();
 
