@@ -126,6 +126,7 @@ import org.reprap.Preferences;
 import org.reprap.geometry.polygons.Point2D;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 import org.reprap.geometry.polyhedra.STLObject;
+import org.reprap.gui.botConsole.PrintTabFrame;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
 
@@ -400,6 +401,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	private final AllSTLsToBuild stls;
 	private boolean reordering;
 	private RrGraphics graphics;
+        PrintTabFrame printTabFrame = new PrintTabFrame();
 
 	// Constructors
 	public RepRapBuild() throws Exception {
@@ -408,6 +410,9 @@ public class RepRapBuild extends Panel3D implements MouseListener {
             reordering = false;
             graphics = null;
             //setPreferredSize(new Dimension(600, 400));
+            java.awt.EventQueue.invokeLater(() -> {
+                printTabFrame.setVisible(true);
+            });
 	}
         
 	public static void main(String[] args) {

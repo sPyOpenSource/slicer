@@ -3,7 +3,9 @@ package org.reprap.machines;
 import java.io.IOException;
 import java.io.File;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileFilter;
 
 import org.reprap.Attributes;
 import org.reprap.CartesianPrinter;
@@ -20,11 +22,13 @@ import org.reprap.utilities.RrGraphics;
 import org.reprap.utilities.Timer;
 import org.reprap.geometry.polygons.Point2D;
 import org.reprap.geometry.polygons.Rectangle;
+import org.reprap.utilities.ExtensionFileFilter;
 
 public abstract class GenericRepRap implements CartesianPrinter
 {
 	protected boolean stlLoaded = false;
 	protected boolean gcodeLoaded = false;
+        private JFileChooser chooser;
 	
 	LayerRules layerRules = null;
 	
@@ -213,6 +217,13 @@ public abstract class GenericRepRap implements CartesianPrinter
 	
 	public GenericRepRap() throws Exception
 	{
+            chooser = new JFileChooser();
+
+            // Do we want just to list .stl files, or all?
+            // If all, comment out the next two lines
+
+            FileFilter filter = new ExtensionFileFilter("STL", new String[] { "STL" });
+            chooser.setFileFilter(filter);
 		topDown = false;
 		XYEAtZero = false;
 		startTime = System.currentTimeMillis();
@@ -1000,16 +1011,44 @@ public abstract class GenericRepRap implements CartesianPrinter
 		return foundationLayers;
 	}
 	
+        public File onOpen(String description, String[] extensions, String defaultRoot) 
+        {
+            String result;
+            File f;
+            FileFilter filter = new ExtensionFileFilter(description, extensions);
+
+            chooser.setFileFilter(filter);
+            if(!defaultRoot.contentEquals("") && extensions.length == 1)
+            {
+                File defaultFile = new File(defaultRoot + "." + extensions[0]);
+                chooser.setSelectedFile(defaultFile);
+            }
+
+            int returnVal = chooser.showOpenDialog(null);
+            if(returnVal == JFileChooser.APPROVE_OPTION) 
+            {
+                f = chooser.getSelectedFile();
+                result = f.getAbsolutePath();
+                /*if(extensions[0].toUpperCase().contentEquals("RFO"))
+                    builder.addRFOFile(result);
+                if(extensions[0].toUpperCase().contentEquals("STL"))
+                    builder.anotherSTLFile(result, printer, true);*/
+
+                return f;
+            }
+            return null;
+        }
 	
 	/**
 	 * Load an STL file to be made.
 	 * @return the name of the file
 	 */
+        @Override
 	public String addSTLFileForMaking()
 	{
 		gcodeLoaded = false;		
 		stlLoaded = true;
-		File f = org.reprap.Main.gui.onOpen("STL triangulation file", new String[] {"stl"}, "");
+		File f = onOpen("STL triangulation file", new String[] {"stl"}, "");
 		if(f == null)
 			return "";
 		else 

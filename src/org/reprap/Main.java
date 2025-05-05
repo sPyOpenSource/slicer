@@ -218,6 +218,7 @@ public class Main {
         builder = new RepRapBuild();
         builderFrame.setMinimumSize(new Dimension(0,0));
         //builderFrame.add(builder);
+        //RepRapBuild.launch(new String[]{});
 
         panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); 
         panel.setPreferredSize(Utility.getDefaultAppSize());

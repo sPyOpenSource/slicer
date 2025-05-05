@@ -493,12 +493,12 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
 	{
 		int response = JOptionPane.showOptionDialog(
                 null                       // Center in window.
-                , "This will abandon the G Code file you loaded."        // Message
+                , "This will abandon the G Code file you loaded." // Message
                 , "Load STL"               // Title in titlebar
                 , JOptionPane.YES_NO_OPTION  // Option type
                 , JOptionPane.PLAIN_MESSAGE  // messageType
                 , null                       // Icon (none)
-                , new String[] {"OK", "Cancel"}                    // Button text as above.
+                , new String[] {"OK", "Cancel"} // Button text as above.
                 , ""    // Default button's label
               );
 		if(response == 1){
@@ -522,27 +522,27 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
 		loadedFilesLong = true;
 	} else {
 		loadedFiles += fn + " ";
-                     }
+        }
 	fileNameBox.setText(loadedFiles);
 	stlLoaded = true;
 	gcodeLoaded = false;
     }//GEN-LAST:event_loadSTL
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if(!GLoadOK){
+        /*if(!GLoadOK){
 		return;
-        }
+        }*/
 	if(seenSNAP)
 	{
 		JOptionPane.showMessageDialog(null, "Sorry.  Sending G Codes to SNAP RepRap machines is not implemented.");
 		return;
 	}
 
-	if(!org.reprap.Preferences.GCodeUseSerial())
+	/*if(!org.reprap.Preferences.GCodeUseSerial())
 	{
 		JOptionPane.showMessageDialog(null, "There is no point in sending a G Code file to a G Code file.");
 		return;
-	}
+	}*/
 
 	if(stlLoaded)
 	{
