@@ -38,7 +38,7 @@ public class Simulator extends GenericRepRap {
     }
 
     @Override
-    public boolean iAmPaused()
+    public boolean isPaused()
     {
         return false;
     }

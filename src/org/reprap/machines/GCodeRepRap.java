@@ -630,9 +630,9 @@ public class GCodeRepRap extends GenericRepRap {
      * @return
      */
     @Override
-    public boolean iAmPaused()
+    public boolean isPaused()
     {
-            return gcode.iAmPaused();
+            return gcode.isPaused();
     }
 	
 	/**

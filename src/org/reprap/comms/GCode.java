@@ -38,7 +38,7 @@ public class GCode
     // A positive number returned is a request for that line number
     // to be resent.
 
-    private static final long shutDown = -3;
+    private static final long shutDown  = -3;
     private static final long allSentOK = -1;
     private double eTemp;
     private double bTemp;
@@ -51,8 +51,6 @@ public class GCode
      * Stop sending a file (if we are).
      */
     private boolean paused = false;
-
-    private boolean iAmPaused = false;
 
     /**
      * Not quite sure why this is needed...
@@ -151,7 +149,7 @@ public class GCode
 
     public static void main(String[] arg){
         try {
-            GCode reader = new GCode("/Users/xuyi/Pictures/test.gcode");
+            GCode reader = new GCode("/Users/xuyi/Source/GCode/test.gcode");
             //reader.viewer();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(GCode.class.getName()).log(Level.SEVERE, null, ex);
@@ -182,7 +180,6 @@ public class GCode
     {
         resetReceived();
         paused = false;
-        iAmPaused = false;
         alreadyReversed = false;
         ringBuffer = new String[buflen];
         ringLines = new long[buflen];
@@ -222,7 +219,7 @@ public class GCode
 
     /**
      * Stop the printer building.
-     * This _shouldn't_ also stop it being controlled interactively.
+     * This shouldn't also stop it being controlled interactively.
      */
     public void pause()
     {
@@ -243,9 +240,9 @@ public class GCode
      * Are we paused?
      * @return
      */
-    public boolean iAmPaused()
+    public boolean isPaused()
     {
-        return iAmPaused;
+        return paused;
     }
 	
 	/**
@@ -274,30 +271,27 @@ public class GCode
 				Thread.currentThread().setName("GCode file printer");
 				String line;
 				long bytes = 0;
-				double fractionDone = 0;
 				try 
 				{
 					while ((line = fileInStream.readLine()) != null) 
 					{
 						bufferQueue(line);
 						bytes += line.length();
-						fractionDone = (double)bytes/(double)fileInStreamLength;
+						double fractionDone = (double)bytes / (double)fileInStreamLength;
 						setFractionDone(fractionDone, -1, -1);
 						while(paused)
 						{
-							iAmPaused = true;
+							//iAmPaused = true;
 							//Debug.e("Waiting for pause to end.");
 							sleep(239);
 						}
-						iAmPaused = false;
+						//iAmPaused = false;
 					}
 					fileInStream.close();
-				} catch (Exception e) 
-				{  
+				} catch (Exception e) {  
 					Debug.e("Error printing file: " + e.toString());
 				}
 			}
-			
 		};
 		
 		playFile.start();
@@ -703,8 +697,7 @@ public class GCode
 			try
 			{
 				i = serialInStream.read();
-			} catch (IOException ex)
-			{
+			} catch (IOException ex) {
 				i = -1;
 			}
 

@@ -462,7 +462,7 @@ public interface Printer {
      * Query the paused status
      * @return
      */
-    public boolean iAmPaused();
+    public boolean isPaused();
 
     /**
      * Resume building.

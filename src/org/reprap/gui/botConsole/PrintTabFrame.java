@@ -254,7 +254,7 @@ public class PrintTabFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Print");
+        jButton3.setText("Start");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -509,7 +509,7 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
 	String fn = printer.addSTLFileForMaking();
 	if(fn.length() <= 0)
 	{
-		JOptionPane.showMessageDialog(null, "No STL was loaded.");
+		//JOptionPane.showMessageDialog(null, "No STL was loaded.");
 		return;
 	}
 
@@ -610,7 +610,7 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
         }
 	if(loadedFiles == null)
 	{
-		JOptionPane.showMessageDialog(null, "No GCode was loaded.");
+		//JOptionPane.showMessageDialog(null, "No GCode was loaded.");
 		return;
 	}
 

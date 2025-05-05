@@ -1059,6 +1059,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Load an RFO file to be made.
 	 * @return the name of the file
 	 */
+        @Override
 	public String loadRFOFileForMaking()
 	{
 		gcodeLoaded = false;		
@@ -1072,8 +1073,10 @@ public abstract class GenericRepRap implements CartesianPrinter
 	
 	/**
 	 * Load an RFO file to be made.
+         * @param filerRoot
 	 * @return the name of the file
 	 */
+        @Override
 	public String saveRFOFile(String filerRoot)
 	{
 		return org.reprap.Main.gui.saveRFO(filerRoot);
@@ -1083,10 +1086,11 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Load a GCode file to be made.
 	 * @return the name of the file
 	 */
+        @Override
 	public String loadGCodeFileForMaking()
 	{
-		if(stlLoaded)
-			org.reprap.Main.gui.deleteAllSTLs();
+		/*if(stlLoaded)
+			org.reprap.Main.gui.deleteAllSTLs();*/
 		stlLoaded = false;
 		gcodeLoaded = true;
 		return null;
@@ -1096,10 +1100,12 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Stop the printer building.
 	 * This _shouldn't_ also stop it being controlled interactively.
 	 */
+        @Override
 	public void pause()
 	{
 	}
 	
+        @Override
 	public int getFanLayer()
 	{
 		return fanLayer;
@@ -1109,10 +1115,12 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Resume building.
 	 *
 	 */
+        @Override
 	public void resume()
 	{
 	}
 	
+        @Override
 	public void setTopDown(boolean td)
 	{
 		topDown = td;
@@ -1121,6 +1129,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/**
 	 * @return the flag that decided which direction to compute the layers
 	 */
+        @Override
 	public boolean getTopDown()
 	{
 		return topDown;
@@ -1130,6 +1139,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Set all the extruders' separating mode
 	 * @param s
 	 */
+        @Override
 	public void setSeparating(boolean s)
 	{
             for (Extruder extruder : extruders) {
@@ -1141,6 +1151,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Get the feedrate currently being used
 	 * @return
 	 */
+        @Override
 	public double getCurrentFeedrate()
 	{
 		return currentFeedrate;
@@ -1149,6 +1160,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/**
 	 * @return slow XY movement feedrate in mm/minute
 	 */
+        @Override
 	public double getFastXYFeedrate()
 	{
 		return fastXYFeedrate;
@@ -1157,6 +1169,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/**
 	 * @return slow XY movement feedrate in mm/minute
 	 */
+        @Override
 	public double getSlowXYFeedrate()
 	{
 		return slowXYFeedrate;
@@ -1165,6 +1178,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/**
 	 * @return the fastest the machine can accelerate
 	 */
+        @Override
 	public double getMaxXYAcceleration()
 	{
 		return maxXYAcceleration;
@@ -1173,6 +1187,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/**
 	 * @return slow XY movement feedrate in mm/minute
 	 */
+        @Override
 	public double getSlowZFeedrate()
 	{
 		return slowZFeedrate;
@@ -1181,6 +1196,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/**
 	 * @return the fastest the machine can accelerate
 	 */
+        @Override
 	public double getMaxZAcceleration()
 	{
 		return maxZAcceleration;
@@ -1191,6 +1207,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * you know what you're doing...
 	 * @param z
 	 */
+        @Override
 	public void setZ(double z)
 	{
 		currentZ = z;
@@ -1202,6 +1219,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * @param y
 	 * @param z
 	 */
+        @Override
 	public void setTop(double x, double y, double z)
 	{
 		topX = x;
@@ -1213,11 +1231,13 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * The location of the dump for purging extruders
 	 * @return
 	 */
+        @Override
 	public double getDumpX()
 	{
 		return layerRules.getPurgeMiddle().x();
 	}
 	
+        @Override
 	public double getDumpY()
 	{
 		return layerRules.getPurgeMiddle().y();
@@ -1229,6 +1249,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * @param temperature The temperature of the extruder in centigrade
 	 * @throws Exception 
 	 */
+        @Override
 	public void setBedTemperature(double temperature) throws Exception
 	{
 		bedTemperatureTarget = temperature;
@@ -1238,11 +1259,13 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * The temperature we want the bed to be at
 	 * @return
 	 */
+        @Override
 	public double getBedTemperatureTarget()
 	{
 		return bedTemperatureTarget;
 	}
 	
+        @Override
 	public void forceNextExtruder()
 	{
 		forceSelection = true;
@@ -1252,6 +1275,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Return the current layer rules
 	 * @return
 	 */
+        @Override
 	public LayerRules getLayerRules()
 	{
 		return layerRules;
@@ -1261,6 +1285,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Return the diagnostic graphics window (or null if there isn't one)
 	 * @return
 	 */
+        @Override
 	public RrGraphics getGraphics()
 	{
 		return org.reprap.Main.gui.getGraphics();
@@ -1268,7 +1293,9 @@ public abstract class GenericRepRap implements CartesianPrinter
 	
 	/**
 	 * The XY point furthest from the origin
+         * @return 
 	 */
+        @Override
 	public Point2D getBedNorthEast()
 	{
 		return bedNorthEast;
