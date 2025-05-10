@@ -21,9 +21,14 @@ import org.reprap.geometry.polygons.Point2D;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
+import javafx.application.Platform;
+import javafx.scene.Camera;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  *
@@ -31,15 +36,15 @@ import java.util.logging.Logger;
 public class GCodeRepRap extends GenericRepRap {
 	
     /**
-    * our class to send gcode instructions
-    */
+     * our class to send gcode instructions
+     */
     GCode gcode;
 
     /**
      * @throws Exception
      */
-    public GCodeRepRap() throws Exception {
-        super();
+    public GCodeRepRap(Stage stage) throws Exception {
+        super(stage);
 
         gcode = new GCode();
         String s = "M110";
@@ -302,11 +307,10 @@ public class GCodeRepRap extends GenericRepRap {
 		super.moveTo(x, y, z, feedrate, startUp, endUp);
 	}
 	
-
-	
 	/**
 	 * make a single, usually non-building move (between plots, or zeroing an axis etc.)
 	 */
+    @Override
 	public void singleMove(double x, double y, double z, double feedrate, boolean really)
 	{
 		double x0 = getX();
@@ -446,9 +450,6 @@ public class GCodeRepRap extends GenericRepRap {
 		super.dispose();
 	}
 	
-
-	
-	
 	/**
 	 * Go to the finish point
 	 */
@@ -457,10 +458,10 @@ public class GCodeRepRap extends GenericRepRap {
 
 	}
 
-
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#initialise()
 	 */
+    @Override
 	public void startRun(LayerRules lc) throws Exception
 	{	
 		// If we are printing from a file, that should contain all the headers we need.
@@ -494,6 +495,7 @@ public class GCodeRepRap extends GenericRepRap {
 		}
 	}
 	
+    @Override
 	public void startingLayer(LayerRules lc) throws Exception
 	{
 		currentFeedrate = -1;  // Force it to set the feedrate
@@ -503,6 +505,7 @@ public class GCodeRepRap extends GenericRepRap {
 		super.startingLayer(lc);
 	}
 	
+    @Override
 	public void finishedLayer(LayerRules lc) throws Exception
 	{
 		super.finishedLayer(lc);
@@ -512,6 +515,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#terminate(LayerRules layerRules)
 	 */
+    @Override
 	public void terminate(LayerRules lc) throws Exception
 	{
 		gcode.startingEpilogue(lc);
@@ -539,6 +543,7 @@ public class GCodeRepRap extends GenericRepRap {
 		gcode.finish(lc);
 	}
 
+    @Override
 	public void home() throws Exception 
 	{
 		String s = "G28";
@@ -640,6 +645,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * @return
 	 * @throws Exception 
 	 */
+    @Override
 	public double[] getCoordinates() throws Exception
 	{
 		String s = "M114";
@@ -666,7 +672,7 @@ public class GCodeRepRap extends GenericRepRap {
 			gcode.queue(s);
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.initialiseSD() has thrown:");
-			e.printStackTrace();
+			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
 		}		
 	}
 	
@@ -674,6 +680,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Get the file list from the machine's SD card
 	 * @return
 	 */
+    @Override
 	public String[] getSDFiles()
 	{
 		initialiseSD();
@@ -692,6 +699,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/**
 	 * Turn the fan on
 	 */
+    @Override
 	public void fanOn()
 	{
 		String s = "M106 S255";
@@ -708,6 +716,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/**
 	 * Turn the fan off
 	 */
+    @Override
 	public void fanOff()
 	{
 		String s = "M106 S0";
@@ -725,6 +734,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Print a file on the SD card
 	 * @param filename
 	 */
+    @Override
 	public boolean printSDFile(String filename)
 	{
 		if(filename == null)
@@ -872,15 +882,18 @@ public class GCodeRepRap extends GenericRepRap {
 	/**
 	 * Wait until the GCodeWriter has exhausted its buffer.
 	 */
+    @Override
 	public void waitWhileBufferNotEmpty()
 	{
 	}
 	
+    @Override
 	public void slowBuffer()
 	{
 		gcode.slowBufferThread();
 	}
 	
+    @Override
 	public void speedBuffer()
 	{
 		gcode.speedBufferThread();
@@ -890,26 +903,36 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Load a GCode file to be made.
 	 * @return the name of the file
 	 */
+    @Override
 	public String loadGCodeFileForMaking()
 	{
 		super.loadGCodeFileForMaking();
-		return gcode.loadGCodeFileForMaking();
+		String name = gcode.loadGCodeFileForMaking();
+                
+                Scene scene = gcode.buildScene();
+                Platform.runLater(() -> {
+                    stage.setScene(scene);
+                });
+                return name;
 	}
 	
-	/**
-	 * Set an output file
-	 * @return
-	 */
-	public String setGCodeFileForOutput(String fileRoot)
-	{
-		return gcode.setGCodeFileForOutput(getTopDown(), fileRoot);
-	}
+    /**
+     * Set an output file
+     * @param fileRoot
+     * @return
+     */
+    @Override
+    public String setGCodeFileForOutput(String fileRoot)
+    {
+        return gcode.setGCodeFileForOutput(getTopDown(), fileRoot);
+    }
 	
 	/**
 	 * If a file replay is being done, do it and return true
 	 * otherwise return false.
 	 * @return
 	 */
+    @Override
 	public Thread filePlay()
 	{
 		return gcode.filePlay();
@@ -919,6 +942,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Stop the printer building.
 	 * This _shouldn't_ also stop it being controlled interactively.
 	 */
+    @Override
 	public void pause()
 	{
 		gcode.pause();
@@ -928,6 +952,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Resume building.
 	 *
 	 */
+    @Override
 	public void resume()
 	{
 		gcode.resume();

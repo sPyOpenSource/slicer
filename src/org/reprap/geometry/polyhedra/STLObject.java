@@ -98,7 +98,6 @@ import org.reprap.utilities.Debug;
  * @author adrian
  * 
  */
-
 public class STLObject
 {
 
@@ -233,8 +232,8 @@ public class STLObject
     	Attributes att = new Attributes(null, this, null, app);
     	Contents child = loadSingleSTL(location, att, offset, lastPicked);
         att.setAppearance(child.scene);
-    	if(child == null)
-    		return null;
+    	/*if(child == null)
+    		return null;*/
     	if(lastPicked == null)
     		contents.add(child);
     	else
@@ -325,8 +324,7 @@ public class STLObject
                 }
             }
         } catch ( FileNotFoundException e ) {
-            Debug.e("loadSingelSTL(): Exception loading STL file from: " 
-                    + location);
+            Debug.e("loadSingelSTL(): Exception loading STL file from: " + location);
             Logger.getLogger(STLObject.class.getName()).log(Level.SEVERE, null, e);
         }
         
@@ -494,23 +492,19 @@ public class STLObject
             } 
  
             // How big?
-            
             extent = new Vector3d(p1.x - p0.x, p1.y - p0.y, p1.z - p0.z);
             
             // Position us centre at origin:
-            
             offset = add(offset, neg(scale(extent, 0.5)));
             
             // Recursively apply that.  N.B. we do not apply a transform to the
             // loaded object; we actually shift all its points to put it in this
             // standard place.
-                        
             result.centreToOrigin = offset;
             
             //System.out.println("centreToOrigin = " + offset.toString());
 
             // Now shift us to have bottom left at origin using our transform.
-            
             result.bottomLeftShift = scale(extent, 0.5);
             //System.out.println("half-size = " + result.bottomLeftShift.toString());            
         } else {
@@ -632,7 +626,6 @@ public class STLObject
     }
     
     // Shift a Shape3D permanently by p
-    
     private void s3dOffset(Shape3D shape, Tuple3d p)
     {
         /*GeometryArray g = (GeometryArray)shape.getGeometry();
@@ -649,7 +642,6 @@ public class STLObject
     }
     
     // Scale the object by s permanently (i.e. don't just apply a transform).
-    
     private void recursiveSetScale(Object sg, double x, double y, double z, boolean zOnly) 
     {
             
@@ -671,7 +663,6 @@ public class STLObject
     }
     
    // Scale a Shape3D permanently by s
-    
     private void s3dScale(Shape3D shape, double x, double y, double z, boolean zOnly)
     {
         /*GeometryArray g = (GeometryArray)shape.getGeometry();
@@ -697,21 +688,18 @@ public class STLObject
 
 
     // Set my transform
-    
     public void setTransform(Transform t3d)
     {
         trans.getTransforms().add(t3d);
     }
     
     // Get my transform
-    
     public List<Transform> getTransforms()
     {
         return trans.getTransforms();
     }
     
     // Get one of the the actual objects
-    
     public Group getSTL()
     {
     	return stl;
@@ -733,14 +721,12 @@ public class STLObject
     }
     
     // Get the number of objects
-    
     public int numChildren()
     {
     	return stl.getChildren().size();
     }
     
     // The mouse calls this to tell us it is controlling us
-    
     public void setMouse(MouseObject m)
     {
         mouse = m;

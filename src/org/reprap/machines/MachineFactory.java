@@ -1,5 +1,6 @@
 package org.reprap.machines;
 
+import javafx.stage.Stage;
 import org.reprap.Printer;
 import org.reprap.RepRapException;
 
@@ -15,14 +16,14 @@ public class MachineFactory {
      * @return new machine
      * @throws Exception
      */
-    static public Printer create() throws Exception
+    static public Printer create(Stage stage) throws Exception
     {
         String machine = org.reprap.Preferences.RepRapMachine();
 
         if (machine.compareToIgnoreCase("GCodeRepRap") == 0){
-            return new GCodeRepRap();
+            return new GCodeRepRap(stage);
         } else if (machine.compareToIgnoreCase("simulator") == 0) {
-            return new Simulator();		
+            return new Simulator(stage);		
         } else {
             throw new RepRapException("Invalid RepRap machine in properties file: " + machine);
         }

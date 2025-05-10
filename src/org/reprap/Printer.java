@@ -2,8 +2,8 @@ package org.reprap;
 
 import java.io.IOException;
 import java.io.PrintStream;
-
 import javax.swing.JCheckBoxMenuItem;
+
 import org.reprap.geometry.LayerRules;
 import org.reprap.geometry.polygons.Point2D;
 import org.reprap.utilities.RrGraphics;
@@ -32,7 +32,7 @@ public interface Printer {
      * Range betwen [0..???]
      * @param z absolute z position in millimters relative to the home position.
      * Range between [0..???]
-                  * @param feedrate
+     * @param feedrate
      * @param startUp ?
      * @param endUp ?
      * @throws RepRapException
@@ -428,7 +428,7 @@ public interface Printer {
     public void machineWait(double milliseconds, boolean fastExtrude, boolean really) throws Exception;
 
     /**
-     * Load a file to be made.
+     * Load a file.
      * Currently these can be STLs (more than one can be loaded) or
      * a GCode file, or an .rfo file.
      * @return the name of the file
@@ -436,6 +436,7 @@ public interface Printer {
     public String addSTLFileForMaking();
     public String loadGCodeFileForMaking();
     public String loadRFOFileForMaking();
+    
     public String saveRFOFile(String fileRoot);
 	
     /**

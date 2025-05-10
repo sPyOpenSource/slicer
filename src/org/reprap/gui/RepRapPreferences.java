@@ -70,7 +70,9 @@ public class RepRapPreferences extends JFrame {
 	
 	public static void main(String[] args) 
 	{
-		new RepRapPreferences();
+            java.awt.EventQueue.invokeLater(() -> {
+                new RepRapPreferences().setVisible(true);
+            });
 	}
 	
 
@@ -92,11 +94,8 @@ public class RepRapPreferences extends JFrame {
 		org.reprap.Preferences.setGlobalString(name, value);
 	}
 	
-
 	public void updatePreferencesValues() {
-		try {
-			
-					
+		try {	
 			for(int i = 0; i < globals.length; i++)
 			{
 				globalValues[i].setText(loadString(globals[i].getText()));
@@ -109,9 +108,7 @@ public class RepRapPreferences extends JFrame {
 				for(int i = 0; i < enames.length; i++)
 					extruderValues[j][i].setText(loadString(enames[i].getText()));
 			}
-				
-				
-			} catch (IOException ex) {
+		} catch (IOException ex) {
 			JOptionPane.showMessageDialog(null, "Updating preferences: " + ex);
 		}
 	}
@@ -169,10 +166,10 @@ public class RepRapPreferences extends JFrame {
 			globals = makeLabels(g);
 			globalValues = makeValues(globals);
 			globalCats = categorise(globalValues);
-		}catch (IOException ex)
+		} catch (IOException ex)
 		{
 			Debug.e("Preferences window: Can't load the globals!");
-			 Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		// Next we need to know how many extruders we've got.
@@ -199,7 +196,7 @@ public class RepRapPreferences extends JFrame {
 				extruderValues[i]= makeValues(extruders[i]);
 				extruderCats[i] = categorise(extruderValues[i]);
 			}
-		}catch (IOException ex)
+		} catch (IOException ex)
 		{
 			Debug.e("Preferences window: Can't load extruder(s)!");
 			Logger.getLogger(RepRapPreferences.class.getName()).log(Level.SEVERE, null, ex);
@@ -256,12 +253,11 @@ public class RepRapPreferences extends JFrame {
 			panel.add(value.getObject());
 	
 	}
+        
 	/**
 	 * Set up the panels with all the right boxes in
 	 *
 	 */
-	
-	
 	private void initGUI() 
 	{
 		setSize(400, 500);
@@ -416,15 +412,15 @@ public class RepRapPreferences extends JFrame {
 				
 				odd = keys.length%2 != 0;
 				if(odd)
-					rows = keys.length/2 + 2;
+					rows = keys.length / 2 + 2;
 				else
-					rows = keys.length/2 + 1;
+					rows = keys.length / 2 + 1;
 				jPanelExtruder.setLayout(new GridLayout(rows, 4, 5, 5));
 				jTabbedPane1.addTab(loadString("Extruder" + j +"_MaterialType(name)"), null, jScrollPaneExtruder, null);
 				// Do it in two chunks, so they're vertically ordered, not horizontally
 				
-				half = keys.length/2;
-				for(i = 0; i < keys.length/2; i++)
+				half = keys.length / 2;
+				for(i = 0; i < keys.length / 2; i++)
 				{
 					jPanelExtruder.add(keys[i]);
 					addValueToPanel(values[i], jPanelExtruder);

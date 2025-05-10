@@ -13,7 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import javafx.stage.Stage;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.reprap.Extruder;
@@ -25,7 +27,7 @@ import org.reprap.pcb.PCB;
  *
  * @author  ensab
  */
-public class PrintTabFrame extends javax.swing.JFrame {
+public class PrintTabFrame extends JFrame {
     private static final long serialVersionUID = 1L;
     private BotConsoleFrame parentBotConsoleFrame = null;
     private Printer printer = null;
@@ -45,7 +47,7 @@ public class PrintTabFrame extends javax.swing.JFrame {
     /** Creates new form PrintTabFrame
      *
      */
-    public PrintTabFrame() {
+    public PrintTabFrame(Stage stage) {
         initComponents();
     	String machine = "simulator";
 
@@ -55,7 +57,7 @@ public class PrintTabFrame extends javax.swing.JFrame {
     	printerFilePlay = null;
 
         try {
-            printer = new GCodeRepRap();//org.reprap.Main.gui.getPrinter();
+            printer = new GCodeRepRap(stage);//org.reprap.Main.gui.getPrinter();
         } catch (Exception ex) {
             Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -121,9 +123,9 @@ public class PrintTabFrame extends javax.swing.JFrame {
     		return;
     	}
 
-    	long f = (long)((double)(e - startTime)/fractionDone);
-    	int h = (int)(f/60000)/60;
-    	int m = (int)(f/60000)%60;
+    	long f = (long)((double)(e - startTime) / fractionDone);
+    	int h = (int)(f / 60000) / 60;
+    	int m = (int)(f / 60000) % 60;
 
     	if(m > 9){
     		expectedBuildTime.setText("" + h + ":" + m);
@@ -371,7 +373,7 @@ public void printDone()
 {
 	restoreSliceButton();
 	String[] options = { "Exit" };
-		JOptionPane.showOptionDialog(null, "The file has been processed.", "Message",
+	JOptionPane.showOptionDialog(null, "The file has been processed.", "Message",
 			JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
 			null, options, options[0]);
 	org.reprap.Main.gui.dispose();
@@ -434,7 +436,7 @@ private void layerPause(boolean p)
 }
 
 private void layerPauseCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_layerPauseCheckActionPerformed
-org.reprap.Main.gui.setLayerPause(layerPauseCheck.isSelected());
+    org.reprap.Main.gui.setLayerPause(layerPauseCheck.isSelected());
 }//GEN-LAST:event_layerPauseCheckActionPerformed
 
 private void selectorRadioButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectorRadioButtonMousePressed
@@ -491,7 +493,7 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
         }
 	if(gcodeLoaded)
 	{
-		int response = JOptionPane.showOptionDialog(
+            int response = JOptionPane.showOptionDialog(
                 null                       // Center in window.
                 , "This will abandon the G Code file you loaded." // Message
                 , "Load STL"               // Title in titlebar
@@ -500,11 +502,11 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
                 , null                       // Icon (none)
                 , new String[] {"OK", "Cancel"} // Button text as above.
                 , ""    // Default button's label
-              );
-		if(response == 1){
-			return;
-                }
-		loadedFiles = "";
+            );
+            if(response == 1){
+                    return;
+            }
+            loadedFiles = "";
 	}
 	String fn = printer.addSTLFileForMaking();
 	if(fn.length() <= 0)
@@ -546,7 +548,7 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
 
 	if(stlLoaded)
 	{
-		int response = JOptionPane.showOptionDialog(
+            int response = JOptionPane.showOptionDialog(
                 null                       // Center in window.
                 , "This will abandon the STL/RFO file(s) you loaded."        // Message
                 , "Load GCode"               // Title in titlebar
@@ -555,12 +557,12 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
                 , null                       // Icon (none)
                 , new String[] {"OK", "Cancel"}                    // Button text as above.
                 , ""    // Default button's label
-              );
-		if(response == 1){
-			return;
-                }
-		org.reprap.Main.gui.deleteAllSTLs();
-		loadedFiles = "";
+            );
+            if(response == 1){
+                    return;
+            }
+            org.reprap.Main.gui.deleteAllSTLs();
+            loadedFiles = "";
 	}
 	if(gcodeLoaded)
 	{
@@ -729,7 +731,7 @@ private void enableSLoad()
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new PrintTabFrame().setVisible(true);
+            new PrintTabFrame(null).setVisible(true);
         });
     }
 }

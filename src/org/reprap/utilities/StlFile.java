@@ -21,9 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Point3D;
+import javafx.scene.Camera;
 import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
@@ -42,10 +46,10 @@ import org.jogamp.vecmath.Vector3f;
  *
  *
  * Things TO-DO:
- *    1.-We can't read binary files over the net.
- *    2.-For binary files if size is lower than expected (calculated with the number of faces)
+ *    1. We can't read binary files over the net.
+ *    2. For binary files if size is lower than expected (calculated with the number of faces)
  *    the program will block.
- *    3.-Improve the way for detecting the kind of stl file?
+ *    3. Improve the way for detecting the kind of stl file?
  *    Can give us problems if the comment of the binary file begins by "solid"
  *    
  *    ----
@@ -58,6 +62,8 @@ import org.jogamp.vecmath.Vector3f;
 
 public class StlFile
 {
+    private static double zTrans = -3500;
+    private static final int camSpeed = 100;
   private static final boolean DEBUG = false;     // Sets mode to Debug: outputs every action done
 
   // Maximum length (in chars) of basePath
@@ -128,8 +134,8 @@ public class StlFile
    * Method that reads the word "solid" and stores the object name.
    * It also detects what kind of file it is
    * TO-DO:
-   *    1.- Better way control of exceptions?
-   *    2.- Better way to decide between Ascii and Binary?
+   *    1. Better way control of exceptions?
+   *    2. Better way to decide between Ascii and Binary?
    *
    * @param parser The file parser. An instance of StlFileParser.
    */
@@ -147,8 +153,7 @@ public class StlFile
       // If the first word is not "solid" then we consider the file is binary
       // Can give us problems if the comment of the binary file begins by "solid"
       this.setAscii(false);
-    } 
-    else  // It's an ASCII file
+    } else  // It's an ASCII file
     {
     	try{
     		parser.nextToken();
@@ -775,7 +780,59 @@ public class StlFile
     group.getChildren().add(shape);
     
     scene.addNamedObject(objectName, shape);*/
-    
+    Camera camera = new PerspectiveCamera(true);
+    camera.setFarClip(Integer.MAX_VALUE);
+    camera.setNearClip(0.1);
+    scene.setCamera(camera);
+    scene.setOnScroll((ScrollEvent event) -> {
+                zTrans += event.getDeltaY() * (zTrans / -50);
+            });
+            scene.setOnKeyPressed((KeyEvent event) -> {
+                switch (event.getCode()) {
+                    case RIGHT:
+                        scene.getCamera().setTranslateX(camera.getTranslateX() + camSpeed);
+                        break;
+                    case LEFT:
+                        scene.getCamera().setTranslateX(camera.getTranslateX() - camSpeed);
+                        break;
+                    case UP:
+                        scene.getCamera().setTranslateY(camera.getTranslateY() - camSpeed);
+                        break;
+                    case DOWN:
+                        scene.getCamera().setTranslateY(camera.getTranslateY() + camSpeed);
+                        break;
+                    case W:
+                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case S:
+                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                    case Q:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case E:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                    case D:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case A:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                }
+            });
+            new javafx.animation.AnimationTimer() {
+                @Override
+                public void handle(long now) {
+                    scene.getCamera().setTranslateZ(zTrans);
+                }
+            }.start();
     return scene;
   } // end of makeScene
 

@@ -20,9 +20,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.geometry.Point3D;
+import javafx.scene.Camera;
 import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Sphere;
 
@@ -37,7 +41,8 @@ public class GCode
     // Codes for responses from the machine
     // A positive number returned is a request for that line number
     // to be resent.
-
+    private static double zTrans = -3500;
+    private static final int camSpeed = 100;
     private static final long shutDown  = -3;
     private static final long allSentOK = -1;
     private double eTemp;
@@ -252,49 +257,49 @@ public class GCode
 	 */
 	public Thread filePlay()
 	{
-		if(fileInStream == null)
-		{
-			// Not playing a file...
-			return null;
-		}
-		
-		simulationPlot = null;
+            if(fileInStream == null)
+            {
+                    // Not playing a file...
+                    return null;
+            }
 
-		if(Preferences.simulate())
-			simulationPlot = new RrGraphics("RepRap building simulation");
-		
-		Thread playFile = new Thread() 
-		{
-                        @Override
-			public void run() 
-			{
-				Thread.currentThread().setName("GCode file printer");
-				String line;
-				long bytes = 0;
-				try 
-				{
-					while ((line = fileInStream.readLine()) != null) 
-					{
-						bufferQueue(line);
-						bytes += line.length();
-						double fractionDone = (double)bytes / (double)fileInStreamLength;
-						setFractionDone(fractionDone, -1, -1);
-						while(paused)
-						{
-							//iAmPaused = true;
-							//Debug.e("Waiting for pause to end.");
-							sleep(239);
-						}
-						//iAmPaused = false;
-					}
-					fileInStream.close();
-				} catch (Exception e) {  
-					Debug.e("Error printing file: " + e.toString());
-				}
-			}
-		};
-		
-		playFile.start();
+            simulationPlot = null;
+
+            if(Preferences.simulate())
+                    simulationPlot = new RrGraphics("RepRap building simulation");
+
+            Thread playFile = new Thread() 
+            {
+                    @Override
+                    public void run() 
+                    {
+                            Thread.currentThread().setName("GCode file printer");
+                            String line;
+                            long bytes = 0;
+                            try 
+                            {
+                                    while ((line = fileInStream.readLine()) != null) 
+                                    {
+                                            bufferQueue(line);
+                                            bytes += line.length();
+                                            double fractionDone = (double)bytes / (double)fileInStreamLength;
+                                            setFractionDone(fractionDone, -1, -1);
+                                            while(paused)
+                                            {
+                                                    //iAmPaused = true;
+                                                    //Debug.e("Waiting for pause to end.");
+                                                    sleep(239);
+                                            }
+                                            //iAmPaused = false;
+                                    }
+                                    fileInStream.close();
+                            } catch (Exception e) {  
+                                    Debug.e("Error printing file: " + e.toString());
+                            }
+                    }
+            };
+
+            playFile.start();
 
 	    return playFile;
 	}
@@ -822,7 +827,6 @@ public class GCode
 	{
 	}
 	
-	
 	public String loadGCodeFileForMaking()
 	{
             JFileChooser chooser = new JFileChooser();
@@ -841,14 +845,12 @@ public class GCode
                     fileInStreamLength = chooser.getSelectedFile().length();
                     fileInStream = new BufferedReader(new FileReader(chooser.getSelectedFile()));
                     return chooser.getSelectedFile().getName();
-                } catch (FileNotFoundException ex) 
-                {
+                } catch (FileNotFoundException ex) {
                     Debug.e("Can't read file " + name);
                     fileInStream = null;
                     return null;
                 }
-            } else
-            {
+            } else {
                 Debug.e("Can't read file.");
                 fileInStream = null;
             }
@@ -907,9 +909,7 @@ public class GCode
 				opFileName = null;
 				fileOutStream = null;
 			}
-		}
-		else
-		{
+		} else {
 			fileOutStream = null;
 		}
 		return null;
@@ -963,8 +963,6 @@ public class GCode
 	public void startingEpilogue(LayerRules lc)
 	{
 	}
-	
-
 	
 	/**
 	 * All done.
@@ -1046,6 +1044,59 @@ public class GCode
             }
             Scene scene = new Scene(root, 800, 600, true, SceneAntialiasing.BALANCED);
             scene.setFill(Color.GREEN);
+            Camera camera = new PerspectiveCamera(true);
+            camera.setFarClip(Integer.MAX_VALUE);
+            camera.setNearClip(0.1);
+            scene.setCamera(camera);
+            scene.setOnScroll((ScrollEvent event) -> {
+                zTrans += event.getDeltaY() * (zTrans / -50);
+            });
+            scene.setOnKeyPressed((KeyEvent event) -> {
+                switch (event.getCode()) {
+                    case RIGHT:
+                        scene.getCamera().setTranslateX(camera.getTranslateX() + camSpeed);
+                        break;
+                    case LEFT:
+                        scene.getCamera().setTranslateX(camera.getTranslateX() - camSpeed);
+                        break;
+                    case UP:
+                        scene.getCamera().setTranslateY(camera.getTranslateY() - camSpeed);
+                        break;
+                    case DOWN:
+                        scene.getCamera().setTranslateY(camera.getTranslateY() + camSpeed);
+                        break;
+                    case W:
+                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case S:
+                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                    case Q:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case E:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                    case D:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case A:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                }
+            });
+            new javafx.animation.AnimationTimer() {
+                @Override
+                public void handle(long now) {
+                    scene.getCamera().setTranslateZ(zTrans);
+                }
+            }.start();
             return scene;
         } catch (IOException ex) {
             Logger.getLogger(GCode.class.getName()).log(Level.SEVERE, null, ex);

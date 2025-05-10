@@ -182,17 +182,17 @@ class MaterialRadioButtons extends JPanel {
 			int matnumber = -1;
 			for(int i = 0; i < names.length; i++)
 			{
-				if(matname.contentEquals(names[i]))
-					matnumber = i;
-				JRadioButton b = new JRadioButton(names[i]);
-		        b.setActionCommand(names[i]);
-		        b.addActionListener((ActionEvent e) -> {
-                            att.setMaterial(e.getActionCommand());
-                                });
-		        if(i == matnumber)
+                            if(matname.contentEquals(names[i]))
+				matnumber = i;
+                            JRadioButton b = new JRadioButton(names[i]);
+                            b.setActionCommand(names[i]);
+                            b.addActionListener((ActionEvent e) -> {
+                                att.setMaterial(e.getActionCommand());
+                            });
+                            if(i == matnumber)
 		        	b.setSelected(true);
-		        bGroup.add(b);
-		        radioPanel.add(b);
+                            bGroup.add(b);
+                            radioPanel.add(b);
 			}
 			if(matnumber < 0)
 			{
@@ -210,8 +210,7 @@ class MaterialRadioButtons extends JPanel {
                         });
 			
 			add(radioPanel, BorderLayout.LINE_START);
-			setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-			
+			setBorder(BorderFactory.createEmptyBorder(20,20,20,20));	
 		} catch (IOException ex)
 		{
 			Debug.e(ex.toString());
@@ -265,7 +264,6 @@ class MaterialRadioButtons extends JPanel {
 		if (index >= 0) 
 			createAndShowGUI(a, r, index, r.getSTLs().get(index).volume());
     }
-	
 }
 
 
@@ -401,7 +399,7 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	private final AllSTLsToBuild stls;
 	private boolean reordering;
 	private RrGraphics graphics;
-        PrintTabFrame printTabFrame = new PrintTabFrame();
+        PrintTabFrame printTabFrame;// = new PrintTabFrame();
 
 	// Constructors
 	public RepRapBuild() throws Exception {
@@ -410,9 +408,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
             reordering = false;
             graphics = null;
             //setPreferredSize(new Dimension(600, 400));
-            java.awt.EventQueue.invokeLater(() -> {
-                printTabFrame.setVisible(true);
-            });
 	}
         
 	public static void main(String[] args) {
@@ -677,10 +672,12 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 		stls.saveSCAD(s);
 	}
 	
-
-
         @Override
 	public void start(Stage primaryStage) throws Exception {
+            //java.awt.EventQueue.invokeLater(() -> {
+                new PrintTabFrame(primaryStage).setVisible(true);
+            //});
+            stage = primaryStage;
             initialise(primaryStage);
             primaryStage.setTitle("3D Printer");
             primaryStage.show();

@@ -88,5 +88,3 @@ public enum CSGOp
     @Override
     public String toString() { return name; }
 }
-
-

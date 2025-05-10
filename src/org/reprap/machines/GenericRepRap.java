@@ -2,6 +2,15 @@ package org.reprap.machines;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.Camera;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -13,22 +22,26 @@ import org.reprap.Preferences;
 import org.reprap.RepRapException;
 import org.reprap.devices.NullExtruder;
 import org.reprap.devices.GenericExtruder;
-import org.reprap.geometry.LayerRules;
+
 import org.reprap.gui.ContinuationMesage;
 import org.reprap.gui.StatusMessage;
 import org.reprap.Extruder;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
 import org.reprap.utilities.Timer;
+import org.reprap.utilities.ExtensionFileFilter;
+
+import org.reprap.geometry.LayerRules;
 import org.reprap.geometry.polygons.Point2D;
 import org.reprap.geometry.polygons.Rectangle;
-import org.reprap.utilities.ExtensionFileFilter;
+import org.reprap.utilities.StlFile;
 
 public abstract class GenericRepRap implements CartesianPrinter
 {
 	protected boolean stlLoaded = false;
 	protected boolean gcodeLoaded = false;
         private JFileChooser chooser;
+        protected final Stage stage;
 	
 	LayerRules layerRules = null;
 	
@@ -215,8 +228,9 @@ public abstract class GenericRepRap implements CartesianPrinter
 //	public GenericStepperMotor motorY;
 //	public GenericStepperMotor motorZ;
 	
-	public GenericRepRap() throws Exception
+	public GenericRepRap(Stage stage) throws Exception
 	{
+            this.stage = stage;
             chooser = new JFileChooser();
 
             // Do we want just to list .stl files, or all?
@@ -251,6 +265,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 		currentFeedrate = 0;
 	}
 	
+        @Override
 	public void setLayerRules(LayerRules l)
 	{
 		layerRules = l;
@@ -297,6 +312,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 		return new NullExtruder(count, this);
 	}
 	
+        @Override
 	public void refreshPreferences()
 	{
 		try
@@ -483,8 +499,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 			homeToZeroXYE(lc.getReversing()); //***
 			if(liftZ > 0)
 				singleMove(getX(), getY(), currentZ, getFastFeedrateZ(), lc.getReversing()); //***				
-		} else
-		{
+		} else {
 			getExtruder().zeroExtrudedLength(lc.getReversing());
 		}
 
@@ -530,6 +545,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/**
 	 * Go to the purge point
 	 */
+        @Override
 	public void moveToPurge(double liftZ)
 	{
 		if(liftZ > 0)
@@ -645,9 +661,11 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 */
 	public Extruder getExtruder(String name)
 	{
-		for(int i = 0; i < extruders.length; i++)
-			if(name.equals(extruders[i].toString()))
-				return extruders[i];
+            for (Extruder extruder : extruders) {
+                if (name.equals(extruder.toString())) {
+                    return extruder;
+                }
+            }
 		return null;
 	}
 	
@@ -663,6 +681,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#getExtruder()
 	 */
+        @Override
 	public Extruder[] getExtruders()
 	{
 		return extruders;
@@ -673,6 +692,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * before we try to move the extruder.  But first take up the slack from any
 	 * previous reverse.
 	 */
+        @Override
 	public void printStartDelay(boolean firstOneInLayer) 
 	{
 		try
@@ -1031,8 +1051,16 @@ public abstract class GenericRepRap implements CartesianPrinter
                 result = f.getAbsolutePath();
                 /*if(extensions[0].toUpperCase().contentEquals("RFO"))
                     builder.addRFOFile(result);
-                if(extensions[0].toUpperCase().contentEquals("STL"))
-                    builder.anotherSTLFile(result, printer, true);*/
+                if(extensions[0].toUpperCase().contentEquals("STL"))*/
+                StlFile file = new StlFile();
+                try {
+                    Scene scene = file.load(result);
+                    Platform.runLater(() -> {
+                        stage.setScene(scene);
+                    });
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(GenericRepRap.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
                 return f;
             }
@@ -1098,7 +1126,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	
 	/**
 	 * Stop the printer building.
-	 * This _shouldn't_ also stop it being controlled interactively.
+	 * This shouldn't also stop it being controlled interactively.
 	 */
         @Override
 	public void pause()

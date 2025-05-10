@@ -100,7 +100,7 @@ public class Main {
         chooser.setFileFilter(filter);
 
         try {
-            printer = MachineFactory.create();
+            printer = MachineFactory.create(null);
         } catch (Exception ex) {
             Debug.e("MachineFactory.create() failed.\n");
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);

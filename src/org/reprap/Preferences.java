@@ -131,6 +131,7 @@ public class Preferences {
 		}
                 mainPreferences.setProperty("NumberOfExtruders", "1");
                 mainPreferences.setProperty("Shield", "False");
+                mainPreferences.setProperty("Extruder0_MaterialType(name)", "PLC");
 
 	}
 	

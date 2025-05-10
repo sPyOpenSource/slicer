@@ -194,7 +194,7 @@ public class PCB {
                 new File("/Users/xuyi/Source/KiCad/minikame/gerber/minikame-Edge.Cuts.gbr"), 
                 new File("/Users/xuyi/Source/KiCad/minikame/gerber/minikame.drl"), 
                 new File("/Users/xuyi/Source/KiCad/minikame/gerber.gcode"), 
-                new GCodeExtruder(reader, 0, new Simulator())
+                new GCodeExtruder(reader, 0, new Simulator(null))
             );
             pcb.writeGCodes();
             //reader.viewer();

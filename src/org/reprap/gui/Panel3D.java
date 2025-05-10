@@ -1,38 +1,26 @@
 
 package org.reprap.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.GraphicsConfigTemplate;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.Iterator;
+
 import javafx.application.Application;
 import javafx.geometry.BoundingBox;
-
 import javafx.geometry.Bounds;
+import javafx.stage.Stage;
+
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.transform.Transform;
-import javafx.stage.Stage;
 
-import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3d;
 
-import org.reprap.Preferences;
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
 
@@ -83,12 +71,12 @@ abstract public class Panel3D extends Application {
 	// the
 	// working volume and STLs
 	// are joined on.
-
 	protected STLObject world = null; // Everything
 	protected STLObject workingVolume = null; // The RepRap machine itself.
 	
 	// The world in the Applet
 	protected Scene universe = null;
+        protected Stage stage;
 	protected Group sceneBranchGroup = null;
 	protected Bounds applicationBounds = null;
 
@@ -151,10 +139,8 @@ abstract public class Panel3D extends Application {
 		// ----------------------
 	}
 
-
 	protected void initialise(Stage primaryStage) throws Exception 
 	{
-		
 		refreshPreferences();
 
 		picked_app = new PhongMaterial(selectedColour);//, black, selectedColour, black, 0f);
@@ -162,7 +148,6 @@ abstract public class Panel3D extends Application {
 		wv_app = new PhongMaterial(machineColour);//, black, machineColour, black, 0f);
 
 		initJava3d(primaryStage);
-
 	}
 
 	// How far away is the back?
@@ -192,8 +177,8 @@ abstract public class Panel3D extends Application {
 	{
 		return unselectedColour;
 	}
+        
 	// Where are we in the file system?
-
 	public static URL getWorkingDirectory() {
 		try {
 			File file = new File(System.getProperty("user.dir"));
@@ -206,7 +191,6 @@ abstract public class Panel3D extends Application {
 	}
 
 	// Return handles on big things above where we are interested
-
 	public Scene getVirtualUniverse() {
 		return universe;
 	}
@@ -256,7 +240,6 @@ abstract public class Panel3D extends Application {
 	}*/
 
 	// The size of the world
-
 	protected Bounds getApplicationBounds() {
 		if (applicationBounds == null)
 			applicationBounds = createApplicationBounds();
@@ -265,18 +248,17 @@ abstract public class Panel3D extends Application {
 	}
 
 	// Fire up Java3D
-
 	public void initJava3d(Stage vp) throws Exception {
 		//universe = createVirtualUniverse();
 
 		//org.jogamp.java3d.Locale locale = createLocale(universe);
-Camera camera = new PerspectiveCamera(true);
+        Camera camera = new PerspectiveCamera(true);
         camera.setFarClip(Integer.MAX_VALUE);
         camera.setNearClip(0.1);
 		Scene sceneBranchGroup = createSceneBranchGroup();
                 sceneBranchGroup.setCamera(camera);
                 sceneBranchGroup.getCamera().setTranslateZ(-3500);
-vp.setScene(sceneBranchGroup);
+        vp.setScene(sceneBranchGroup);
 		//Stage vp = createViewPlatform();
 		//Group viewBranchGroup = createViewBranchGroup(getViewTransformGroupArray());
 
@@ -304,12 +286,12 @@ vp.setScene(sceneBranchGroup);
 		return new Group();
 	}
 
-	protected Stage createViewPlatform() {
-		Stage vp = new Stage();
+	public Stage getViewPlatform() {
+		//Stage vp = new Stage();
 		//vp.setViewAttachPolicy(View.RELATIVE_TO_FIELD_OF_VIEW);
 		//vp.setActivationRadius(getViewPlatformActivationRadius());
 
-		return vp;
+		return stage;
 	}
 
 	// These two are probably wrong.
@@ -386,5 +368,4 @@ vp.setScene(sceneBranchGroup);
 	{
 		return wv_location;
 	}
-	
 }

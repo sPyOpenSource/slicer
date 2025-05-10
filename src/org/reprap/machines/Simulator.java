@@ -2,6 +2,7 @@ package org.reprap.machines;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import javafx.stage.Stage;
 
 import org.reprap.Extruder;
 import org.reprap.devices.NullExtruder;
@@ -16,8 +17,8 @@ public class Simulator extends GenericRepRap {
     /**
      * @throws java.lang.Exception
      */
-    public Simulator() throws Exception {
-        super();
+    public Simulator(Stage stage) throws Exception {
+        super(stage);
     }
 
     @Override
