@@ -726,7 +726,7 @@ public class StlFile
         // Create Scene to pass back
         Group group = new Group();
         float[] points = {
-            50, 0, 0,  // v0 (iv0 = 0)
+            50,  0, 0, // v0 (iv0 = 0)
             45, 10, 0, // v1 (iv1 = 1)
             55, 10, 0  // v2 (iv2 = 2)
         };
@@ -785,54 +785,54 @@ public class StlFile
     camera.setNearClip(0.1);
     scene.setCamera(camera);
     scene.setOnScroll((ScrollEvent event) -> {
-                zTrans += event.getDeltaY() * (zTrans / -50);
-            });
-            scene.setOnKeyPressed((KeyEvent event) -> {
-                switch (event.getCode()) {
-                    case RIGHT:
-                        scene.getCamera().setTranslateX(camera.getTranslateX() + camSpeed);
-                        break;
-                    case LEFT:
-                        scene.getCamera().setTranslateX(camera.getTranslateX() - camSpeed);
-                        break;
-                    case UP:
-                        scene.getCamera().setTranslateY(camera.getTranslateY() - camSpeed);
-                        break;
-                    case DOWN:
-                        scene.getCamera().setTranslateY(camera.getTranslateY() + camSpeed);
-                        break;
-                    case W:
-                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
-                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
-                        break;
-                    case S:
-                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
-                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
-                        break;
-                    case Q:
-                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
-                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
-                        break;
-                    case E:
-                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
-                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
-                        break;
-                    case D:
-                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
-                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
-                        break;
-                    case A:
-                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
-                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
-                        break;
-                }
-            });
-            new javafx.animation.AnimationTimer() {
-                @Override
-                public void handle(long now) {
-                    scene.getCamera().setTranslateZ(zTrans);
-                }
-            }.start();
+        zTrans += event.getDeltaY() * (zTrans / -50);
+    });
+    scene.setOnKeyPressed((KeyEvent event) -> {
+        switch (event.getCode()) {
+            case RIGHT:
+                scene.getCamera().setTranslateX(camera.getTranslateX() + camSpeed);
+                break;
+            case LEFT:
+                scene.getCamera().setTranslateX(camera.getTranslateX() - camSpeed);
+                break;
+            case UP:
+                scene.getCamera().setTranslateY(camera.getTranslateY() - camSpeed);
+                break;
+            case DOWN:
+                scene.getCamera().setTranslateY(camera.getTranslateY() + camSpeed);
+                break;
+            case W:
+                scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                break;
+            case S:
+                scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                break;
+            case Q:
+                scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                break;
+            case E:
+                scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                break;
+            case D:
+                scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                break;
+            case A:
+                scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                break;
+        }
+    });
+    new javafx.animation.AnimationTimer() {
+        @Override
+        public void handle(long now) {
+            scene.getCamera().setTranslateZ(zTrans);
+        }
+    }.start();
     return scene;
   } // end of makeScene
 

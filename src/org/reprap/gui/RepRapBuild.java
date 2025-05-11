@@ -266,7 +266,6 @@ class MaterialRadioButtons extends JPanel {
     }
 }
 
-
 /**
  * Little class to put up a radiobutton menu so you can set
  * what material something is to be made from.
@@ -399,7 +398,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	private final AllSTLsToBuild stls;
 	private boolean reordering;
 	private RrGraphics graphics;
-        PrintTabFrame printTabFrame;// = new PrintTabFrame();
 
 	// Constructors
 	public RepRapBuild() throws Exception {
@@ -454,7 +452,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 
 	// Set up the RepRap working volume
-
         @Override
 	protected Scene createSceneBranchGroup() throws Exception {
 		sceneBranchGroup = new Group();
@@ -500,7 +497,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 
 	// Action on mouse click
-
         @Override
 	public void mouseClicked(MouseEvent e) {
 		//pickCanvas.setShapeLocation(e);
@@ -547,7 +543,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 
 	// Find the stl object in the scene with the given name
-
         @Override
 	public void mouseEntered(MouseEvent e) {
 	}
@@ -564,7 +559,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 	}
 
-	
 	public void moreCopies(STLObject original, Attributes originalAttributes, int number)
 	{
 		if (number <= 0)
@@ -594,7 +588,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 	
 	// Callback for when the user selects an STL file to load
-
 	public void anotherSTLFile(String s, Printer printer, boolean centre) 
 	{
 		if (s == null)
@@ -628,7 +621,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 	
 	// Callback for when the user has a pre-loaded STL and attribute
-
 	public void anotherSTL(STLObject stl, Attributes att, int index) 
 	{
 		if (stl == null || att == null)
@@ -650,7 +642,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 	
 	// Callback for when the user selects an RFO file to load
-
 	public void addRFOFile(String s) 
 	{
 		if (s == null)
@@ -701,7 +692,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 
 	// Callbacks for when the user rotates the selected object
-
 	public void xRotate() {
 		if (lastPicked != null)
 			lastPicked.xClick();
@@ -761,7 +751,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 	
 	// Move to the next one in the list
-	
 	public void nextPicked()
 	{
 		if (lastPicked == null)
@@ -776,7 +765,6 @@ public class RepRapBuild extends Panel3D implements MouseListener {
 	}
 	
 	// Callback to delete one of the loaded objects
-	
 	public void deleteSTL()
 	{
 		if (lastPicked == null)

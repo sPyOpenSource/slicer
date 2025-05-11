@@ -10,9 +10,7 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.stage.Stage;
 
-import javafx.scene.Camera;
 import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
@@ -20,7 +18,6 @@ import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 
 import org.jogamp.vecmath.Vector3d;
-
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
 
@@ -87,13 +84,11 @@ abstract public class Panel3D extends Application {
 	abstract protected Background createBackground();
 
 	abstract protected Group createViewBranchGroup(
-			Group[] tgArray//, ViewPlatform vp
+			Group[] tgArray
         );
 	
 	public void refreshPreferences()
-	{
-		// -----------------------
-		
+	{		
 		// Set everything up from the properties file
 		// All this needs to go into Preferences.java
             try
@@ -117,9 +112,7 @@ abstract public class Panel3D extends Application {
 		// Factors for front and back clipping planes and so on
 		
 		worldName = "RepRap-World";
-		wv_offset = new Vector3d(0,
-				0,
-				0);
+		wv_offset = new Vector3d(0, 0, 0);
 
 		// The background, and other colours
 		
@@ -135,8 +128,6 @@ abstract public class Panel3D extends Application {
             }
 				
 		// End of stuff from the preferences file
-		
-		// ----------------------
 	}
 
 	protected void initialise(Stage primaryStage) throws Exception 
@@ -252,13 +243,9 @@ abstract public class Panel3D extends Application {
 		//universe = createVirtualUniverse();
 
 		//org.jogamp.java3d.Locale locale = createLocale(universe);
-        Camera camera = new PerspectiveCamera(true);
-        camera.setFarClip(Integer.MAX_VALUE);
-        camera.setNearClip(0.1);
 		Scene sceneBranchGroup = createSceneBranchGroup();
-                sceneBranchGroup.setCamera(camera);
                 sceneBranchGroup.getCamera().setTranslateZ(-3500);
-        vp.setScene(sceneBranchGroup);
+                vp.setScene(sceneBranchGroup);
 		//Stage vp = createViewPlatform();
 		//Group viewBranchGroup = createViewBranchGroup(getViewTransformGroupArray());
 

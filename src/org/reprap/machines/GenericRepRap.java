@@ -5,9 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javafx.application.Platform;
-import javafx.scene.Camera;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -474,6 +473,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Just about to start the next layer
 	 * @param lc
 	 */
+        @Override
 	public void startingLayer(LayerRules lc) throws Exception
 	{
 
@@ -490,9 +490,11 @@ public abstract class GenericRepRap implements CartesianPrinter
 		if(lc.getMachineLayer() > 0 && Preferences.loadGlobalBool("InterLayerCooling"))
 		{
 			double liftZ = -1;
-			for(int i = 0; i < extruders.length; i++)
-				if(extruders[i].getLift() > liftZ)
-					liftZ = extruders[i].getLift();
+                    for (Extruder extruder : extruders) {
+                        if (extruder.getLift() > liftZ) {
+                            liftZ = extruder.getLift();
+                        }
+                    }
 			double currentZ = getZ();
 			if(liftZ > 0)
 				singleMove(getX(), getY(), currentZ + liftZ, getFastFeedrateZ(), lc.getReversing()); //***
@@ -557,22 +559,26 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#calibrate()
 	 */
+        @Override
 	public void calibrate() {
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#calibrate()
 	 */
+        @Override
 	public void dispose()
 	{
-		for(int i = 0; i < extruders.length; i++)
-			extruders[i].dispose();
+            for (Extruder extruder : extruders) {
+                extruder.dispose();
+            }
 	}
 	
 	
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#selectMaterial(int)
 	 */
+        @Override
 	public void selectExtruder(int materialIndex, boolean really, boolean update, Point2D next) throws Exception
 	{
 		if (isCancelled())
@@ -589,6 +595,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#selectMaterial(int)
 	 */
+        @Override
 	public void selectExtruder(Attributes att, Point2D next) throws Exception 
 	{
 		for(int i = 0; i < extruders.length; i++)
@@ -606,6 +613,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#getX()
 	 */
+        @Override
 	public double getX() {
 		return currentX;
 	}
@@ -672,6 +680,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#getExtruder()
 	 */
+        @Override
 	public Extruder getExtruder()
 	{
 		//System.out.println("getExtruder(), extruder: " + extruder);
@@ -744,10 +753,10 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * Extrude backwards for the given time in milliseconds, so that polymer is stopped flowing
 	 * at the end of a track.  Return the amount reversed.
 	 */
+        @Override
 	public double printEndReverse() 
 	{
 		// Extrude motor and valve delays (ms)
-		
 		double delay = getExtruder().getExtrusionReverseDelay();
 		
 		if(delay <= 0)
@@ -877,6 +886,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 		fastFeedrateZ = feedrate;
 	}
 
+        @Override
 	public double getFastFeedrateZ()
 	{
 		return fastFeedrateZ;
@@ -885,6 +895,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#setZManual()
 	 */
+        @Override
 	public void setZManual() throws IOException {
 		setZManual(0.0);
 	}
@@ -992,6 +1003,7 @@ public abstract class GenericRepRap implements CartesianPrinter
 	 * if there should be a pause.  This is a checkbox rather than
 	 * a boolean so it can be changed on the fly. 
 	 */
+        @Override
 	public void setSegmentPause(JCheckBoxMenuItem segmentPause) {
 		segmentPauseCheckbox = segmentPause;
 	}
@@ -1141,7 +1153,6 @@ public abstract class GenericRepRap implements CartesianPrinter
 	
 	/**
 	 * Resume building.
-	 *
 	 */
         @Override
 	public void resume()

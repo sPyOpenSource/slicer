@@ -90,7 +90,7 @@ import org.reprap.gui.MouseObject;
 import org.reprap.utilities.Debug;
 
 /**
- * Class for holding a group (maybe just 1) of 3D objects for RepRap to make.
+ * Class for holding a group (maybe just 1) of 3D objects for RepRap.
  * They can be moved around on the build platform en mass, but not moved
  * relative to each other, so they can represent an assembly made from several
  * different materials.
@@ -132,13 +132,13 @@ public class STLObject
         private int unique = 0;
         public Scene scene;
 
-        Contents(String s, Group st, CSG3D c, Attributes a, double v, Scene scene)
+        Contents(String s, Group stl, CSG3D csg, Attributes att, double volume, Scene scene)
         {
             sourceFile = s;
-            stl = st;
-            csg = c;
-            att = a;
-            volume = v;
+            this.stl = stl;
+            this.csg = csg;
+            this.att = att;
+            this.volume = volume;
             this.scene = scene;
         }
 
@@ -171,11 +171,9 @@ public class STLObject
     	
         
         // No mouse yet
-        
         mouse = null;
         
         // Set up our bit of the scene graph
-        
         top = new Group();
         handle = new Group();
         trans = new Group();
@@ -220,7 +218,6 @@ public class STLObject
     /**
      * Load an STL object from a file with a known offset (set that null to put
      * the object in the middle of the bed) and set its appearance
-     * 
      * @param location
      * @param offset
      * @param app
@@ -247,7 +244,6 @@ public class STLObject
      * the origin.  If lastPicked is null, the file is loaded as a new independent STLObject; if not
      * it is added to lastPicked and subsequently is subjected to all the same transforms, so they retain
      * their relative positions.  This is how multi-material objects are loaded.
-     * 
      * @param location
      * @param att
      * @param offset
@@ -362,7 +358,6 @@ public class STLObject
         extent.x = pOld.x - extent.x;
         extent.y = pOld.y - extent.y;
         extent.z = pOld.z - extent.z;
-        
     }
     
     public Group top()
@@ -393,8 +388,8 @@ public class STLObject
     public String fileItCameFrom(int i)
     {
     	String fn = fileAndDirectioryItCameFrom(i);
-		int sepIndex = fn.lastIndexOf(File.separator);
-		fn = fn.substring(sepIndex + 1, fn.length());
+	int sepIndex = fn.lastIndexOf(File.separator);
+	fn = fn.substring(sepIndex + 1, fn.length());
     	return fn;
     }
     
@@ -460,7 +455,6 @@ public class STLObject
     	return contents.get(i).getUnique();
     }
     
-    
     /**
      * Find how to move the object by actually changing all its coordinates (i.e. don't just add a
      * transform).  Also record its size.
@@ -482,7 +476,6 @@ public class STLObject
             //bbox.getUpper(p1);
             
             // If no offset requested, set it to bottom-left-at-origin
-
             if(offset == null) 
             {
                     offset = new Vector3d();
@@ -542,8 +535,7 @@ public class STLObject
 
             // recursively process group
             if( value instanceof Group g ) 
-            {
-                
+            {       
                 // recurse on child nodes
                 ObservableList<Node> enumKids = g.getChildren( );
                 
@@ -558,7 +550,6 @@ public class STLObject
     }
     
     // Move the object by p permanently (i.e. don't just apply a transform).
-    
     private void recursiveSetOffset(Object sg, Vector3d p) 
     {
             
@@ -646,23 +637,21 @@ public class STLObject
     {
             
             // recursively process group
-            if( sg instanceof Group ) 
-            {
-                Group g = (Group) sg;
-                
+            if( sg instanceof Group g ) 
+            {  
                 // recurse on child nodes
                 ObservableList<Node> enumKids = g.getChildren( );
                 
                 for(Node ob:enumKids)
                     recursiveSetScale( ob, x, y, z, zOnly );
-            } else if ( sg instanceof Shape3D ) 
+            } else if ( sg instanceof Shape3D shape3D ) 
             {
-                    s3dScale((Shape3D)sg, x, y, z, zOnly);
+                    s3dScale(shape3D, x, y, z, zOnly);
             }
         
     }
     
-   // Scale a Shape3D permanently by s
+    // Scale a Shape3D permanently by s
     private void s3dScale(Shape3D shape, double x, double y, double z, boolean zOnly)
     {
         /*GeometryArray g = (GeometryArray)shape.getGeometry();
@@ -684,8 +673,6 @@ public class STLObject
             }
         }*/
     }
-    
-
 
     // Set my transform
     public void setTransform(Transform t3d)
@@ -760,7 +747,6 @@ public class STLObject
         
         for(Node b:enumKids)
         {
-        	//Object b = enumKids.next();
         	if(b instanceof Group group)
         	{
         		Attributes att = (Attributes)group.getUserData();
@@ -772,8 +758,7 @@ public class STLObject
         }
     }
     
-    // Why the !*$! aren't these in Vector3d???
-    
+    // Why the !*$! aren't these in Vector3d?
     public static Vector3d add(Vector3d a, Vector3d b)
     {
         Vector3d result = new Vector3d();
@@ -798,7 +783,6 @@ public class STLObject
     }
     
     // Put a vector in the positive octant (sort of abs for vectors)
-    
     private Vector3d posOct(Vector3d v)
     {
         Vector3d result = new Vector3d();
@@ -811,7 +795,6 @@ public class STLObject
     // Apply a rotating click transform about one of the coordinate axes,
     // which should be set in t.  This can only be done if we're being controlled
     // by the mouse, making us the active object.
-    
     private void rClick(Transform t)
     {
         if(mouse == null)
@@ -827,7 +810,6 @@ public class STLObject
         
         // Subtract the part of the translation that puts the bottom left corner
         // at the origin.
-        
         Vector3d zero = scale(extent, 0.5);
         mouseTranslation = add(mouseTranslation, neg(zero));       
         
@@ -837,30 +819,25 @@ public class STLObject
         extent = posOct(extent); 
         
         // Apply the new rotation to the existing one
-        
         Transform spin = new Rotate();
         //spin.setRotation(mouseRotation);
         t.createConcatenation(spin);
         
         // Add a new translation to put the bottom left corner
         // back at the origin.
-        
         zero = scale(extent, 0.5);
         mouseTranslation = add(mouseTranslation, zero);
         
         // Then slide us back where we were
-        
         Transform fromZeroT = new Translate(mouseTranslation.x, mouseTranslation.y, mouseTranslation.z);
 
         fromZeroT.createConcatenation(t);
         
         // Apply the whole new transformation
-        
         mouse.setTransform(fromZeroT);       
     }
     
    // Rescale the STL object (for inch -> mm conversion) and stretching heights
-    
     public void rScale(double x, double y, double z, boolean zOnly)
     {
         if(mouse == null && !zOnly){
@@ -870,7 +847,6 @@ public class STLObject
     	Matrix3d mouseRotation;
     	
         // Get the mouse transform and split it into a rotation and a translation
-        
         Transform mtrans;
         if(mouse != null)
         {
@@ -885,14 +861,12 @@ public class STLObject
         
         // Subtract the part of the translation that puts the bottom left corner
         // at the origin.
-        
         Vector3d zero = scale(extent, 0.5);
         
         if(mouse != null)
         	mouseTranslation = add(mouseTranslation, neg(zero));       
         
         // Rescale the box
-        
         if(zOnly)
         	extent.z = z * extent.z;
         else
@@ -904,7 +878,6 @@ public class STLObject
         
         // Add a new translation to put the bottom left corner
         // back at the origin.
-        
         zero = scale(extent, 0.5);
         
         if(mouse != null)
@@ -912,24 +885,19 @@ public class STLObject
         	mouseTranslation = add(mouseTranslation, zero);
 
         	// Then slide us back where we were
-
         	Transform fromZeroT = new Translate(mouseTranslation.x, mouseTranslation.y, mouseTranslation.z);
 
         	// Apply the whole new transformation
-
         	mouse.setTransform(fromZeroT);
         }
 
         // Rescale the object
- 
         ObservableList<Node> things = stl.getChildren();
         for(Node value:things) 
         {
         	//Object value = things.next();
         	recursiveSetScale(value, x, y, z, zOnly);
         }
-
-
     }
     
     public void rScale(double s, boolean zOnly)
@@ -939,7 +907,6 @@ public class STLObject
     
     // Apply X, Y or Z 90 degree clicks to us if we're the active (i.e. mouse
     // controlled) object.
-    
     public void xClick()
     {
         if(mouse == null)
@@ -961,7 +928,6 @@ public class STLObject
     }
     
     // Do Zs by any angle
-    
     public void zClick(double angle)
     {
         if(mouse == null)
@@ -974,7 +940,6 @@ public class STLObject
     
     // This is called when the user wants to convert the object from
     // inches to mm.
-    
     public void inToMM()
     {
         if(mouse == null)
@@ -1004,18 +969,16 @@ public class STLObject
     	return contents.get(contents.size() - 1).volume;
     }
     
-    
  /*
     Project each triangle onto the XY plane and sum all the resulting prisms.  Downward-facing triangles will
     give negative volumes, upward positive.  So the result is the volume of the triangulated object.
  */
     
-   /**
-    * Compute the volume of a Shape3D
-    * @param shape
-    * @return
-    */
-    
+    /**
+     * Compute the volume of a Shape3D
+     * @param shape
+     * @return
+     */
     private double s3dVolume(Shape3D shape)
     {
         double total = 0;
@@ -1053,7 +1016,6 @@ public class STLObject
     /**
      * Compute the signed volume of the prism between the XY plane and the 
      * space triangle {a, b, c}
-     * 
      * @param a
      * @param b
      * @param c
@@ -1065,8 +1027,8 @@ public class STLObject
     	Point3d e = new Point3d(b.x, b.y, 0);  
     	Point3d f = new Point3d(c.x, c.y, 0);
     	return tetVolume(a, b, c, e) +
-                tetVolume(a, e, c, d) +
-    		tetVolume(e, f, c, d);
+               tetVolume(a, e, c, d) +
+               tetVolume(e, f, c, d);
     }
     
 }

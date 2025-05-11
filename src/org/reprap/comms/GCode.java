@@ -52,6 +52,7 @@ public class GCode
     private RrGraphics simulationPlot = null;
     private String lastResp;
     private boolean nonRunningWarn;
+    
     /**
      * Stop sending a file (if we are).
      */
@@ -211,7 +212,6 @@ public class GCode
         nonRunningWarn = false;		
     }
 
-
     public boolean buildingFromFile()
     {
         return fileInStream != null;
@@ -325,7 +325,6 @@ public class GCode
 	/**
 	 * Between layers nothing will be queued.  Use the next two
 	 * functions to slow and speed the buffer's spinning.
-	 *
 	 */
 	public void slowBufferThread()
 	{
@@ -679,7 +678,7 @@ public class GCode
 		long increment = 2000;
 		long longWait = 10 * 60 * 1000; // 10 mins...
 		
-		for(;;)
+		while(true)
 		{
 			timeNow = timer.getTime() - startWait;
 			if(timeNow > increment)
@@ -821,7 +820,6 @@ public class GCode
 			Debug.e("GCodeReaderAndWriter().copyFile: exception reading file " + fileName);
 		}
 	}
-	
 
 	private void openSerialConnection(String portName)
 	{
@@ -937,7 +935,6 @@ public class GCode
 	
 	public void startingLayer(LayerRules lc)
 	{
-		
 		lc.setLayerFileName(layerFileNames + "reprap" + lc.getMachineLayer() + tmpString + gcodeExtension);
 		if(!lc.getReversing())
 		try

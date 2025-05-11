@@ -13,8 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import javafx.stage.Stage;
 
+import javafx.stage.Stage;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -561,7 +561,7 @@ private void displayPathsCheckMouseClicked(java.awt.event.MouseEvent evt) {//GEN
             if(response == 1){
                     return;
             }
-            org.reprap.Main.gui.deleteAllSTLs();
+            //org.reprap.Main.gui.deleteAllSTLs();
             loadedFiles = "";
 	}
 	if(gcodeLoaded)
