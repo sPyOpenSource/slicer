@@ -217,12 +217,9 @@ public class LayerRules
 			Debug.e("LayerRules(): Bottom-up slice calculations no longer supported.");
 			topDown = true;
 		}
-		
-		
 
 		// Run through the extruders checking their layer heights and the
 		// Actual physical extruder used.
-		
 		layingSupport = found;
 		Extruder[] es = printer.getExtruders();
 		zStep = es[0].getExtrusionHeight();
@@ -254,24 +251,23 @@ public class LayerRules
 		long thick = Math.round(thickestZStep * 1000.0);
 		for(int i = 0; i < es.length; i++)
 		{
-			long thin = Math.round(es[i].getExtrusionHeight()*1000.0);
-			if(thick%thin != 0)
+			long thin = Math.round(es[i].getExtrusionHeight() * 1000.0);
+			if(thick % thin != 0)
 				Debug.e("LayerRules(): the layer height for extruder " + i + "(" + es[i].getLowerFineLayers() + 
 						") is not an integer divisor of the layer height for layer height " + thickestZStep);
 		}
 		
 		int foundationLayers = Math.max(0, printer.getFoundationLayers());
-		modelLayerMax = (int)(modelZMax/zStep) + 1;
+		modelLayerMax = (int)(modelZMax / zStep) + 1;
 		machineLayerMax = modelLayerMax + foundationLayers;
-		machineZMax = modelZMax + foundationLayers*zStep;
+		machineZMax = modelZMax + foundationLayers * zStep;
 		if(topDown)
 		{
 			modelZ = modelZMax;
 			machineZ = machineZMax;
 			modelLayer = modelLayerMax;
 			machineLayer = machineLayerMax;			
-		} else
-		{
+		} else {
 			modelZ = 0;
 			machineZ = 0;
 			modelLayer = -1;
@@ -279,16 +275,15 @@ public class LayerRules
 		}
 		addToStep = 0;
 		
-// Set up the records of the layers for later reversing (top->down ==>> bottom->up)
-		
-		firstPoint = new Point2D[machineLayerMax+1];
-		firstExtruder = new int[machineLayerMax+1];
-		lastPoint = new Point2D[machineLayerMax+1];
-		lastExtruder = new int[machineLayerMax+1];
-		layerZ = new double[machineLayerMax+1];
-		layerFileNames = new String[machineLayerMax+1];
-		extruderUsedThisLayer = new boolean[machineLayerMax+1][maxAddress];
-		for(int i = 0; i < machineLayerMax+1; i++)
+                // Set up the records of the layers for later reversing (top->down ==>> bottom->up)
+		firstPoint = new Point2D[machineLayerMax + 1];
+		firstExtruder = new int[machineLayerMax + 1];
+		lastPoint = new Point2D[machineLayerMax + 1];
+		lastExtruder = new int[machineLayerMax + 1];
+		layerZ = new double[machineLayerMax + 1];
+		layerFileNames = new String[machineLayerMax + 1];
+		extruderUsedThisLayer = new boolean[machineLayerMax + 1][maxAddress];
+		for(int i = 0; i < machineLayerMax + 1; i++)
 		{
 			layerFileNames[i] = null;
 			for(int j = 0; j < maxAddress; j++)
@@ -314,10 +309,10 @@ public class LayerRules
 
     public Point2D getPurgeEnd(boolean low, int pass)
     {
-            double a = purgeL*0.5;
+            double a = purgeL * 0.5;
             if(low)
                     a = -a;
-            double b = 4*printer.getExtruder().getExtrusionSize() - (printer.getExtruder().getPhysicalExtruderNumber()*3 + pass)*printer.getExtruder().getExtrusionSize();
+            double b = 4 * printer.getExtruder().getExtrusionSize() - (printer.getExtruder().getPhysicalExtruderNumber()*3 + pass)*printer.getExtruder().getExtrusionSize();
             if(purgeXOriented())
                     return Point2D.add(purge, new Point2D(a, b));
             else
@@ -350,7 +345,7 @@ public class LayerRules
 
     public double getModelZ(int layer) 
     {
-            return zStep*layer; 
+            return zStep * layer; 
     }
 	
 	public double getMachineZ() { return machineZ; }
@@ -368,17 +363,17 @@ public class LayerRules
 	{
 		Extruder[] es = printer.getExtruders();
 		double myHeight = es[e].getExtrusionHeight();
-		double eFraction = machineZ/myHeight;
+		double eFraction = machineZ / myHeight;
 		double delta = eFraction - Math.floor(eFraction);
 		if(delta > 0.5)
 			delta = Math.ceil(eFraction) - eFraction;
-		delta = myHeight*delta;
-		return (delta < zStep*0.5);
+		delta = myHeight * delta;
+		return (delta < zStep * 0.5);
 	}
 	
 	public int sliceCacheSize()
 	{
-		return (int)Math.ceil(2*(maxSurfaceLayers*2 + 1)*thickestZStep/zStep);
+		return (int)Math.ceil(2 * (maxSurfaceLayers * 2 + 1) * thickestZStep / zStep);
 	}
 	
 	public void setFirstAndLast(PolygonList[] pl)
@@ -397,7 +392,7 @@ public class LayerRules
 		for(int i = 0; i < pl.length; i++)
 		{
 			if(pl[i] != null)
-				if(pl[i].size() > 0)
+				if(!pl[i].isEmpty())
 				{
 					if(bottom < 0)
 						bottom = i;
@@ -541,17 +536,19 @@ public class LayerRules
 		return getFoundationLayers() - getMachineLayer() <= 2;
 	}
 	
-	/**
-	 * The hatch pattern is:
-	 * 
-	 *  Foundation:
-	 *   X and Y rectangle
-	 *   
-	 *  Model:
-	 *   Alternate even then odd (which can be set to the same angle if wanted).
-	 *   
-	 * @return
-	 */
+    /**
+     * The hatch pattern is:
+     * 
+     *  Foundation:
+     *   X and Y rectangle
+     *   
+     *  Model:
+     *   Alternate even then odd (which can be set to the same angle if wanted).
+     *   
+     * @param e
+     * @param support
+     * @return
+     */
 	public HalfPlane getHatchDirection(Extruder e, boolean support) 
 	{	
 		double myHeight = e.getExtrusionHeight();
@@ -564,17 +561,17 @@ public class LayerRules
 		{
 				angle = e.getOddHatchDirection();
 		} else {
-			if(mylayer%2 == 0)
+			if(mylayer % 2 == 0)
 				angle = e.getEvenHatchDirection();
 			else
 				angle = e.getOddHatchDirection();
 		}
-		angle = angle*Math.PI/180;
+		angle = angle * Math.PI / 180;
 		HalfPlane result = new HalfPlane(new Point2D(0.0, 0.0), new Point2D(Math.sin(angle), Math.cos(angle)));
 		
-		if(((mylayer/2)%2 == 0) && !support)
+		if(((mylayer / 2) % 2 == 0) && !support)
 		{
-			result = result.offset(0.5*getHatchWidth(e));
+			result = result.offset(0.5 * getHatchWidth(e));
 		}
 		
 		return result;
@@ -608,15 +605,13 @@ public class LayerRules
 	 */
 	public void stepMachine()
 	{
-
-		
 		if(topDown)
 		{
 			machineLayer--;
-			machineZ = zStep*machineLayer + addToStep;
+			machineZ = zStep * machineLayer + addToStep;
 		} else {
 			machineLayer++;
-			machineZ = zStep*machineLayer + addToStep;
+			machineZ = zStep * machineLayer + addToStep;
 		}
 	}
 	
@@ -641,7 +636,7 @@ public class LayerRules
 		} else {
 			modelLayer++;
 		}
-		modelZ = modelLayer*zStep + addToStep;
+		modelZ = modelLayer * zStep + addToStep;
 		addToStep = 0;
 		stepMachine();
 	}
@@ -649,7 +644,6 @@ public class LayerRules
 	public void setFractionDone()
 	{
 		// Set -ve to force the system to query the layer rules
-		
 		org.reprap.gui.botConsole.BotConsoleFrame.getBotConsoleFrame().setFractionDone(-1, -1, -1);
 	}
 	

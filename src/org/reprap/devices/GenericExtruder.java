@@ -455,16 +455,14 @@ public abstract class GenericExtruder implements Extruder
 			singleLine = true;//Preferences.loadGlobalBool(prefName + "SingleLine");
 			feedDiameter = 0;//Preferences.loadGlobalDouble(prefName + "FeedDiameter(mm)");
 			insideOut = false;//Preferences.loadGlobalBool(prefName + "InsideOut");
-		} /*catch (IOException ex)
-		{
+		} /*catch (IOException ex) {
 			Debug.e("Refresh extruder preferences: " + ex.toString());
 		}*/
 		
 		if(printer == null)
 		{
 			Debug.e("GenericExtruder(): printer is null!");
-		} else
-		{
+		} else {
 			fastXYFeedrate = Math.min(printer.getFastXYFeedrate(), fastXYFeedrate);
 			slowXYFeedrate = Math.min(printer.getSlowXYFeedrate(), slowXYFeedrate);
 			maxAcceleration = Math.min(printer.getMaxXYAcceleration(), maxAcceleration);			
@@ -477,6 +475,7 @@ public abstract class GenericExtruder implements Extruder
 	/* (non-Javadoc)
 	 * @see org.reprap.Extruder#dispose()
 	 */
+        @Override
 	public void dispose() {
 	}
 	
@@ -484,6 +483,7 @@ public abstract class GenericExtruder implements Extruder
 	 * Wait while the motors move about
 	 * @throws IOException
 	 */
+        @Override
 	public void waitTillNotBusy() throws IOException
 	{
 		if(printer == null)
@@ -491,12 +491,13 @@ public abstract class GenericExtruder implements Extruder
 		printer.waitTillNotBusy();
 	}
 	
-	
+        @Override
 	public void setPrinter(Printer p)
 	{
 		printer = p;
 	}
 	
+        @Override
 	public Printer getPrinter()
 	{
 		return printer;
@@ -514,6 +515,7 @@ public abstract class GenericExtruder implements Extruder
 	 * @throws IOException
 	 * @throws Exception 
 	 */
+        @Override
 	public void setExtrusion(double speed, boolean rev) throws IOException, Exception
 	{
 		if (speed > 0)
@@ -525,11 +527,13 @@ public abstract class GenericExtruder implements Extruder
 		es.setReverse(rev);
 	}
 	
+        @Override
 	public void setTemperature(double temperature, boolean wait) throws Exception
 	{
 		es.setTargetTemperature(temperature);
 	}
 	
+        @Override
 	public void startExtruding()
 	{
 		if (!es.isExtruding())
@@ -544,6 +548,7 @@ public abstract class GenericExtruder implements Extruder
 		}
 	}
 	
+        @Override
 	public void stopExtruding()
 	{
 		if (es.isExtruding())
@@ -558,6 +563,7 @@ public abstract class GenericExtruder implements Extruder
 		}
 	}
 	
+        @Override
 	public void setMotor(boolean motorOn) throws Exception
 	{
 		if(getExtruderSpeed() < 0)
@@ -575,11 +581,13 @@ public abstract class GenericExtruder implements Extruder
 		es.setReverse(false);
 	}
 
+        @Override
 	public void heatOn(boolean wait) throws Exception 
 	{
 		setTemperature(extrusionTemp, wait);
 	}
 	
+        @Override
 	public void heatOff() throws Exception 
 	{
 		setTemperature(0, false);
@@ -588,6 +596,7 @@ public abstract class GenericExtruder implements Extruder
 	/* (non-Javadoc)
 	 * @see org.reprap.Extruder#getTemperatureTarget()
 	 */
+        @Override
 	public double getTemperatureTarget() {
 		return es.targetTemperature();
 	}
@@ -595,6 +604,7 @@ public abstract class GenericExtruder implements Extruder
 	/* (non-Javadoc)
 	 * @see org.reprap.Extruder#getDefaultTemperature()
 	 */
+        @Override
 	public double getDefaultTemperature() {
 		return extrusionTemp;
 	}
@@ -602,6 +612,7 @@ public abstract class GenericExtruder implements Extruder
 	/**
 	 * The the outline speed and the infill speed [0,1]
 	 */
+        @Override
 	public double getInfillSpeedFactor()
 	{
 		return iSpeed;
@@ -610,6 +621,7 @@ public abstract class GenericExtruder implements Extruder
 	/* (non-Javadoc)
 	 * @see org.reprap.Extruder#getInfillFeedrate()
 	 */
+        @Override
 	public double getInfillFeedrate()
 	{
 		return getInfillSpeedFactor() * getFastXYFeedrate();
@@ -618,6 +630,7 @@ public abstract class GenericExtruder implements Extruder
 	/* (non-Javadoc)
 	 * @see org.reprap.Extruder#getOutlineSpeedFactor()
 	 */
+        @Override
 	public double getOutlineSpeedFactor()
 	{
 		return oSpeed;
@@ -626,18 +639,18 @@ public abstract class GenericExtruder implements Extruder
 	/* (non-Javadoc)
 	 * @see org.reprap.Extruder#getOutlineFeedrate()
 	 */
+        @Override
 	public double getOutlineFeedrate()
 	{
 		return getOutlineSpeedFactor() * getFastXYFeedrate();
 	}
-	
-
 	
 	/**
 	 * The length in mm to speed up when going round corners
 	 * (non-Javadoc)
 	 * @see org.reprap.Extruder#getAngleSpeedUpLength()
 	 */
+        @Override
 	public double getAngleSpeedUpLength()
 	{
 		return asLength;
@@ -674,6 +687,7 @@ public abstract class GenericExtruder implements Extruder
     /* (non-Javadoc)
      * @see org.reprap.Extruder#getXYSpeed()
      */
+        @Override
     public double getFastXYFeedrate()
     {
     	return fastXYFeedrate;
@@ -682,6 +696,7 @@ public abstract class GenericExtruder implements Extruder
     /* (non-Javadoc)
      * @see org.reprap.Extruder#getXYSpeed()
      */
+        @Override
     public double getFastEFeedrate()
     {
     	return fastEFeedrate;
@@ -740,11 +755,8 @@ public abstract class GenericExtruder implements Extruder
     	if(separating)
     		return getSeparationSpeed();
     	else
-    		return getRegularExtruderSpeed();
-    	
+    		return getRegularExtruderSpeed();	
     }
-    
-    
     
     /* (non-Javadoc)
      * @see org.reprap.Extruder#getExtrusionSize()
@@ -766,6 +778,7 @@ public abstract class GenericExtruder implements Extruder
      * At the top and bottom return the fine width; in between
      * return the braod one.  If the braod one is negative, just do fine.
      */
+        @Override
     public double getExtrusionInfillWidth()
     {
     		return extrusionInfillWidth;
@@ -781,11 +794,11 @@ public abstract class GenericExtruder implements Extruder
 		return lowerFineLayers;
 	}
 	
+        @Override
 	public int getUpperFineLayers()
 	{
 		return upperFineLayers;
 	}
-    
   
     /* (non-Javadoc)
      * @see org.reprap.Extruder#getCoolingPeriod()
@@ -807,6 +820,7 @@ public abstract class GenericExtruder implements Extruder
      * @return the name of the material
      * TODO: should this give more information?
      */
+        @Override
     public String toString()
     {
     	return material;
@@ -815,6 +829,7 @@ public abstract class GenericExtruder implements Extruder
     /**
      * @return determine whether nozzle wipe method is enabled or not 
      */
+        @Override
     public boolean getNozzleWipeEnabled()
     {
     	return nozzleWipeEnabled;
@@ -831,6 +846,7 @@ public abstract class GenericExtruder implements Extruder
     /**
      * @return the Y-cord for the nozzle wiper
      */
+        @Override
     public double getNozzleWipeDatumY()
     {
     	return nozzleWipeDatumY;
@@ -871,11 +887,11 @@ public abstract class GenericExtruder implements Extruder
     /**
      * @return the time to wait after extruding before wiping the nozzle
      */
+        @Override
     public double getNozzleWaitTime()
     {
     	return nozzleWaitTime;
     }
-    
     
     /**
      * Start polygons at a random location round their perimiter
@@ -900,6 +916,7 @@ public abstract class GenericExtruder implements Extruder
      * set -ve to turn this off.
      * @return
      */
+        @Override
     public double getShortLength()
     {
     	return shortLength; 
@@ -929,23 +946,25 @@ public abstract class GenericExtruder implements Extruder
      * leave a gap between the two
      * @return
      */
+        @Override
     public double getInfillOverlap()
     {
     	return infillOverlap;
     }
     
     /**
-	 * Gets the number of milliseconds to wait before starting a border track
-	 * @return
+     * Gets the number of milliseconds to wait before starting a border track
+     * @return
      */
+    @Override
     public double getExtrusionDelayForLayer()
     {
     	return extrusionDelayForLayer; 
     }
     
     /**
-	 * Gets the number of milliseconds to wait before starting a hatch track
-	 * @return
+     * Gets the number of milliseconds to wait before starting a hatch track
+     * @return
      */
     public double getExtrusionDelayForPolygon()
     {
@@ -954,18 +973,18 @@ public abstract class GenericExtruder implements Extruder
     
     
     /**
-	 * Gets the number of milliseconds to reverse the extrude motor
-	 * at the end of a track
-	 * @return
+     * Gets the number of milliseconds to reverse the extrude motor
+     * at the end of a track
+     * @return
      */
     public double getExtrusionReverseDelay()
     {
     	return extrusionReverseDelay;
     }
     /**
-	 * Gets the number of milliseconds to wait before opening the valve
-	 * for the first track of a layer
-	 * @return
+     * Gets the number of milliseconds to wait before opening the valve
+     * for the first track of a layer
+     * @return
      */
     public double getValveDelayForLayer()
     {
@@ -975,9 +994,9 @@ public abstract class GenericExtruder implements Extruder
     }
     
     /**
-	 * Gets the number of milliseconds to wait before opening the valve
-	 * for any other track
-	 * @return
+     * Gets the number of milliseconds to wait before opening the valve
+     * for any other track
+     * @return
      */
     public double getValveDelayForPolygon()
     {
@@ -1018,6 +1037,7 @@ public abstract class GenericExtruder implements Extruder
      * The number of times to go round the outline (0 to supress)
      * @return
      */
+        @Override
     public int getShells()
     {
     	return shells;
@@ -1074,6 +1094,7 @@ public abstract class GenericExtruder implements Extruder
             return getNumberFromMaterial(inFillMaterial);
     }
 
+        @Override
     public Extruder getInfillExtruder()
     {
             return org.reprap.Main.gui.getPrinter().getExtruder(inFillMaterial);
@@ -1390,6 +1411,7 @@ public abstract class GenericExtruder implements Extruder
      * The diameter of the input filament
      * @return
      */
+        @Override
     public double getFeedDiameter()
     {
     	return feedDiameter;
@@ -1399,6 +1421,7 @@ public abstract class GenericExtruder implements Extruder
      * Plot perimiters inside out or outside in?
      * @return
      */
+        @Override
     public boolean getInsideOut()
     {
     	return insideOut;

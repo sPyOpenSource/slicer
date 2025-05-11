@@ -275,7 +275,7 @@ public class LayerProducer {
 		
 		if (printer.isCancelled()) return;
 		
-//		 Don't call delay; this isn't controlling the printer
+                // Don't call delay; this isn't controlling the printer
 		while(paused)
 		{
 			try
@@ -372,7 +372,6 @@ public class LayerProducer {
 		if (printer.isCancelled()) return;
 		
 		// If getMinLiftedZ() is negative, never lift the head
-		
 		double liftZ = att.getExtruder().getLift();
 		Boolean lift = att.getExtruder().getMinLiftedZ() >= 0 || liftZ > 0;
 		
@@ -457,7 +456,6 @@ public class LayerProducer {
 		}
 
 		// Restore sanity
-				
 		if(p.isClosed())
 			move(p.point(0), p.point(0), false, false, true);
 			

@@ -40,6 +40,7 @@ public class GCodeRepRap extends GenericRepRap {
     GCode gcode;
 
     /**
+     * @param stage
      * @throws Exception
      */
     public GCodeRepRap(Stage stage) throws Exception {
@@ -65,15 +66,15 @@ public class GCodeRepRap extends GenericRepRap {
     @Override
     public void loadExtruders() throws Exception
     {
-        /*try
+        try
         {
             int extruderCount = Preferences.loadGlobalInt("NumberOfExtruders");
             extruders = new GCodeExtruder[extruderCount];
         } catch (IOException e)
         {
             Debug.e(e.toString());
-        }*/
-        extruders = new GCodeExtruder[2];
+        }
+        //extruders = new GCodeExtruder[2];
 
         super.loadExtruders();
     }
@@ -85,7 +86,7 @@ public class GCodeRepRap extends GenericRepRap {
     }
 
     private void qFeedrate(double feedrate) throws Exception
-    {		
+    {
         if(currentFeedrate == feedrate)
             return;
         String s = "G1 F" + feedrate;
@@ -96,7 +97,7 @@ public class GCodeRepRap extends GenericRepRap {
     }
 	
 	private void qXYMove(double x, double y, double feedrate) throws Exception
-	{	
+	{
             double dx = x - currentX;
             double dy = y - currentY;
 
@@ -160,9 +161,8 @@ public class GCodeRepRap extends GenericRepRap {
 	}
 	
 	private void qZMove(double z, double feedrate) throws Exception
-	{	
+	{
 		// note we set the feedrate whether we move or not
-		
 		double zFeedrate = round(getMaxFeedrateZ(), 1);
 		
 		if(zFeedrate < feedrate)
@@ -211,8 +211,6 @@ public class GCodeRepRap extends GenericRepRap {
 		currentZ = z;	
 	}
 
-
-
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#moveTo(double, double, double, boolean, boolean)
 	 */
@@ -256,8 +254,8 @@ public class GCodeRepRap extends GenericRepRap {
 		
 		// This should either be a Z move or an XY move, but not all three
 		
-		boolean zMove = dz != 0;
-		boolean xyMove = dx!= 0 || dy != 0;
+		boolean  zMove = dz != 0;
+		boolean xyMove = dx != 0 || dy != 0;
 		
 		if(zMove && xyMove)
 			Debug.d("GcodeRepRap.moveTo(): attempt to move in X|Y and Z simultaneously: (x, y, z) = (" + 
@@ -284,8 +282,7 @@ public class GCodeRepRap extends GenericRepRap {
 				qZMove(z, feedrate);
 			if(xyMove)
 				qXYMove(x, y, feedrate);
-		} else
-		{
+		} else {
 			if(xyMove)
 				qXYMove(x, y, feedrate);
 			if(zMove)
@@ -306,9 +303,14 @@ public class GCodeRepRap extends GenericRepRap {
 		super.moveTo(x, y, z, feedrate, startUp, endUp);
 	}
 	
-	/**
-	 * make a single, usually non-building move (between plots, or zeroing an axis etc.)
-	 */
+    /**
+     * make a single, usually non-building move (between plots, or zeroing an axis etc.)
+     * @param x
+     * @param y
+     * @param z
+     * @param feedrate
+     * @param really
+     */
     @Override
 	public void singleMove(double x, double y, double z, double feedrate, boolean really)
 	{
@@ -322,7 +324,7 @@ public class GCodeRepRap extends GenericRepRap {
 		double dy = y - y0;
 		double dz = z - z0;
 		
-		boolean zMove = dz != 0;
+		boolean  zMove = dz != 0;
 		boolean xyMove = dx != 0 || dy != 0;
 		
 		if(zMove && xyMove)
@@ -445,13 +447,13 @@ public class GCodeRepRap extends GenericRepRap {
         @Override
 	public void dispose() {
 		// TODO: fix this to be more flexible
-
 		super.dispose();
 	}
 	
-	/**
-	 * Go to the finish point
-	 */
+    /**
+     * Go to the finish point
+     * @param lc
+     */
 	public void moveToFinish(LayerRules lc)
 	{
 
@@ -491,6 +493,7 @@ public class GCodeRepRap extends GenericRepRap {
 			super.startRun(lc);
 		} catch (Exception E) {
 			Debug.d("Initialization error: " + E.toString());
+                        Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, E);
 		}
 	}
 	
@@ -709,7 +712,7 @@ public class GCodeRepRap extends GenericRepRap {
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.fanOn() has thrown:");
 			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
-		}		
+		}
 	}
 	
 	/**
@@ -726,7 +729,7 @@ public class GCodeRepRap extends GenericRepRap {
 		} catch (Exception e) {
 			Debug.e("GCodeRepRap.fanOff() has thrown:");
 			Logger.getLogger(GCodeRepRap.class.getName()).log(Level.SEVERE, null, e);
-		}			
+		}
 	}
 	
 	/**
@@ -768,6 +771,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * @return
 	 * @throws Exception 
 	 */
+    @Override
 	public double[] getZeroError() throws Exception
 	{
 		String s = "M117";
@@ -785,6 +789,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#homeToZeroX()
 	 */
+    @Override
 	public void homeToZeroX() throws Exception {
 		String s = "G28 X0";
 		if(Debug.d())
@@ -796,18 +801,17 @@ public class GCodeRepRap extends GenericRepRap {
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#homeToZeroY()
 	 */
+    @Override
 	public void homeToZeroY() throws Exception {
-
 		// Assume extruder is off...
-		
 		String s = "G28 Y0";
 		if(Debug.d())
 			s += " ; set y 0";
 		gcode.queue(s);
 		super.homeToZeroY();
-
 	}
 	
+    @Override
 	public void homeToZeroXYE(boolean really) throws Exception
 	{
 		if(XYEAtZero)
@@ -834,6 +838,7 @@ public class GCodeRepRap extends GenericRepRap {
 	/* (non-Javadoc)
 	 * @see org.reprap.Printer#homeToZeroY()
 	 */
+    @Override
 	public void homeToZeroZ() throws Exception {
 		String s = "G28 Z0";
 		if(Debug.d())
@@ -849,28 +854,33 @@ public class GCodeRepRap extends GenericRepRap {
 		return Math.round(c*power)/power;
 	}
 	
+    @Override
 	public void waitTillNotBusy() throws IOException {}
 
 	//TODO: make this work normally.
+    @Override
 	public void stopMotor() throws Exception
 	{
 		getExtruder().stopExtruding();
 	}
 	
 	//TODO: make this work normally.
+    @Override
 	public void stopValve() throws Exception
 	{
 		getExtruder().setValve(false);
 	}
 	
-	/**
-	 * All machine dwells and delays are routed via this function, rather than 
-	 * calling Thread.sleep - this allows them to generate the right G codes (G4) etc.
-	 * 
-	 * The RS232/USB etc comms system doesn't use this - it sets its own delays.
-	 * @param milliseconds
-	 * @throws Exception 
-	 */
+    /**
+     * All machine dwells and delays are routed via this function, rather than 
+     * calling Thread.sleep - this allows them to generate the right G codes (G4) etc.The RS232/USB etc comms system doesn't use this - it sets its own delays.
+     * 
+     * @param milliseconds
+     * @param fastExtrude
+     * @param really
+     * @throws Exception 
+     */
+    @Override
 	public void machineWait(double milliseconds, boolean fastExtrude, boolean really) throws Exception
 	{
 		if(milliseconds <= 0)
@@ -962,6 +972,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * you know what you're doing...
 	 * @param z
 	 */
+    @Override
 	public void setZ(double z)
 	{
 		currentZ = round(z, 4);
@@ -1054,6 +1065,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * @param temperature The temperature of the extruder in centigrade
 	 * @throws Exception 
 	 */
+    @Override
 	public void setBedTemperature(double temperature) throws Exception
 	{
 		super.setBedTemperature(temperature);
@@ -1068,6 +1080,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * @return
 	 * @throws Exception 
 	 */
+    @Override
 	public double getBedTemperature() throws Exception
 	{ 
 		String s = "M105";
@@ -1082,6 +1095,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * extruder and bed temperatures are at the values set and stable.
 	 * @throws Exception 
 	 */
+    @Override
 	public void stabilise() throws Exception
 	{
 		String s = "M116";
@@ -1094,6 +1108,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Force the output stream to be some value - use with caution
 	 * @param fos
 	 */
+    @Override
 	public void forceOutputFile(PrintStream fos)
 	{
 		gcode.forceOutputFile(fos);
@@ -1103,6 +1118,7 @@ public class GCodeRepRap extends GenericRepRap {
 	 * Return the name if the gcode file
 	 * @return
 	 */
+    @Override
 	public String getOutputFilename()
 	{
 		return gcode.getOutputFilename();

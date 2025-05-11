@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
@@ -36,7 +35,6 @@ import org.reprap.utilities.RFO;
 import org.reprap.utilities.Debug;
 import org.reprap.utilities.RrGraphics;
 
-import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Matrix4d;
 import org.jogamp.vecmath.Vector3d;
 
@@ -457,13 +455,9 @@ public class AllSTLsToBuild
 		if(!file.exists())
 			file.mkdir();
 		RFO.copySTLs(this, path);
-		try
-		{
-			PrintWriter out = new PrintWriter(new FileWriter(path+name));
-			out.println(toSCAD());
-			out.close();
-		} catch (IOException e)
-		{
+                try (PrintWriter out = new PrintWriter(new FileWriter(path+name))) {
+                    out.println(toSCAD());
+		} catch (IOException e) {
 			Debug.e("AllSTLsToBuild.saveSCAD(): can't open file: " + path+name);
 		}
 	}
@@ -528,9 +522,8 @@ public class AllSTLsToBuild
 			{
 				//Object ob = enumKids.next();
 
-				if(ob instanceof Group)
+				if(ob instanceof Group bg1)
 				{
-					Group bg1 = (Group)ob;
 					Attributes att = (Attributes)(bg1.getUserData());
 					if(XYZbox == null)
 					{
@@ -539,8 +532,7 @@ public class AllSTLsToBuild
 							rectangles.set(i, new Rectangle(XYZbox.XYbox));
 						else
 							rectangles.set(i, Rectangle.union(rectangles.get(i), XYZbox.XYbox));
-					} else
-					{
+					} else {
 						s = BBox(att.getPart(), trans);
 						if(s != null)
 						{
@@ -618,9 +610,8 @@ public class AllSTLsToBuild
         //if(value instanceof SceneGraphObject) 
         //{
             //SceneGraphObject sg = (SceneGraphObject)value;
-            if(sg instanceof Group) 
+            if(sg instanceof Group g) 
             {
-                Group g = (Group)sg;
                 ObservableList<Node> enumKids = g.getChildren( );
                 for(Node ob:enumKids)
                 {
@@ -633,9 +624,9 @@ public class AllSTLsToBuild
                 			b.expand(s);
                 	}
                 }
-            } else if (sg instanceof Shape3D) 
+            } else if (sg instanceof Shape3D shape3D) 
             {
-                b = BBoxPoints((Shape3D)sg, trans);
+                b = BBoxPoints(shape3D, trans);
             }
         //}
         
@@ -728,7 +719,7 @@ public class AllSTLsToBuild
 		Point2D end = next.b;
 		
 		boolean first = true;
-		while(edges.size() > 0)
+		while(!edges.isEmpty())
 		{
 			double d2 = Point2D.dSquared(start, end);
 			if(first)
@@ -1132,19 +1123,15 @@ public class AllSTLsToBuild
 	public PolygonList computeInfill(int stl) 
 	{
 		// Where the result will be stored.
-		
 		InFillPatterns infill = new InFillPatterns();
 		
 		// No more additions or movements, please
-		
 		freeze();
 		
 		// Where are we and what does the current slice look like?
-		
 		int layer = layerRules.getModelLayer();
 		
 		BooleanGridList slice = slice(stl, layer);
-		
 		
 		int surfaceLayers = 1;
 		for(int i = 0; i < slice.size(); i++)
@@ -1155,7 +1142,6 @@ public class AllSTLsToBuild
 		}
 		
 		// Get the bottom out of the way - no fancy calculations needed.
-		
 		if(layer <= surfaceLayers)
 		{
 			slice = slice.offset(layerRules, false, -1);
@@ -1401,8 +1387,7 @@ public class AllSTLsToBuild
 		if(layer < 0)
 			return new BooleanGridList();
 		
-		// Is the result in the cache?  If so, just use that.
-		
+		// Is the result in the cache? If so, just use that.
 		BooleanGridList result = cache.getSlice(layer, stlIndex);
 		if(result != null)
 			return result;
@@ -1416,7 +1401,7 @@ public class AllSTLsToBuild
 		
 		// Probably...
 		
-		double z = layerRules.getModelZ(layer) + layerRules.getZStep()*0.5;
+		double z = layerRules.getModelZ(layer) + layerRules.getZStep() * 0.5;
 		Extruder[] extruders = layerRules.getPrinter().getExtruders();
 		result = new BooleanGridList();
 		CSG2D csgp;

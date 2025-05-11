@@ -9,10 +9,11 @@ public class GCodeExtruder extends GenericExtruder
 {
 	GCode gcode;
 	
-	/**
-	 * @param p
-	 * @param extruderId
-	 */
+    /**
+     * @param writer
+     * @param p
+     * @param extruderId
+     */
 	public GCodeExtruder(GCode writer, int extruderId, Printer p)
 	{
 		super(extruderId, p);
@@ -20,10 +21,13 @@ public class GCodeExtruder extends GenericExtruder
 		gcode = writer;
 	}
 	
-	/**
-	 * Zero the extruded length
-	 *
-	 */
+    /**
+     * Zero the extruded length
+     *
+     * @param really
+     * @throws java.lang.Exception
+     */
+        @Override
 	public void zeroExtrudedLength(boolean really) throws Exception
 	{
 			super.zeroExtrudedLength(really);
@@ -36,8 +40,7 @@ public class GCodeExtruder extends GenericExtruder
 			}
 	}
 	
-
-	
+        @Override
 	public void setTemperature(double temperature, boolean wait) throws Exception
 	{
 		String s;
@@ -56,8 +59,10 @@ public class GCodeExtruder extends GenericExtruder
 		super.setTemperature(temperature, wait);
 	}
 	
+        @Override
 	public void setHeater(int heat, double maxTemp) {}
 	
+        @Override
 	public double getTemperature() throws Exception
 	{
 		String s = "M105";
@@ -68,6 +73,7 @@ public class GCodeExtruder extends GenericExtruder
 		return es.currentTemperature();
 	}
 	
+        @Override
 	public void setExtrusion(double speed, boolean reverse) throws Exception
 	{
 		if(getExtruderSpeed() < 0)
@@ -113,6 +119,7 @@ public class GCodeExtruder extends GenericExtruder
 	}
 	
 	//TODO: make these real G codes.
+        @Override
 	public void setCooler(boolean coolerOn, boolean really) throws Exception
 	{
 		if(really)
@@ -133,8 +140,8 @@ public class GCodeExtruder extends GenericExtruder
 			}
 		}
 	}
-	
 
+        @Override
 	public void setValve(boolean valveOpen) throws Exception
 	{
 		if(valvePulseTime <= 0)
@@ -155,6 +162,7 @@ public class GCodeExtruder extends GenericExtruder
 		}
 	}
 	
+        @Override
 	public boolean isEmpty()
 	{
 		return false;

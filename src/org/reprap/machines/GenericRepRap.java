@@ -456,12 +456,13 @@ public abstract class GenericRepRap implements CartesianPrinter
 
 	}
 
-	/**
-	 * Deals with all the actions that need to be done between one layer
-	 * and the next.
-	 * THIS FUNCTION MUST NOT MAKE THE REPRAP MACHINE DO ANYTHING (LIKE MOVE).
-	 * @param lc
-	 */
+    /**
+     * Deals with all the actions that need to be done between one layer
+     * and the next.THIS FUNCTION MUST NOT MAKE THE REPRAP MACHINE DO ANYTHING (LIKE MOVE).
+     * @param lc
+     * @throws java.lang.Exception
+     */
+        @Override
 	public void betweenLayers(LayerRules lc) throws Exception
 	{
 		// Now is a good time to garbage collect

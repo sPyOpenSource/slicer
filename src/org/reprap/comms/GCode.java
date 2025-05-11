@@ -800,21 +800,18 @@ public class GCode
 	public void copyFile(String fileName)
 	{
 		File f = new File(fileName);
-		if (!f.exists()) 
+		if (!f.exists())
 		{
 			Debug.e("GCodeReaderAndWriter().copyFile: can't find file " + fileName);
 			return;
 		}
-		try 
-		{
-			FileReader fr = new FileReader(f);
-			BufferedReader br = new BufferedReader(fr);
-			String s;
-			while((s = br.readLine()) != null)
-			{
-				queue(s);
-			}
-			fr.close();
+                try (FileReader fr = new FileReader(f)) {
+                        BufferedReader br = new BufferedReader(fr);
+                        String s;
+                        while((s = br.readLine()) != null)
+                        {
+                            queue(s);
+                        }
 		} catch (Exception ex) 
 		{
 			Debug.e("GCodeReaderAndWriter().copyFile: exception reading file " + fileName);

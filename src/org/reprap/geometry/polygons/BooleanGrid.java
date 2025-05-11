@@ -675,7 +675,7 @@ public class BooleanGrid
 	}
 	
 	/**
-	 * Little class to hold the ends of hatching patterns.  Snakes are a combination of the hatching
+	 * Little class to hold the ends of hatching patterns. Snakes are a combination of the hatching
 	 * lines that infill a shape plus the bits of boundary that join their ends to make a zig-zag pattern.
 	 * @author ensab
 	 *
@@ -699,8 +699,8 @@ public class BooleanGrid
 	/**
 	 * The resolution of the RepRap machine
 	 */
-	private static final double pixSize = Preferences.machineResolution()*0.6;
-	private static final double realResolution = pixSize*1.5;
+	private static final double pixSize = Preferences.machineResolution() * 0.6;
+	private static final double realResolution = pixSize * 1.5;
 	private static final double rSwell = 2.0; // mm by which to swell rectangles to give margins round stuff
 	
 	/**
@@ -716,13 +716,13 @@ public class BooleanGrid
 	private final iPoint[] neighbour = 
 	{
 		new iPoint(-1, -1),  //0 /
-		new iPoint(0, -1),   //1 V
-		new iPoint(1, -1),   //2 \
-		new iPoint(1, 0),    //3 ->
-		new iPoint(1, 1),    //4 /
-		new iPoint(0, 1),    //5 ^
-		new iPoint(-1, 1),   //6 \
-		new iPoint(-1, 0)    //7 <
+		new iPoint( 0, -1),  //1 V
+		new iPoint( 1, -1),  //2 \
+		new iPoint( 1,  0),  //3 ->
+		new iPoint( 1,  1),  //4 /
+		new iPoint( 0,  1),  //5 ^
+		new iPoint(-1,  1),  //6 \
+		new iPoint(-1,  0)   //7 <
 	};
 	
 	// Marching squares directions.  2x2 grid bits:
@@ -730,10 +730,9 @@ public class BooleanGrid
 	//    0  1
 	//
 	//    2  3
-	
 	private final int[] march =
 	{
-			-1, // 0
+                        -1, // 0
 			5,  // 1
 			3,  // 2
 			3,  // 3
@@ -752,7 +751,7 @@ public class BooleanGrid
 	};
 	
 	/**
-	 * Lookup table for whether to cull points forming thin bridges.  The index into this is the byte bitpattern
+	 * Lookup table for whether to cull points forming thin bridges. The index into this is the byte bitpattern
 	 * implied by the neighbour array.  This table is generated interactively by the program 
 	 * org.reprap.utilities.FilterGenerator.
 	 */
@@ -844,10 +843,12 @@ public class BooleanGrid
 	static double scale(int i) { return i*pixSize; }
 	static int iScale(double d) { return (int)Math.round(d/pixSize); }
 	
-	/**
-	 * Build the grid from a CSG expression
-	 * @param csgExp
-	 */
+    /**
+     * Build the grid from a CSG expression
+     * @param csgExp
+     * @param rectangle
+     * @param a
+     */
 	public BooleanGrid(CSG2D csgExp, Rectangle rectangle, Attributes a)
 	{
 		att = a;
@@ -869,7 +870,7 @@ public class BooleanGrid
 	
 	/**
 	 * Copy constructor
-	 * N.B. attributes are _not_ deep copied
+	 * N.B. attributes are not deep copied
 	 * @param bg
 	 */
 	public BooleanGrid(BooleanGrid bg)
@@ -881,11 +882,12 @@ public class BooleanGrid
 		bits = (BitSet)bg.bits.clone();
 	}
 	
-	/**
-	 * Copy constructor with new rectangle
-	 * N.B. attributes are _not_ deep copied
-	 * @param bg
-	 */
+    /**
+     * Copy constructor with new rectangle
+     * N.B.attributes are not deep copied
+     * @param bg
+     * @param newRec
+     */
 	public BooleanGrid(BooleanGrid bg, iRectangle newRec)
 	{
 		att = bg.att;
@@ -903,9 +905,9 @@ public class BooleanGrid
 				bits.set(pixI(x + offxOut, y + offyOut), bg.bits.get(bg.pixI(x + offxIn, y + offyIn)));
 	}
 	
-	/**
+    /**
      * The empty grid
-	 */
+     */
 	private BooleanGrid()
 	{
 		att = new Attributes(null, null, null, null);
@@ -1586,7 +1588,7 @@ public class BooleanGrid
 	 */
 	private int neighbourIndex(iPoint n)
 	{
-		switch((n.y + 1)*3 + n.x + 1)
+		switch((n.y + 1) * 3 + n.x + 1)
 		{
 		case 0: return 0;
 		case 1: return 1;
@@ -2289,9 +2291,9 @@ public class BooleanGrid
     	
     	iPoint pNew;
     	double vOrigin = originPlane.value(p.realPoint());
-    	boolean notCrossedOriginPlane = originPlane.value(p.realPoint())*vOrigin >= 0;
-    	boolean notCrossedTargetPlane = targetPlane.value(p.realPoint())*vTarget >= 0;
-    	while(p != null && notCrossedOriginPlane && notCrossedTargetPlane)
+    	boolean notCrossedOriginPlane = originPlane.value(p.realPoint()) * vOrigin >= 0;
+    	boolean notCrossedTargetPlane = targetPlane.value(p.realPoint()) * vTarget >= 0;
+    	while(notCrossedOriginPlane && notCrossedTargetPlane)
     	{
     		track.add(p);
     		vSet(p, true);
@@ -2708,7 +2710,7 @@ public class BooleanGrid
 		}
 		if(result.isEmpty())
 			return nothingThere;
-			result.deWhisker();
+		result.deWhisker();
 		return result;
 	}
 	
@@ -2795,12 +2797,13 @@ public class BooleanGrid
 	}
 	
 	
-	/**
-	 * Compute the intersection of two  bit patterns
-	 * @param d
-	 * @param e
-	 * @return
-	 */
+    /**
+     * Compute the intersection of two bit patterns
+     * @param d
+     * @param e
+     * @param a
+     * @return
+     */
 	public static BooleanGrid intersection(BooleanGrid d, BooleanGrid e, Attributes a)
 	{	
 		BooleanGrid result;
@@ -2812,8 +2815,7 @@ public class BooleanGrid
 		{
 			result = new BooleanGrid(d);
 			result.bits.and(e.bits);
-		} else
-		{
+		} else {
 
 			iRectangle u = d.rec.intersection(e.rec);
 			if(u.isEmpty())
@@ -2830,7 +2832,7 @@ public class BooleanGrid
 	}
 
 	/**
-	 * Compute the intersection of two  bit patterns
+	 * Compute the intersection of two bit patterns
 	 * @param d
 	 * @param e
 	 * @return
@@ -2882,6 +2884,7 @@ public class BooleanGrid
 		result.forceAttribute(a);
 		return result;
 	}
+        
 	/**
 	 * Grid d - grid e
 	 * d's rectangle is presumed to contain the result.
