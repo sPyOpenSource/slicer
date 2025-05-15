@@ -59,9 +59,7 @@ package org.reprap.gui;
 import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
-import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
 import org.reprap.geometry.polyhedra.STLObject;
 
 
@@ -77,7 +75,6 @@ public class MouseObject
     
     // Constructor takes the bounds of the world and two factors for translate
     // and zoom movements
-    
     public MouseObject(Bounds behaviorBounds, double mouse_tf, double mouse_zf)
     {
         // Set up the free transform that allows all movements

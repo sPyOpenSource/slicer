@@ -40,7 +40,6 @@ public class BooleanGrid
 	 * @author ensab
 	 *
 	 */
-
 	class iPoint
 	{
 		private int x, y;
@@ -470,7 +469,7 @@ public class BooleanGrid
 			{
 				r.add(point(v));
 				v = findAngleStart(v);
-			}while(v < size() - 1);
+			} while(v < size() - 1);
 			r.add(point(v));
 			return r;
 		}
@@ -606,9 +605,15 @@ public class BooleanGrid
 	 */
 	class DDA
 	{
-		private iPoint delta, count, p;
-		private int steps, taken;
-		private boolean xPlus, yPlus, finished;
+
+            private final iPoint delta;
+            private iPoint count;
+            private final iPoint p;
+            private final int steps;
+            private int taken;
+            private final boolean xPlus;
+            private final boolean yPlus;
+            private boolean finished;
 		
 		/**
 		 * Set up the DDA between a start and an end point
@@ -801,8 +806,6 @@ public class BooleanGrid
 	
 	private Boolean isThin = false;
 	
-
-	
 	//**************************************************************************************************
 	// Debugging and timing
 	
@@ -821,6 +824,7 @@ public class BooleanGrid
 			str += " ";
 		Debug.a("{ " + str + s);
 	}
+        
 	private void pop()
 	{
 		if(!debug)
@@ -840,8 +844,8 @@ public class BooleanGrid
 	 * @param i
 	 * @return
 	 */
-	static double scale(int i) { return i*pixSize; }
-	static int iScale(double d) { return (int)Math.round(d/pixSize); }
+	static double scale(int i) { return i * pixSize; }
+	static int iScale(double d) { return (int)Math.round(d / pixSize); }
 	
     /**
      * Build the grid from a CSG expression
@@ -857,7 +861,7 @@ public class BooleanGrid
 		rec = new iRectangle(new iPoint(0, 0), new iPoint(1, 1));  // Set the origin to (0, 0)...
 		rec.swCorner = new iPoint(ri.sw());                        // That then gets subtracted by the iPoint constructor to give the true origin
 		rec.size = new iPoint(ri.ne());                            // The true origin is now automatically subtracted.
-		bits = new BitSet(rec.size.x*rec.size.y);
+		bits = new BitSet(rec.size.x * rec.size.y);
 		visited = null;
 		push("Build quad tree... ");
 		//Debug.e("Quad start.");
@@ -878,7 +882,7 @@ public class BooleanGrid
 		att = bg.att;
 		visited = null;
 		isThin = bg.isThin;
-		rec= new iRectangle(bg.rec);
+		rec = new iRectangle(bg.rec);
 		bits = (BitSet)bg.bits.clone();
 	}
 	
@@ -893,8 +897,8 @@ public class BooleanGrid
 		att = bg.att;
 		visited = null;
 		isThin = bg.isThin;
-		rec= new iRectangle(newRec);
-		bits = new BitSet(rec.size.x*rec.size.y);
+		rec = new iRectangle(newRec);
+		bits = new BitSet(rec.size.x * rec.size.y);
 		iRectangle recScan = rec.intersection(bg.rec);
 		int offxOut = recScan.swCorner.x - rec.swCorner.x;
 		int offyOut = recScan.swCorner.y - rec.swCorner.y;
@@ -944,7 +948,7 @@ public class BooleanGrid
 	 */
 	private int pixI(int x, int y)
 	{
-		return x*rec.size.y + y;
+		return x * rec.size.y + y;
 	}
 	
 	/**
@@ -964,7 +968,7 @@ public class BooleanGrid
 	 */
 	private iPoint pixel(int i)
 	{
-		return new iPoint(i/rec.size.y, i%rec.size.y);
+		return new iPoint(i / rec.size.y, i % rec.size.y);
 	}
 	
 	/**
@@ -1309,7 +1313,7 @@ public class BooleanGrid
 	 */
 	private void generateQuadTree(iPoint ipsw, iPoint ipne, CSG2D csgExpression)
 	{
-		Point2D inc = new Point2D(pixSize*0.5, pixSize*0.5);
+		Point2D inc = new Point2D(pixSize * 0.5, pixSize * 0.5);
 		Point2D p0 = ipsw.realPoint();
 		
 		// Single pixel?
@@ -1404,10 +1408,8 @@ public class BooleanGrid
 		
 		sw = new iPoint(xm+1, y0);
 		ne = new iPoint(x1, ym);
-		generateQuadTree(sw, ne, csgExpression.prune(new Rectangle(Point2D.sub(sw.realPoint(), inc), Point2D.add(ne.realPoint(), inc))));		
-
+		generateQuadTree(sw, ne, csgExpression.prune(new Rectangle(Point2D.sub(sw.realPoint(), inc), Point2D.add(ne.realPoint(), inc))));
 	}
-
 	
 	//*************************************************************************************
 	
@@ -1420,7 +1422,6 @@ public class BooleanGrid
 		if(visited != null)
 			visited.clear();
 	}
-	
 	
 	/**
 	 * Is a pixel on an edge?
@@ -2395,7 +2396,7 @@ public class BooleanGrid
 		do
 		{
 			thisPolygon.remove(thisPt);
-			if(thisPt%2 != 0)
+			if(thisPt % 2 != 0)
 				thisPt--;
 			pt = thisPolygon.point(thisPt);
 			result.add(pt);
@@ -2718,7 +2719,6 @@ public class BooleanGrid
 	
 	// Boolean operators on the bitmap
 	
-	
 	/**
 	 * Complement a grid
 	 * N.B. the grid doesn't get bigger, even though the expression
@@ -2728,12 +2728,11 @@ public class BooleanGrid
 	public BooleanGrid complement()
 	{
 		BooleanGrid result = new BooleanGrid(this);
-		result.bits.flip(0, result.rec.size.x*result.rec.size.y - 1);
+		result.bits.flip(0, result.rec.size.x * result.rec.size.y - 1);
 		//result.deWhisker();
 		return result;
 	}
 	
-
 	/**
 	 * Compute the union of two bit patterns, forcing attribute a on the result.
 	 * @param d

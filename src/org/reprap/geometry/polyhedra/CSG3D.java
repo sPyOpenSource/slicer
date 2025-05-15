@@ -51,7 +51,6 @@
 package org.reprap.geometry.polyhedra;
 
 import java.util.ArrayList;
-
 import org.jogamp.vecmath.Matrix4d;
 
 import org.reprap.comms.CSGOp;

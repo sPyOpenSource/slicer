@@ -280,5 +280,3 @@ public class Point3D
 		return dSquared(a, b) < tol_2;
 	}
 }
-
-

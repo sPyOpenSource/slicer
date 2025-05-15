@@ -29,10 +29,15 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
 
 import org.jogamp.vecmath.Vector3f;
+import org.reprap.Attributes;
+import org.reprap.geometry.polyhedra.AllSTLsToBuild;
+import org.reprap.geometry.polyhedra.AllSTLsToBuild.LineSegment;
 
 /**
  * Title:         STL Loader
@@ -64,7 +69,7 @@ public class StlFile
 {
     private static double zTrans = -3500;
     private static final int camSpeed = 100;
-  private static final boolean DEBUG = false;     // Sets mode to Debug: outputs every action done
+    private static final boolean DEBUG = false;     // Sets mode to Debug: outputs every action done
 
   // Maximum length (in chars) of basePath
   private static final int MAX_PATH_LENGTH = 1024;
@@ -495,9 +500,9 @@ public class StlFile
         normArray = new Vector3f[Number_faces];
         stripCounts = new int[Number_faces];
 
-        for(int i=0;i<Number_faces;i++)
+        for(int i = 0; i < Number_faces; i++)
         {
-          stripCounts[i]=3;
+          stripCounts[i] = 3;
           try
           {
             readFacetB(dataBuffer,i);
@@ -723,6 +728,7 @@ public class StlFile
    */
   private Scene makeScene()
   {
+        AllSTLsToBuild test = new AllSTLsToBuild();
         // Create Scene to pass back
         Group group = new Group();
         float[] points = {
@@ -739,19 +745,39 @@ public class StlFile
             ball.translateYProperty().set(p.getY());
             ball.translateZProperty().set(p.getZ());
             group.getChildren().add(ball);*/
-            points[i * 3] = (float)p.getX();
+            points[i * 3]     = (float)p.getX();
             points[i * 3 + 1] = (float)p.getY();
             points[i * 3 + 2] = (float)p.getZ();
             i++;
             if(i == 3){
+                LineSegment line = test.addEdge(
+                        new Point3D(points[0], points[1], points[2]), 
+                        new Point3D(points[3], points[4], points[5]),
+                        new Point3D(points[6], points[7], points[8]),
+                        14, new Attributes(null,null,null,null));
                 i = 0;
+                if(line != null){
+                  //  System.out.println(line.a);
                 TriangleMesh mesh = new TriangleMesh();
                 mesh.getPoints().addAll(points);
                 mesh.getTexCoords().addAll(texCoords);
                 mesh.getFaces().addAll(faces);
                 MeshView meshView = new MeshView();
                 meshView.setMesh(mesh);
-                group.getChildren().add(meshView);
+                //group.getChildren().add(meshView);
+                    Sphere ball1 = new Sphere(2);
+                    ball1.translateXProperty().set(line.a.x());
+                    ball1.translateYProperty().set(line.a.y());
+                    ball1.translateZProperty().set(0);
+                    //group.getChildren().add(ball1);
+                    Sphere ball2 = new Sphere(2);
+                    ball2.translateXProperty().set(line.b.x());
+                    ball2.translateYProperty().set(line.b.y());
+                    ball2.translateZProperty().set(0);
+                    //group.getChildren().add(ball2);
+                    Line lines = new Line(line.a.x(), line.a.y(), line.b.x(), line.b.y()); //instantiating Line class   
+                    group.getChildren().add(lines);
+                }
             }
         }
         

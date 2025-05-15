@@ -16,6 +16,7 @@ import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Transform;
+import javafx.util.Pair;
 
 import org.reprap.geometry.LayerRules;
 import org.reprap.geometry.polygons.BooleanGrid;
@@ -121,7 +122,7 @@ public class AllSTLsToBuild
 	 * @author Adrian
 	 *
 	 */
-	class LineSegment
+	public class LineSegment
 	{	
 		/**
 		 * The ends of the line segment
@@ -288,7 +289,7 @@ public class AllSTLsToBuild
 	 * Recently computed slices
 	 */
 	private SliceCache cache;
-	
+	private boolean finished = false;
 	/**
 	 * Simple constructor
 	 *
@@ -566,6 +567,17 @@ public class AllSTLsToBuild
 		if(cache == null)
 			cache = new SliceCache(layerRules);
 		setBoxes();
+                List<Pair<Integer, Integer>> pairs = new ArrayList<>();
+                if(!finished){
+                    while(layerRules.getModelLayer() > 0){
+                        for(int i = 0; i < size(); i++){
+                            pairs.add(new Pair(i, layerRules.getModelLayer()));
+                        }
+                        layerRules.step();
+                    }
+                    pairs.parallelStream().forEach(e -> slice(e.getKey(), e.getValue()));
+                    finished = true;
+                }
 	}
 	
     /**
@@ -1157,15 +1169,15 @@ public class AllSTLsToBuild
 		// How many do we need to consider?
 		
 				
-		BooleanGridList above = slice(stl, layer+1);
+		BooleanGridList above = slice(stl, layer + 1);
 		for(int i = 2; i <= surfaceLayers; i++)
-			above = BooleanGridList.intersections(slice(stl, layer+i), above);
+			above = BooleanGridList.intersections(slice(stl, layer + i), above);
 		
 		// ...nor does the intersection of those below.
 		
-		BooleanGridList below = slice(stl, layer-1);
+		BooleanGridList below = slice(stl, layer - 1);
 		for(int i = 2; i <= surfaceLayers; i++)
-			below = BooleanGridList.intersections(slice(stl, layer-i), below);
+			below = BooleanGridList.intersections(slice(stl, layer - i), below);
 	
 		// The bit of the slice with nothing above it needs fine infill...
 		
@@ -1395,12 +1407,10 @@ public class AllSTLsToBuild
 		// Haven't got it in the cache, so we need to compute it
 		
 		// Anything there?
-		
 		if(rectangles.get(stlIndex) == null)
 			return new BooleanGridList();
 		
 		// Probably...
-		
 		double z = layerRules.getModelZ(layer) + layerRules.getZStep() * 0.5;
 		Extruder[] extruders = layerRules.getPrinter().getExtruders();
 		result = new BooleanGridList();
@@ -1409,7 +1419,6 @@ public class AllSTLsToBuild
 		int extruderID;
 		
 		// Bin the edges and CSGs (if any) by extruder ID.
-		
 		ArrayList<LineSegment>[] edges = new ArrayList[extruders.length];
 		ArrayList<CSG3D>[] csgs = new ArrayList[extruders.length];
 		Attributes[] atts = new Attributes[extruders.length];
@@ -1421,7 +1430,6 @@ public class AllSTLsToBuild
 		}
 		
 		// Generate all the edges for STLObject i at this z
-		
 		STLObject stlObject = stls.get(stlIndex);
 		List<Transform> trans = stlObject.getTransforms();
 		Matrix4d m4 = new Matrix4d();
@@ -1446,11 +1454,9 @@ public class AllSTLsToBuild
 
 			// Turn them into lists of polygons, one for each extruder, then
 			// turn those into pixelmaps.
-
 			for(extruderID = 0; extruderID < edges.length; extruderID++)
 			{
 				// Deal with CSG shapes (much simpler and faster).
-
 				for(int j = 0; j < csgs[extruderID].size(); j++)
 				{
 					csgp = CSG2D.slice(csgs[extruderID].get(j), z);
@@ -1458,7 +1464,6 @@ public class AllSTLsToBuild
 				}
 
 				// Deal with STL-generated edges
-
 				if(!edges[extruderID].isEmpty())
 				{
 					pgl = simpleCull(edges[extruderID]);
@@ -1466,11 +1471,9 @@ public class AllSTLsToBuild
 					if(!pgl.isEmpty())
 					{
 						// Remove wrinkles
-
-						pgl = pgl.simplify(Preferences.gridRes()*1.5);
+						pgl = pgl.simplify(Preferences.gridRes() * 1.5);
 
 						// Fix small radii
-
 						pgl = pgl.arcCompensate();
 
 						csgp = pgl.toCSG(Preferences.tiny());
@@ -1488,7 +1491,6 @@ public class AllSTLsToBuild
 		result = result.unionDuplicates();
 		
 		// We may need this later...
-		
 		cache.setSlice(result, layer, stlIndex);
 		
 		return result;
@@ -1497,16 +1499,17 @@ public class AllSTLsToBuild
 	
 	public void destroyLayer() {}
 	
-	/**
-	 * Add the edge where the plane z cuts the triangle (p, q, r) (if it does).
-	 * Also update the triangulation of the object below the current slice used
-	 * for the simulation window.
-	 * @param p
-	 * @param q
-	 * @param r
-	 * @param z
-	 */
-	private void addEdge(javafx.geometry.Point3D p, javafx.geometry.Point3D q, javafx.geometry.Point3D r, double z, Attributes att, ArrayList<LineSegment> edges[])
+    /**
+     * Add the edge where the plane z cuts the triangle (p, q, r) (if it does).Also update the triangulation of the object below the current slice used
+     * for the simulation window.
+     * @param p
+     * @param q
+     * @param r
+     * @param z
+     * @param att
+     * @return
+     */
+	public LineSegment addEdge(javafx.geometry.Point3D p, javafx.geometry.Point3D q, javafx.geometry.Point3D r, double z, Attributes att)
 	{
 		javafx.geometry.Point3D odd = null, even1 = null, even2 = null;
 		int pat = 0;
@@ -1521,12 +1524,10 @@ public class AllSTLsToBuild
 		switch(pat)
 		{
 		// All above
-		case 0:
-			return;
-			
+		case 0:			
 		// All below
 		case 7:
-			return;
+			return null;
 			
 		// q, r below, p above	
 		case 6:
@@ -1563,19 +1564,19 @@ public class AllSTLsToBuild
 		}
 		
 		// Work out the intersection line segment (e1 -> e2) between the z plane and the triangle
-		
-		even1.subtract(odd);
-		even2.subtract(odd);
+		even1 = even1.subtract(odd);
+		even2 = even2.subtract(odd);
 		double t = (z - odd.getZ()) / even1.getZ();	
 		Point2D e1 = new Point2D(odd.getX() + t * even1.getX(), odd.getY() + t * even1.getY());	
-		e1 = new Point2D(e1.x(), e1.y());
+		//e1 = new Point2D(Math.abs(e1.x()), Math.abs(e1.y()));
 		t = (z - odd.getZ()) / even2.getZ();
 		Point2D e2 = new Point2D(odd.getX() + t * even2.getX(), odd.getY() + t * even2.getY());
-		e2 = new Point2D(e2.x(), e2.y());
+		//e2 = new Point2D(Math.abs(e2.x()), Math.abs(e2.y()));
 		
 		// Too short?
 		//if(!Point2D.same(e1, e2, Preferences.lessGridSquare()))
-			edges[att.getExtruder().getID()].add(new LineSegment(e1, e2, att));
+			//edges[att.getExtruder().getID()].add(new LineSegment(e1, e2, att));
+                        return new LineSegment(e1, e2, att);
 	}
 	
     /**

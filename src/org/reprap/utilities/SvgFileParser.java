@@ -5,10 +5,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.geometry.Point3D;
+import javafx.scene.Camera;
 
 import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Sphere;
@@ -28,6 +33,9 @@ import org.w3c.dom.NodeList;
  * @author Xuyi
  */
 public class SvgFileParser {
+    private static double zTrans = -3500;
+    private static final int camSpeed = 100;
+    
     public Scene buildScene(String filename){
         try {
             File inputFile = new File(filename);
@@ -39,7 +47,7 @@ public class SvgFileParser {
             Group group = new Group();
         
             for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node nNode = nList.item(temp);
+                Node nNode = nList.item(temp);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
                     double x1 = Double.parseDouble(eElement.getAttribute("x1")) / 1000;
@@ -62,6 +70,59 @@ public class SvgFileParser {
             }
             Scene scene = new Scene(group, 800, 600, true, SceneAntialiasing.BALANCED);
             scene.setFill(Color.GREEN);
+            Camera camera = new PerspectiveCamera(true);
+            camera.setFarClip(Integer.MAX_VALUE);
+            camera.setNearClip(0.1);
+            scene.setCamera(camera);
+            scene.setOnScroll((ScrollEvent event) -> {
+                zTrans += event.getDeltaY() * (zTrans / -50);
+            });
+            scene.setOnKeyPressed((KeyEvent event) -> {
+                switch (event.getCode()) {
+                    case RIGHT:
+                        scene.getCamera().setTranslateX(camera.getTranslateX() + camSpeed);
+                        break;
+                    case LEFT:
+                        scene.getCamera().setTranslateX(camera.getTranslateX() - camSpeed);
+                        break;
+                    case UP:
+                        scene.getCamera().setTranslateY(camera.getTranslateY() - camSpeed);
+                        break;
+                    case DOWN:
+                        scene.getCamera().setTranslateY(camera.getTranslateY() + camSpeed);
+                        break;
+                    case W:
+                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case S:
+                        scene.getCamera().setRotationAxis(new Point3D(1, 0, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                    case Q:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case E:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 0, 1));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                    case D:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() + 2);
+                        break;
+                    case A:
+                        scene.getCamera().setRotationAxis(new Point3D(0, 1, 0));
+                        scene.getCamera().setRotate(scene.getCamera().getRotate() - 2);
+                        break;
+                }
+            });
+            new javafx.animation.AnimationTimer() {
+                @Override
+                public void handle(long now) {
+                    scene.getCamera().setTranslateZ(zTrans);
+                }
+            }.start();
             return scene;
         } catch (IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(SvgFileParser.class.getName()).log(Level.SEVERE, null, ex);

@@ -13,13 +13,10 @@ import javafx.stage.Stage;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
-import javafx.geometry.Point3D;
 
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.ScrollEvent;
 
 import org.reprap.comms.GCode;
 import org.reprap.utilities.StlFile;
