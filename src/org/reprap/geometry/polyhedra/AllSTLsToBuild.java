@@ -49,7 +49,6 @@ import org.jogamp.vecmath.Vector3d;
  *
  */
 
-
 public class AllSTLsToBuild 
 {	
 	/**
@@ -114,7 +113,6 @@ public class AllSTLsToBuild
 			Zint.expand(b.Zint);
 			XYbox.expand(b.XYbox);
 		}
-		
 	}
 	
 	/**
@@ -138,6 +136,7 @@ public class AllSTLsToBuild
 		 * Constructor takes two intersection points with an STL triangle edge.
 		 * @param p
 		 * @param q
+                 * @param at
 		 */
 		public LineSegment(Point2D p, Point2D q, Attributes at)
 		{
@@ -608,43 +607,38 @@ public class AllSTLsToBuild
         return b;
     }
 	
-	/**
-	 * Unpack the Shape3D(s) from value and find their enclosing XYZ box
-	 * @param value
-	 * @param trans
-	 * @param z
-	 */
-	private BoundingBox BBox(Object sg, List<Transform> trans) 
+    /**
+     * Unpack the Shape3D(s) from value and find their enclosing XYZ box
+     * @param value
+     * @param trans
+     * @param z
+     */
+    private BoundingBox BBox(Object sg, List<Transform> trans) 
     {
-		BoundingBox b = null;
-		BoundingBox s;
-		
-        //if(value instanceof SceneGraphObject) 
-        //{
-            //SceneGraphObject sg = (SceneGraphObject)value;
-            if(sg instanceof Group g) 
+        BoundingBox b = null;
+        BoundingBox s;
+
+        if(sg instanceof Group g) 
+        {
+            ObservableList<Node> enumKids = g.getChildren( );
+            for(Node ob:enumKids)
             {
-                ObservableList<Node> enumKids = g.getChildren( );
-                for(Node ob:enumKids)
-                {
-                	if(b == null)
-                		b = BBox(ob, trans);
-                	else
-                	{
-                		s = BBox(ob, trans);
-                		if(s != null)
-                			b.expand(s);
-                	}
-                }
-            } else if (sg instanceof Shape3D shape3D) 
-            {
-                b = BBoxPoints(shape3D, trans);
+                    if(b == null)
+                            b = BBox(ob, trans);
+                    else
+                    {
+                            s = BBox(ob, trans);
+                            if(s != null)
+                                    b.expand(s);
+                    }
             }
-        //}
+        } else if (sg instanceof Shape3D shape3D) 
+        {
+            b = BBoxPoints(shape3D, trans);
+        }
         
         return b;
     }
-	
 	
 	/**
 	 * Return the XY box round everything
@@ -667,7 +661,6 @@ public class AllSTLsToBuild
 			Debug.e("AllSTLsToBuild.maxZ(): null XYZbox!");
 		return XYZbox.Zint.high();
 	}
-	
 	
 	/**
 	 * Make sure the list starts with and edge longer than 1.5mm (or the longest if not)
@@ -1568,10 +1561,8 @@ public class AllSTLsToBuild
 		even2 = even2.subtract(odd);
 		double t = (z - odd.getZ()) / even1.getZ();	
 		Point2D e1 = new Point2D(odd.getX() + t * even1.getX(), odd.getY() + t * even1.getY());	
-		//e1 = new Point2D(Math.abs(e1.x()), Math.abs(e1.y()));
 		t = (z - odd.getZ()) / even2.getZ();
 		Point2D e2 = new Point2D(odd.getX() + t * even2.getX(), odd.getY() + t * even2.getY());
-		//e2 = new Point2D(Math.abs(e2.x()), Math.abs(e2.y()));
 		
 		// Too short?
 		//if(!Point2D.same(e1, e2, Preferences.lessGridSquare()))
