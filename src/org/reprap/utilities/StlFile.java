@@ -71,34 +71,34 @@ public class StlFile
     private static final int camSpeed = 100;
     private static final boolean DEBUG = false;     // Sets mode to Debug: outputs every action done
 
-  // Maximum length (in chars) of basePath
-  private static final int MAX_PATH_LENGTH = 1024;
+    // Maximum length (in chars) of basePath
+    private static final int MAX_PATH_LENGTH = 1024;
 
-  // Global variables
-  private int flag;                   // Needed cause implements Loader
+    // Global variables
+    private int flag;                   // Needed cause implements Loader
 
-  private URL baseUrl = null;         // Reading files over Internet
-  private String basePath = null;     // For local files
+    private URL baseUrl = null;         // Reading files over Internet
+    private String basePath = null;     // For local files
 
-  private boolean fromUrl = false;    // Usefull for binary files
-  private boolean Ascii = true;       // File type Ascii -> true o binary -> false
-  private String fileName = null;
+    private boolean fromUrl = false;    // Usefull for binary files
+    private boolean Ascii = true;       // File type Ascii -> true o binary -> false
+    private String fileName = null;
 
-  // Arrays with coordinates and normals
-  // Needed for reading ASCII files because its size is unknown until the end
-  private final ArrayList coordList = new ArrayList();		// Holds Point3f
-  private final ArrayList normList = new ArrayList();		// Holds Vector3f
+    // Arrays with coordinates and normals
+    // Needed for reading ASCII files because its size is unknown until the end
+    private final ArrayList coordList = new ArrayList();		// Holds Point3f
+    private final ArrayList normList  = new ArrayList();		// Holds Vector3f
 
-  // GeometryInfo needs Arrays
-  private final List<Point3D> coordArray = new ArrayList<>();
-  private Vector3f[] normArray = null;
+    // GeometryInfo needs Arrays
+    private final List<Point3D> coordArray = new ArrayList<>();
+    private Vector3f[] normArray = null;
 
-  // Needed because TRIANGLE_STRIP_ARRAY
-  // As the number of strips = the number of faces it's filled in objectToVectorArray
-  private int[] stripCounts = null;
+    // Needed because TRIANGLE_STRIP_ARRAY
+    // As the number of strips = the number of faces it's filled in objectToVectorArray
+    private int[] stripCounts = null;
 
-  // Default = Not available
-  private String objectName = "Not available";
+    // Default = Not available
+    private String objectName = "Not available";
 
   public static void main(String[] args)
   {
@@ -608,7 +608,7 @@ public class StlFile
   public Scene load(String filename) throws FileNotFoundException
   {
     setBasePathFromFilename(filename);
-    setFileName(filename);     // For binary files
+    setFileName(filename); // For binary files
 
     Reader reader = new BufferedReader(new FileReader(filename));
     return load(reader);
@@ -666,7 +666,7 @@ public class StlFile
     // Initialize data
     //coordList = new ArrayList();
     //normList = new ArrayList();
-    setAscii(true);      // Default ascii
+    setAscii(true); // Default ascii
 
     readFile(st);
     return makeScene();
@@ -757,14 +757,13 @@ public class StlFile
                         14, new Attributes(null,null,null,null));
                 i = 0;
                 if(line != null){
-                  //  System.out.println(line.a);
-                TriangleMesh mesh = new TriangleMesh();
-                mesh.getPoints().addAll(points);
-                mesh.getTexCoords().addAll(texCoords);
-                mesh.getFaces().addAll(faces);
-                MeshView meshView = new MeshView();
-                meshView.setMesh(mesh);
-                //group.getChildren().add(meshView);
+                    TriangleMesh mesh = new TriangleMesh();
+                    mesh.getPoints().addAll(points);
+                    mesh.getTexCoords().addAll(texCoords);
+                    mesh.getFaces().addAll(faces);
+                    MeshView meshView = new MeshView();
+                    meshView.setMesh(mesh);
+                    //group.getChildren().add(meshView);
                     Sphere ball1 = new Sphere(2);
                     ball1.translateXProperty().set(line.a.x());
                     ball1.translateYProperty().set(line.a.y());
@@ -955,7 +954,7 @@ public class StlFile
 
   public void setFlags(int parm)
   {
-    this.flag=parm;
+    this.flag = parm;
   }
 
   public boolean getAscii()
@@ -975,7 +974,7 @@ public class StlFile
 
   public void setFileName(String filename)
   {
-    this.fileName=filename;
+    this.fileName = filename;
   }
 
   public String getObjectName()

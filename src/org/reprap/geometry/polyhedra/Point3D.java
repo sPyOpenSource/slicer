@@ -83,7 +83,7 @@ public class Point3D
 	 * Usual constructor
 	 * @param a
 	 * @param b
-     * @param c
+         * @param c
 	 */
 	public Point3D(double a, double b, double c)
 	{

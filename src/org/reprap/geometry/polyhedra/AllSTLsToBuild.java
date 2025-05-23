@@ -54,7 +54,6 @@ public class AllSTLsToBuild
 	/**
 	 * Class to hold infill patterns
 	 * @author ensab
-	 *
 	 */
 	class InFillPatterns
 	{
@@ -83,7 +82,6 @@ public class AllSTLsToBuild
 	/**
 	 * 3D bounding box
 	 * @author ensab
-	 *
 	 */
 	class BoundingBox
 	{
@@ -118,7 +116,6 @@ public class AllSTLsToBuild
 	/**
 	 * Line segment consisting of two points.
 	 * @author Adrian
-	 *
 	 */
 	public class LineSegment
 	{	
@@ -152,7 +149,6 @@ public class AllSTLsToBuild
 	 * Ring buffer cache to hold previously computed slices for doing 
 	 * infill and support material calculations.
 	 * @author ensab
-	 *
 	 */
 	class SliceCache
 	{

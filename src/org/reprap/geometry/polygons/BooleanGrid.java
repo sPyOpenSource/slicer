@@ -38,7 +38,6 @@ public class BooleanGrid
 	/**
 	 * Integer 2D point
 	 * @author ensab
-	 *
 	 */
 	class iPoint
 	{
@@ -160,7 +159,6 @@ public class BooleanGrid
 	 * Small class to hold rectangles represented by the sw point and
 	 * the size.
 	 * @author ensab
-	 *
 	 */
 	class iRectangle
 	{
@@ -284,7 +282,6 @@ public class BooleanGrid
 	/**
 	 * Integer-point polygon
 	 * @author ensab
-	 *
 	 */
 	class iPolygon
 	{
@@ -491,7 +488,6 @@ public class BooleanGrid
 	/**
 	 * A list of polygons
 	 * @author ensab
-	 *
 	 */
 	class iPolygonList
 	{
@@ -601,7 +597,6 @@ public class BooleanGrid
 	/**
 	 * Straight-line DDA
 	 * @author ensab
-	 *
 	 */
 	class DDA
 	{
@@ -683,7 +678,6 @@ public class BooleanGrid
 	 * Little class to hold the ends of hatching patterns. Snakes are a combination of the hatching
 	 * lines that infill a shape plus the bits of boundary that join their ends to make a zig-zag pattern.
 	 * @author ensab
-	 *
 	 */
 	class SnakeEnd
 	{
