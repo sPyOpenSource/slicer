@@ -750,12 +750,19 @@ public class StlFile
             points[i * 3 + 2] = (float)p.getZ();
             i++;
             if(i == 3){
+                double z_min = Math.min(points[2], points[5]);
+                z_min = Math.min(z_min, points[8]);
+                double z_max = Math.max(points[2], points[5]);
+                z_max = Math.max(z_max, points[8]);
+                i = 0;
+                double step = 4;
+                for(int j = (int)(z_min/step); j < (int)(z_max/step); j++){
+                double z = j * step;
                 LineSegment line = test.addEdge(
                         new Point3D(points[0], points[1], points[2]), 
                         new Point3D(points[3], points[4], points[5]),
                         new Point3D(points[6], points[7], points[8]),
-                        14, new Attributes(null,null,null,null));
-                i = 0;
+                        z, new Attributes(null,null,null,null));
                 if(line != null){
                     TriangleMesh mesh = new TriangleMesh();
                     mesh.getPoints().addAll(points);
@@ -764,19 +771,20 @@ public class StlFile
                     MeshView meshView = new MeshView();
                     meshView.setMesh(mesh);
                     //group.getChildren().add(meshView);
-                    Sphere ball1 = new Sphere(2);
-                    ball1.translateXProperty().set(line.a.x());
-                    ball1.translateYProperty().set(line.a.y());
-                    ball1.translateZProperty().set(0);
-                    //group.getChildren().add(ball1);
-                    Sphere ball2 = new Sphere(2);
-                    ball2.translateXProperty().set(line.b.x());
-                    ball2.translateYProperty().set(line.b.y());
-                    ball2.translateZProperty().set(0);
-                    //group.getChildren().add(ball2);
-                    Line lines = new Line(line.a.x(), line.a.y(), line.b.x(), line.b.y()); //instantiating Line class   
-                    group.getChildren().add(lines);
-                }
+                    Sphere ball1 = new Sphere(0.5);
+                    ball1.setTranslateX(line.a.x());
+                    ball1.setTranslateY(line.a.y());
+                    ball1.setTranslateZ(z);
+                    group.getChildren().add(ball1);
+                    Sphere ball2 = new Sphere(0.5);
+                    ball2.setTranslateX(line.b.x());
+                    ball2.setTranslateY(line.b.y());
+                    ball2.setTranslateZ(z);
+                    group.getChildren().add(ball2);
+                    Line lines = new Line(line.a.x(), line.a.y(), line.b.x(), line.b.y()); //instantiating Line class
+                    lines.translateZProperty().set(z);
+                    //group.getChildren().add(lines);
+                }}
             }
         }
         
