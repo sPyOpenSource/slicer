@@ -1561,7 +1561,7 @@ public class AllSTLsToBuild
 		Point2D e2 = new Point2D(odd.getX() + t * even2.getX(), odd.getY() + t * even2.getY());
 		
 		// Too short?
-		//if(!Point2D.same(e1, e2, Preferences.lessGridSquare()))
+		if(Point2D.same(e1, e2, Preferences.lessGridSquare())) return null;
 			//edges[att.getExtruder().getID()].add(new LineSegment(e1, e2, att));
                         return new LineSegment(e1, e2, att);
 	}
