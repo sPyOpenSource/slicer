@@ -755,7 +755,7 @@ public class StlFile
                 double z_max = Math.max(points[2], points[5]);
                 z_max = Math.max(z_max, points[8]);
                 i = 0;
-                double step = 1;
+                double step = 6;
                 double r = 0.4;
                 for(int j = (int)(z_min/step); j <= (int)(z_max/step); j++){
                     double z = j * step;
@@ -776,15 +776,16 @@ public class StlFile
                         ball1.setTranslateX(line.a.x());
                         ball1.setTranslateY(line.a.y());
                         ball1.setTranslateZ(z);
-                        group.getChildren().add(ball1);
+                        //group.getChildren().add(ball1);
                         Sphere ball2 = new Sphere(r);
                         ball2.setTranslateX(line.b.x());
                         ball2.setTranslateY(line.b.y());
                         ball2.setTranslateZ(z);
                         //group.getChildren().add(ball2);
                         Line lines = new Line(line.a.x(), line.a.y(), line.b.x(), line.b.y()); //instantiating Line class
-                        lines.translateZProperty().set(z);
-                        //group.getChildren().add(lines);
+                        lines.setTranslateZ(z);
+                        lines.setStrokeWidth(r);
+                        group.getChildren().add(lines);
                     }
                 }
             }
