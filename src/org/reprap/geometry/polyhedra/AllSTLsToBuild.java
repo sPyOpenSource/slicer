@@ -150,7 +150,7 @@ public class AllSTLsToBuild
 	 * infill and support material calculations.
 	 * @author ensab
 	 */
-	class SliceCache
+	public class SliceCache
 	{
 		private final BooleanGridList[][] sliceRing;
 		private final BooleanGridList[][] supportRing;
@@ -278,7 +278,7 @@ public class AllSTLsToBuild
 	/**
 	 * Is the list editable?
 	 */
-	private boolean frozen;
+	public boolean frozen;
 	
 	/**
 	 * Recently computed slices
@@ -551,7 +551,7 @@ public class AllSTLsToBuild
 	 * Also compute the XY box round everything.
 	 * Also compute the individual plan boxes round each STLObject.
 	 */
-	private void freeze()
+	public void freeze()
 	{
 		if(frozen)
 			return;
@@ -766,7 +766,7 @@ public class AllSTLsToBuild
 				return result;
 		}
 		
-		Debug.d("AllSTLsToBuild.getNextPolygon(): exhausted edge list!");
+		//Debug.d("AllSTLsToBuild.getNextPolygon(): exhausted edge list!");
 		
 		return result;
 	}
@@ -800,7 +800,7 @@ public class AllSTLsToBuild
 	 * @param edges
 	 * @return
 	 */
-	private PolygonList simpleCull(ArrayList<LineSegment> edges)
+	public PolygonList simpleCull(ArrayList<LineSegment> edges)
 	{
 		if(!frozen)
 		{

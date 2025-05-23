@@ -18,7 +18,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Camera;
@@ -36,6 +38,10 @@ import javafx.scene.shape.TriangleMesh;
 
 import org.jogamp.vecmath.Vector3f;
 import org.reprap.Attributes;
+import org.reprap.Preferences;
+import org.reprap.geometry.polygons.BooleanGrid;
+import org.reprap.geometry.polygons.CSG2D;
+import org.reprap.geometry.polygons.PolygonList;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild.LineSegment;
 
@@ -99,7 +105,9 @@ public class StlFile
 
     // Default = Not available
     private String objectName = "Not available";
-
+    
+    Map<Integer, ArrayList<LineSegment>> edges = new HashMap<>();
+        
   public static void main(String[] args)
   {
         StlFile file = new StlFile();
@@ -729,6 +737,7 @@ public class StlFile
   private Scene makeScene()
   {
         AllSTLsToBuild test = new AllSTLsToBuild();
+        test.frozen = true;
         // Create Scene to pass back
         Group group = new Group();
         float[] points = {
@@ -755,9 +764,10 @@ public class StlFile
                 double z_max = Math.max(points[2], points[5]);
                 z_max = Math.max(z_max, points[8]);
                 i = 0;
-                double step = 6;
+                double step = 0.1;
                 double r = 0.4;
                 for(int j = (int)(z_min/step); j <= (int)(z_max/step); j++){
+                    //System.out.println(j);
                     double z = j * step;
                     LineSegment line = test.addEdge(
                             new Point3D(points[0], points[1], points[2]), 
@@ -782,14 +792,38 @@ public class StlFile
                         ball2.setTranslateY(line.b.y());
                         ball2.setTranslateZ(z);
                         //group.getChildren().add(ball2);
+                        ArrayList<LineSegment> temp = edges.get(j);
+                        if (temp == null) temp = new ArrayList<>();
+                        temp.add(line);
+                        edges.put(j, temp);
                         Line lines = new Line(line.a.x(), line.a.y(), line.b.x(), line.b.y()); //instantiating Line class
                         lines.setTranslateZ(z);
                         lines.setStrokeWidth(r);
-                        group.getChildren().add(lines);
+                        //group.getChildren().add(lines);
                     }
                 }
             }
         }
+        edges.entrySet().parallelStream().forEach((e) -> {
+            System.out.println(e.getKey());
+            PolygonList pgl = test.simpleCull(e.getValue());
+            if(!pgl.isEmpty())
+            {
+                // Remove wrinkles
+                pgl = pgl.simplify(Preferences.gridRes() * 1.5);
+
+                // Fix small radii
+                //pgl = pgl.arcCompensate();
+
+                CSG2D csgp = pgl.toCSG(Preferences.tiny());
+
+                // We use the plan rectangle of the entire stl object to store the bitmap, even though this slice may be
+                // much smaller than the whole.  This allows booleans on slices to be computed much more
+                // quickly as each is in the same rectangle so the bit patterns match exactly.  But it does use more memory.
+
+                //result.add(new BooleanGrid(csgp, rectangles.get(stlIndex), pgl.get(0).getAttributes()));
+            }
+        });
         
         Scene scene = new Scene(group, 800, 600, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.GREEN);
