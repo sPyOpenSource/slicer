@@ -47,8 +47,8 @@ public class Gfx3D extends Application {
             GCode reader = new GCode("/Users/xuyi/Source/GCode/test.gcode");
             SvgFileParser parser = new SvgFileParser();
             //Scene scene = reader.viewer();
-            Scene scene = file.load("/Users/xuyi/Pictures/3D/edf/files/edf120.stl");
-            //Scene scene = parser.buildScene("/Users/xuyi/Pictures/3D/edf/slice/Edf12051.svg");
+            //Scene scene = file.load("/Users/xuyi/Pictures/3D/edf/files/edf120.stl");
+            Scene scene = parser.buildScene("8.svg");
             scene.setCamera(camera);
             
             primaryStage.setScene(scene);

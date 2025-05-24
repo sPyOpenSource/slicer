@@ -3,6 +3,7 @@ package org.reprap.utilities;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Point3D;
@@ -43,11 +44,12 @@ public class SvgFileParser {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(inputFile);
             doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("line");
             Group group = new Group();
+
+            NodeList nList1 = doc.getElementsByTagName("line");
         
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
+            for (int temp = 0; temp < nList1.getLength(); temp++) {
+                Node nNode = nList1.item(temp);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
                     double x1 = Double.parseDouble(eElement.getAttribute("x1")) / 1000;
@@ -66,6 +68,20 @@ public class SvgFileParser {
                     group.getChildren().add(ball2);
                     Line line = new Line(x1, y1, x2, y2); //instantiating Line class   
                     group.getChildren().add(line);
+                }
+            }
+            
+            NodeList nList2 = doc.getElementsByTagName("polygon");
+            for (int temp = 0; temp < nList2.getLength(); temp++) {
+                Element polygonElement = (Element) nList2.item(temp);
+                String[] points = polygonElement.getAttribute("points").split(" ");
+                for(String point:points){
+                    Sphere ball1 = new Sphere(2);
+                    String[] xy = point.split(",");
+                    ball1.translateXProperty().set(Double.parseDouble(xy[0]));
+                    ball1.translateYProperty().set(Double.parseDouble(xy[1]));
+                    ball1.translateZProperty().set(0);
+                    group.getChildren().add(ball1);
                 }
             }
             Scene scene = new Scene(group, 800, 600, true, SceneAntialiasing.BALANCED);
