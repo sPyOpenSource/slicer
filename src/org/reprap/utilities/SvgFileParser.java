@@ -17,6 +17,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Sphere;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -38,52 +39,69 @@ public class SvgFileParser {
     private static final int camSpeed = 100;
     
     public Scene buildScene(String filename){
+        Group group = new Group();
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = null;
         try {
-            File inputFile = new File(filename);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputFile);
-            doc.getDocumentElement().normalize();
-            Group group = new Group();
+            dBuilder = dbFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(SvgFileParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for(int j = 3; j < 10; j++){
+            try {
+                File inputFile = new File(j + ".svg");
+                
+                Document doc = dBuilder.parse(inputFile);
+                doc.getDocumentElement().normalize();
 
-            NodeList nList1 = doc.getElementsByTagName("line");
-        
-            for (int temp = 0; temp < nList1.getLength(); temp++) {
-                Node nNode = nList1.item(temp);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    double x1 = Double.parseDouble(eElement.getAttribute("x1")) / 1000;
-                    double y1 = Double.parseDouble(eElement.getAttribute("y1")) / 1000;
-                    double x2 = Double.parseDouble(eElement.getAttribute("x2")) / 1000;
-                    double y2 = Double.parseDouble(eElement.getAttribute("y2")) / 1000;
-                    Sphere ball1 = new Sphere(2);
-                    ball1.translateXProperty().set(x1);
-                    ball1.translateYProperty().set(y1);
-                    ball1.translateZProperty().set(0);
-                    group.getChildren().add(ball1);
-                    Sphere ball2 = new Sphere(2);
-                    ball2.translateXProperty().set(x2);
-                    ball2.translateYProperty().set(y2);
-                    ball2.translateZProperty().set(0);
-                    group.getChildren().add(ball2);
-                    Line line = new Line(x1, y1, x2, y2); //instantiating Line class   
-                    group.getChildren().add(line);
+                NodeList nList1 = doc.getElementsByTagName("line");
+
+                for (int temp = 0; temp < nList1.getLength(); temp++) {
+                    Node nNode = nList1.item(temp);
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element eElement = (Element) nNode;
+                        double x1 = Double.parseDouble(eElement.getAttribute("x1")) / 1000;
+                        double y1 = Double.parseDouble(eElement.getAttribute("y1")) / 1000;
+                        double x2 = Double.parseDouble(eElement.getAttribute("x2")) / 1000;
+                        double y2 = Double.parseDouble(eElement.getAttribute("y2")) / 1000;
+                        Sphere ball1 = new Sphere(2);
+                        ball1.translateXProperty().set(x1);
+                        ball1.translateYProperty().set(y1);
+                        ball1.translateZProperty().set(0);
+                        group.getChildren().add(ball1);
+                        Sphere ball2 = new Sphere(2);
+                        ball2.translateXProperty().set(x2);
+                        ball2.translateYProperty().set(y2);
+                        ball2.translateZProperty().set(0);
+                        group.getChildren().add(ball2);
+                        Line line = new Line(x1, y1, x2, y2); //instantiating Line class   
+                        group.getChildren().add(line);
+                    }
                 }
-            }
-            
-            NodeList nList2 = doc.getElementsByTagName("polygon");
-            for (int temp = 0; temp < nList2.getLength(); temp++) {
-                Element polygonElement = (Element) nList2.item(temp);
-                String[] points = polygonElement.getAttribute("points").split(" ");
-                for(String point:points){
-                    Sphere ball1 = new Sphere(2);
-                    String[] xy = point.split(",");
-                    ball1.translateXProperty().set(Double.parseDouble(xy[0]));
-                    ball1.translateYProperty().set(Double.parseDouble(xy[1]));
-                    ball1.translateZProperty().set(0);
-                    group.getChildren().add(ball1);
+
+                NodeList nList2 = doc.getElementsByTagName("polygon");
+                for (int temp = 0; temp < nList2.getLength(); temp++) {
+                    Element polygonElement = (Element) nList2.item(temp);
+                    String[] points = polygonElement.getAttribute("points").split(" ");
+                    double[] p = new double[points.length * 2];
+                    for(int i = 0; i < points.length; i++){
+                        Sphere ball1 = new Sphere(2);
+                        String[] xy = points[i].split(",");
+                        p[i * 2] = Double.parseDouble(xy[0]);
+                        p[i * 2 + 1] = Double.parseDouble(xy[1]);
+                        ball1.translateXProperty().set(Double.parseDouble(xy[0]));
+                        ball1.translateYProperty().set(Double.parseDouble(xy[1]));
+                        ball1.translateZProperty().set(0);
+                        //group.getChildren().add(ball1);
+                    }
+                    Polygon polygon = new Polygon(p);
+                    polygon.setTranslateZ(j);
+                    group.getChildren().add(polygon);
                 }
+            } catch (IOException | SAXException ex) {
+                Logger.getLogger(SvgFileParser.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
             Scene scene = new Scene(group, 800, 600, true, SceneAntialiasing.BALANCED);
             scene.setFill(Color.GREEN);
             Camera camera = new PerspectiveCamera(true);
@@ -140,9 +158,5 @@ public class SvgFileParser {
                 }
             }.start();
             return scene;
-        } catch (IOException | ParserConfigurationException | SAXException ex) {
-            Logger.getLogger(SvgFileParser.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 }
