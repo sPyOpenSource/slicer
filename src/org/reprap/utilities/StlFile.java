@@ -39,7 +39,6 @@ import javafx.scene.shape.TriangleMesh;
 import org.jogamp.vecmath.Vector3f;
 import org.reprap.Attributes;
 import org.reprap.Preferences;
-import org.reprap.geometry.polygons.BooleanGrid;
 import org.reprap.geometry.polygons.CSG2D;
 import org.reprap.geometry.polygons.PolygonList;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
@@ -764,7 +763,7 @@ public class StlFile
                 double z_max = Math.max(points[2], points[5]);
                 z_max = Math.max(z_max, points[8]);
                 i = 0;
-                double step = 0.1;
+                double step = 4;
                 double r = 0.4;
                 for(int j = (int)(z_min/step); j <= (int)(z_max/step); j++){
                     //System.out.println(j);
@@ -799,7 +798,7 @@ public class StlFile
                         Line lines = new Line(line.a.x(), line.a.y(), line.b.x(), line.b.y()); //instantiating Line class
                         lines.setTranslateZ(z);
                         lines.setStrokeWidth(r);
-                        //group.getChildren().add(lines);
+                        group.getChildren().add(lines);
                     }
                 }
             }
@@ -814,7 +813,7 @@ public class StlFile
 
                 // Fix small radii
                 //pgl = pgl.arcCompensate();
-
+                pgl.svg(e.getKey() + ".svg");
                 CSG2D csgp = pgl.toCSG(Preferences.tiny());
 
                 // We use the plan rectangle of the entire stl object to store the bitmap, even though this slice may be

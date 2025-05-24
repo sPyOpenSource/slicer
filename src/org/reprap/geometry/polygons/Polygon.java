@@ -564,7 +564,7 @@ public class Polygon
             int leng = size();
             for(int i = 0; i < leng; i++)
                     result += Double.toString((point(i)).x()) + "," 
-                                    + Double.toString((point(i)).y());
+                                    + Double.toString((point(i)).y()) + ",";
             result +="\" />";
             return result;
     }

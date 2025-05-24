@@ -57,8 +57,12 @@
 package org.reprap.geometry.polygons;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.reprap.Extruder;
 import org.reprap.geometry.LayerRules;
@@ -593,29 +597,33 @@ public class PolygonList extends ArrayList<Polygon>
 	
     /**
      * Turn into SVG xml
-     * @return 
+     * @param path 
      */
-    public String svg()
+    public void svg(String path)
     {
-            String result = "<?xml version=\"1.0\" standalone=\"no\"?>" +
-            "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"" +
-            "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" +
-            "<svg" +
-            " width=\"" + Double.toString(box.x().length()) + "mm\"" +
-            " height=\""  + Double.toString(box.y().length()) +  "mm\"" +
-            " viewBox=\"" + Double.toString(box.x().low()) +
-            " " + Double.toString(box.y().low()) +
-            " " + Double.toString(box.x().high()) +
-            " " + Double.toString(box.y().high()) + "\"" +
-            " xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" +
-            " <desc>RepRap polygon list - http://reprap.org</desc>";
+        String result = "<?xml version=\"1.0\" standalone=\"no\"?>\n" +
+        "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n" +
+        "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" +
+        "<svg" +
+        " width=\"" + Double.toString(box.x().length()) + "mm\"" +
+        " height=\""  + Double.toString(box.y().length()) +  "mm\"" +
+        " viewBox=\"" + Double.toString(box.x().low()) +
+        " " + Double.toString(box.y().low()) +
+        " " + Double.toString(box.x().high()) +
+        " " + Double.toString(box.y().high()) + "\"" +
+        " xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">" +
+        " <desc>RepRap polygon list - http://reprap.org</desc>";
 
-            int leng = size();
-            for(int i = 0; i < leng; i++)
-                    result += get(i).svg();
+        int leng = size();
+        for(int i = 0; i < leng; i++)
+                result += get(i).svg();
 
-            result += "</svg>";
-            return result;
+        result += "</svg>";
+        try (PrintWriter out = new PrintWriter(path)) {
+            out.println(result);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PolygonList.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 	
 	/**
