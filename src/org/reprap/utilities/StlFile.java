@@ -72,7 +72,7 @@ import org.reprap.geometry.polyhedra.AllSTLsToBuild.LineSegment;
 
 public class StlFile
 {
-    private static double zTrans = -3500;
+    private static double zTrans = -500;
     private static final int camSpeed = 100;
     private static final boolean DEBUG = false;     // Sets mode to Debug: outputs every action done
 
@@ -110,7 +110,7 @@ public class StlFile
   public static void main(String[] args)
   {
         StlFile file = new StlFile();
-        String filename = "/Users/xuyi/Pictures/edf/files/edf120.stl";
+        String filename = "/Users/xuyi/Pictures/3D/edf/files/edf120.stl";
         try {
             Reader reader = new BufferedReader(new FileReader(filename));
             file.setBasePathFromFilename(filename);
@@ -281,7 +281,7 @@ public class StlFile
               System.out.println("Z=" + z);
 
             // We add that vertex to the array of vertex
-            coordList.add(new Point3D(x, y, z));
+            coordArray.add(new Point3D(x, y, z));
             readEOL(parser);
 	  } else {
               System.err.println("Format Error: expecting coordinate on line " + parser.lineno());
@@ -763,10 +763,9 @@ public class StlFile
                 double z_max = Math.max(points[2], points[5]);
                 z_max = Math.max(z_max, points[8]);
                 i = 0;
-                double step = 4;
+                double step = 0.2;
                 double r = 0.4;
                 for(int j = (int)(z_min/step); j <= (int)(z_max/step); j++){
-                    //System.out.println(j);
                     double z = j * step;
                     LineSegment line = test.addEdge(
                             new Point3D(points[0], points[1], points[2]), 
@@ -780,7 +779,8 @@ public class StlFile
                         mesh.getFaces().addAll(faces);
                         MeshView meshView = new MeshView();
                         meshView.setMesh(mesh);
-                        //group.getChildren().add(meshView);
+                        group.getChildren().add(meshView);
+                        if(true) break;
                         Sphere ball1 = new Sphere(r);
                         ball1.setTranslateX(line.a.x());
                         ball1.setTranslateY(line.a.y());
@@ -798,7 +798,7 @@ public class StlFile
                         Line lines = new Line(line.a.x(), line.a.y(), line.b.x(), line.b.y()); //instantiating Line class
                         lines.setTranslateZ(z);
                         lines.setStrokeWidth(r);
-                        group.getChildren().add(lines);
+                        //group.getChildren().add(lines);
                     }
                 }
             }
@@ -853,6 +853,8 @@ public class StlFile
     camera.setFarClip(Integer.MAX_VALUE);
     camera.setNearClip(0.1);
     scene.setCamera(camera);
+    scene.getCamera().setTranslateX(100);
+    scene.getCamera().setTranslateY(100);
     scene.setOnScroll((ScrollEvent event) -> {
         zTrans += event.getDeltaY() * (zTrans / -50);
     });

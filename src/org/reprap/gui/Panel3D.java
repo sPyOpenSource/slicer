@@ -28,8 +28,8 @@ abstract public class Panel3D extends Application {
 	// What follows are defaults.  These values should be overwritten from
 	// the reprap.properties file.
 	
-	protected String wv_location = "/Users/xuyi/Pictures/3D/edf/files/edf120.stl";
-
+	//protected String wv_location = "/Users/xuyi/Pictures/3D/edf/files/edf120.stl";
+protected String wv_location = "/Users/xuyi/Downloads/mendel-base.stl";
 	// Translate and zoom scaling factors
 	
 	protected double mouse_tf = 50;

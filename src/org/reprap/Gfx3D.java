@@ -23,8 +23,6 @@ import org.reprap.utilities.StlFile;
 import org.reprap.utilities.SvgFileParser;
 
 public class Gfx3D extends Application {
-    private static double zTrans = -3500;
-    private static final int camSpeed = 100;
     
     public static void main(String[] args) {
         launch(args);
@@ -38,18 +36,14 @@ public class Gfx3D extends Application {
            return;
         }
 
-        Camera camera = new PerspectiveCamera(true);
-        camera.setFarClip(Integer.MAX_VALUE);
-        camera.setNearClip(0.1);
-
         try {
             StlFile file = new StlFile();
             GCode reader = new GCode("/Users/xuyi/Source/GCode/test.gcode");
             SvgFileParser parser = new SvgFileParser();
             //Scene scene = reader.viewer();
             //Scene scene = file.load("/Users/xuyi/Pictures/3D/edf/files/edf120.stl");
-            Scene scene = parser.buildScene("8.svg");
-            scene.setCamera(camera);
+            Scene scene = file.load("/Users/xuyi/Downloads/mendel-base.stl");
+            //Scene scene = parser.buildScene("8.svg");
             
             primaryStage.setScene(scene);
         } catch (FileNotFoundException ex) {
@@ -60,4 +54,5 @@ public class Gfx3D extends Application {
 
         primaryStage.show();
     }
+    
 }

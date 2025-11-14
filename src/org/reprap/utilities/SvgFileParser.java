@@ -3,7 +3,6 @@ package org.reprap.utilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Point3D;
@@ -85,14 +84,14 @@ public class SvgFileParser {
                     String[] points = polygonElement.getAttribute("points").split(" ");
                     double[] p = new double[points.length * 2];
                     for(int i = 0; i < points.length; i++){
-                        Sphere ball1 = new Sphere(2);
+                        Sphere ball1 = new Sphere(0.5);
                         String[] xy = points[i].split(",");
                         p[i * 2] = Double.parseDouble(xy[0]);
                         p[i * 2 + 1] = Double.parseDouble(xy[1]);
                         ball1.translateXProperty().set(Double.parseDouble(xy[0]));
                         ball1.translateYProperty().set(Double.parseDouble(xy[1]));
-                        ball1.translateZProperty().set(0);
-                        //group.getChildren().add(ball1);
+                        ball1.translateZProperty().set(j);
+                        group.getChildren().add(ball1);
                     }
                     Polygon polygon = new Polygon(p);
                     polygon.setTranslateZ(j);

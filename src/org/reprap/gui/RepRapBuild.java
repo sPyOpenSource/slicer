@@ -165,56 +165,56 @@ class MaterialRadioButtons extends JPanel {
             jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
             copies = new JTextField("1");
 	    copies.setSize(20, 10);
-		copies.setHorizontalAlignment(SwingConstants.CENTER);
-		radioPanel.add(copies);
-		
-		JLabel jLabel1 = new JLabel();
-		radioPanel.add(jLabel1);
-		jLabel1.setText(" Select the material for the object(s): ");
-		jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
-		
-		try
-		{
-			names = Preferences.allMaterials();
-			String matname = att.getMaterial();
-			if(matname == null)
-				matname = "";
-			int matnumber = -1;
-			for(int i = 0; i < names.length; i++)
-			{
-                            if(matname.contentEquals(names[i]))
-				matnumber = i;
-                            JRadioButton b = new JRadioButton(names[i]);
-                            b.setActionCommand(names[i]);
-                            b.addActionListener((ActionEvent e) -> {
-                                att.setMaterial(e.getActionCommand());
-                            });
-                            if(i == matnumber)
-		        	b.setSelected(true);
-                            bGroup.add(b);
-                            radioPanel.add(b);
-			}
-			if(matnumber < 0)
-			{
-				att.setMaterial(names[0]);
-				JRadioButton b = (JRadioButton)bGroup.getElements().nextElement();
-				b.setSelected(true);
-			} else
-				copies.setEnabled(false);  // If it's already loaded, don't make multiple copies (FUTURE: why not...?)
-			
-			JButton okButton = new JButton();
-			radioPanel.add(okButton);
-			okButton.setText("OK");
-			okButton.addActionListener((ActionEvent evt) -> {
-                            OKHandler();
+            copies.setHorizontalAlignment(SwingConstants.CENTER);
+            radioPanel.add(copies);
+
+            JLabel jLabel1 = new JLabel();
+            radioPanel.add(jLabel1);
+            jLabel1.setText(" Select the material for the object(s): ");
+            jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
+
+            try
+            {
+                    names = Preferences.allMaterials();
+                    String matname = att.getMaterial();
+                    if(matname == null)
+                            matname = "";
+                    int matnumber = -1;
+                    for(int i = 0; i < names.length; i++)
+                    {
+                        if(matname.contentEquals(names[i]))
+                            matnumber = i;
+                        JRadioButton b = new JRadioButton(names[i]);
+                        b.setActionCommand(names[i]);
+                        b.addActionListener((ActionEvent e) -> {
+                            att.setMaterial(e.getActionCommand());
                         });
-			
-			add(radioPanel, BorderLayout.LINE_START);
-			setBorder(BorderFactory.createEmptyBorder(20,20,20,20));	
-		} catch (IOException ex)
-		{
-			Debug.e(ex.toString());
-		}	
+                        if(i == matnumber)
+                            b.setSelected(true);
+                        bGroup.add(b);
+                        radioPanel.add(b);
+                    }
+                    if(matnumber < 0)
+                    {
+                            att.setMaterial(names[0]);
+                            JRadioButton b = (JRadioButton)bGroup.getElements().nextElement();
+                            b.setSelected(true);
+                    } else
+                            copies.setEnabled(false);  // If it's already loaded, don't make multiple copies (FUTURE: why not...?)
+
+                    JButton okButton = new JButton();
+                    radioPanel.add(okButton);
+                    okButton.setText("OK");
+                    okButton.addActionListener((ActionEvent evt) -> {
+                        OKHandler();
+                    });
+
+                    add(radioPanel, BorderLayout.LINE_START);
+                    setBorder(BorderFactory.createEmptyBorder(20,20,20,20));	
+            } catch (IOException ex)
+            {
+                    Debug.e(ex.toString());
+            }	
 	}
 	
 	public static void OKHandler()
@@ -253,16 +253,16 @@ class MaterialRadioButtons extends JPanel {
     	if(lastPicked == null)
     		return;
     	int index = -1;
-		for(int i = 0; i < r.getSTLs().size(); i++)
-		{
-			if(r.getSTLs().get(i) == lastPicked)
-			{
-				index = i;
-				break;
-			}
-		}
-		if (index >= 0) 
-			createAndShowGUI(a, r, index, r.getSTLs().get(index).volume());
+        for(int i = 0; i < r.getSTLs().size(); i++)
+        {
+                if(r.getSTLs().get(i) == lastPicked)
+                {
+                        index = i;
+                        break;
+                }
+        }
+        if (index >= 0) 
+                createAndShowGUI(a, r, index, r.getSTLs().get(index).volume());
     }
 }
 
@@ -388,7 +388,6 @@ class ScaleXYZ extends JPanel {
  * working volume, allows you to put STL-file objects in it, move them about
  * to arrange them, and build them in the machine.
  */
-
 public class RepRapBuild extends Panel3D implements MouseListener {
 	
 	private static final long serialVersionUID = 1L;
