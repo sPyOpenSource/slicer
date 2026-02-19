@@ -1029,12 +1029,15 @@ public class GCode
                 }
                 //System.out.println(line);
             }
+            int i = 0;
             for(Point3D p : points){
-                Sphere ball = new Sphere(2);
+                Sphere ball = new Sphere(1);
                 ball.translateXProperty().set(p.getX());
                 ball.translateYProperty().set(p.getY());
                 ball.translateZProperty().set(p.getZ());
-                root.getChildren().add(ball);
+                if(i%15==0)
+                    root.getChildren().add(ball);
+                i++;
             }
             Scene scene = new Scene(root, 800, 600, true, SceneAntialiasing.BALANCED);
             scene.setFill(Color.GREEN);
