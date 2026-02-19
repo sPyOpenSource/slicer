@@ -24,7 +24,7 @@ import assets.Assets;
 
 abstract public class Panel3D extends Application {
 	private static final long serialVersionUID = 1L;
-        private Assets assets = new Assets();
+        private final Assets assets = new Assets();
         
 	//-------------------------------------------------------------
 	
@@ -32,7 +32,7 @@ abstract public class Panel3D extends Application {
 	// the reprap.properties file.
 	
 	//protected String wv_location = "/Users/xuyi/Pictures/3D/edf/files/edf120.stl";
-protected String wv_location = "/assets/stl/mendel-base.stl";
+        protected String wv_location = "/assets/stl/mendel-base.stl";
 	// Translate and zoom scaling factors
 	
 	protected double mouse_tf = 50;
@@ -92,8 +92,8 @@ protected String wv_location = "/assets/stl/mendel-base.stl";
 	
 	public void refreshPreferences()
 	{		
-		// Set everything up from the properties file
-		// All this needs to go into Preferences.java
+            // Set everything up from the properties file
+            // All this needs to go into Preferences.java
             try
             {
                 //wv_location = Preferences.getBasePath();
@@ -130,7 +130,7 @@ protected String wv_location = "/assets/stl/mendel-base.stl";
 		Debug.e("Refresh Panel3D preferences: " + ex.toString());
             }
 				
-		// End of stuff from the preferences file
+            // End of stuff from the preferences file
 	}
 
 	protected void initialise(Stage primaryStage) throws Exception 

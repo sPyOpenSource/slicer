@@ -48,7 +48,6 @@ import org.reprap.utilities.RrGraphics;
  *  
  */
 
-
 public class Main {
     public static Main gui;
     public static RrDeleteOnExit ftd = null;

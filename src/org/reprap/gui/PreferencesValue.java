@@ -1,4 +1,5 @@
 package org.reprap.gui;
+
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultButtonModel;
 import javax.swing.JPanel;
@@ -7,12 +8,9 @@ import javax.swing.JTextField;
 import java.awt.Component;
 import java.awt.GridLayout;
 
-
 public class PreferencesValue {
-	
 	private JTextField textfieldValue = null;
 	private BooleanChoice boolchoiceValue = null;
-	
 	
 	public class BooleanChoice extends JPanel {
 		private boolean userchoice;
@@ -22,7 +20,6 @@ public class PreferencesValue {
 		
 		public BooleanChoice(Boolean boolvalue)
 		{
-			
 			
 			if(boolvalue == true)
 				trueButton   = new JRadioButton("True"  , true);
@@ -52,10 +49,10 @@ public class PreferencesValue {
 			
                     this.userchoice = bgroup.isSelected( (DefaultButtonModel)trueButton.getModel() );
 			
-			if(this.userchoice)
-				return "true";
-			else
-				return "false";
+                    if(this.userchoice)
+                            return "true";
+                    else
+                            return "false";
 		}
 		
 		public void setValue(boolean boolvalue)

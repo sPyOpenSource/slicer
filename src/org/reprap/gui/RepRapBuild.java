@@ -1,60 +1,59 @@
 /*
- 
- RepRap
- ------
- 
- The Replicating Rapid Prototyper Project
- 
- 
- Copyright (C) 2006
- Adrian Bowyer & The University of Bath
- 
- http://reprap.org
- 
- Principal author:
- 
- Adrian Bowyer
- Department of Mechanical Engineering
- Faculty of Engineering and Design
- University of Bath
- Bath BA2 7AY
- U.K.
- 
- e-mail: A.Bowyer@bath.ac.uk
- 
- RepRap is free; you can redistribute it and/or
- modify it under the terms of the GNU Library General Public
- Licence as published by the Free Software Foundation; either
- version 2 of the Licence, or (at your option) any later version.
- 
- RepRap is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Library General Public Licence for more details.
- 
- For this purpose the words "software" and "library" in the GNU Library
- General Public Licence are taken to mean any and all computer programs
- computer files data results documents and other copyright information
- available from the RepRap project.
- 
- You should have received a copy of the GNU Library General Public
- Licence along with RepRap; if not, write to the Free
- Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA,
- or see
- 
- http://www.gnu.org/
- 
- =====================================================================
- 
- This program loads STL files of objects, orients them, and builds them
- in the RepRap machine.
- 
- It is based on one of the open-source examples in Daniel Selman's excellent
- Java3D book, and his notice is immediately below.
- 
- First version 2 April 2006
- This version: 16 April 2006
- 
+ * 
+ * RepRap
+ * ------
+ *
+ * The Replicating Rapid Prototyper Project
+ *
+ *
+ * Copyright (C) 2006
+ * Adrian Bowyer & The University of Bath
+ *
+ * http://reprap.org
+ *
+ * Principal author:
+ *
+ * Adrian Bowyer
+ * Department of Mechanical Engineering
+ * Faculty of Engineering and Design
+ * University of Bath
+ * Bath BA2 7AY
+ * U.K.
+ *
+ * e-mail: A.Bowyer@bath.ac.uk
+ *
+ * RepRap is free; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * Licence as published by the Free Software Foundation; either
+ * version 2 of the Licence, or (at your option) any later version.
+ *
+ * RepRap is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public Licence for more details.
+ *
+ * For this purpose the words "software" and "library" in the GNU Library
+ * General Public Licence are taken to mean any and all computer programs
+ * computer files data results documents and other copyright information
+ * available from the RepRap project.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * Licence along with RepRap; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA,
+ * or see
+ *
+ * http://www.gnu.org/
+ *
+ * =====================================================================
+ *
+ * This program loads STL files of objects, orients them, and builds them
+ * in the RepRap machine.
+ *
+ * It is based on one of the open-source examples in Daniel Selman's excellent
+ * Java3D book, and his notice is immediately below.
+ *
+ * First version 2 April 2006
+ * This version: 16 April 2006 
  */
 
 /*******************************************************************************
@@ -211,8 +210,7 @@ class MaterialRadioButtons extends JPanel {
 
                     add(radioPanel, BorderLayout.LINE_START);
                     setBorder(BorderFactory.createEmptyBorder(20,20,20,20));	
-            } catch (IOException ex)
-            {
+            } catch (IOException ex) {
                     Debug.e(ex.toString());
             }	
 	}
