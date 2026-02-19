@@ -1,12 +1,12 @@
 package test;
 
 import javafx.geometry.Point3D;
+import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
 
 import org.reprap.Attributes;
-import org.testng.annotations.Test;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild;
 import org.reprap.geometry.polyhedra.AllSTLsToBuild.LineSegment;
-import static org.testng.Assert.assertEquals;
 
 /**
  *

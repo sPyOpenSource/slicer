@@ -44,23 +44,19 @@ import org.reprap.utilities.RrGraphics;
  * 
  * section overview Overview
  * 
- * Please see http://reprap.org/ for more details.
+ * Please see https://reprap.org/ for more details.
  *  
  */
 
 
 public class Main {
-	
     public static Main gui;
-    
-    private static final int localNodeNumber = 0;
-	
     public static RrDeleteOnExit ftd = null;
-    
+
+    private static final int localNodeNumber = 0;
     private static boolean repRapAttached = false;
     
     private Producer producer = null;
-    
     private Printer printer = null;
     
     // Window to walk the file tree
@@ -74,6 +70,7 @@ public class Main {
     
     private JMenuItem cancelMenuItem;
     private JMenuItem produceProduceB;
+    private JSplitPane panel;
 
     public void setSegmentPause(boolean state) {
         segmentPause.setState(state);
@@ -86,9 +83,7 @@ public class Main {
     public void clickCancel() {
         cancelMenuItem.doClick();
     }
-    
-    private JSplitPane panel;
-	
+    	
     public Main() {
         ftd = new RrDeleteOnExit();
         chooser = new JFileChooser();
@@ -515,10 +510,8 @@ public class Main {
         return repRapAttached;
     }
 
-
     public RrGraphics getGraphics()
     {
         return builder.getRrGraphics();
     }
-
 }

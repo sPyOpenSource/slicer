@@ -1,10 +1,12 @@
 package org.reprap.utilities;
 
+import assets.Assets;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import java.io.Reader;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
@@ -78,6 +80,7 @@ public class StlFile
 
     // Maximum length (in chars) of basePath
     private static final int MAX_PATH_LENGTH = 1024;
+    private Assets assets = new Assets();
 
     // Global variables
     private int flag;                   // Needed cause implements Loader
@@ -614,11 +617,16 @@ public class StlFile
    */
   public Scene load(String filename) throws FileNotFoundException
   {
-    setBasePathFromFilename(filename);
-    setFileName(filename); // For binary files
+    File f = new File(filename);
+    if(f.exists() && !f.isDirectory()) {
+        setBasePathFromFilename(filename);
+        setFileName(filename); // For binary files
 
-    Reader reader = new BufferedReader(new FileReader(filename));
-    return load(reader);
+        Reader reader = new BufferedReader(new FileReader(filename));
+        return load(reader);
+    } else {
+        return load(assets.getURL(filename));
+    }
   } // End of load(String)
 
    /**

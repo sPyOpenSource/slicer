@@ -20,16 +20,19 @@ import javafx.scene.paint.PhongMaterial;
 import org.jogamp.vecmath.Vector3d;
 import org.reprap.geometry.polyhedra.STLObject;
 import org.reprap.utilities.Debug;
+import assets.Assets;
 
 abstract public class Panel3D extends Application {
 	private static final long serialVersionUID = 1L;
+        private Assets assets = new Assets();
+        
 	//-------------------------------------------------------------
 	
 	// What follows are defaults.  These values should be overwritten from
 	// the reprap.properties file.
 	
 	//protected String wv_location = "/Users/xuyi/Pictures/3D/edf/files/edf120.stl";
-protected String wv_location = "/Users/xuyi/Downloads/mendel-base.stl";
+protected String wv_location = "/assets/stl/mendel-base.stl";
 	// Translate and zoom scaling factors
 	
 	protected double mouse_tf = 50;

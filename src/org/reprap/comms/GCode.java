@@ -41,7 +41,7 @@ public class GCode
     // Codes for responses from the machine
     // A positive number returned is a request for that line number
     // to be resent.
-    private static double zTrans = -3500;
+    private static double zTrans = -1000;
     private static final int camSpeed = 100;
     private static final long shutDown  = -3;
     private static final long allSentOK = -1;
@@ -992,10 +992,10 @@ public class GCode
         Group root = new Group();
         String line;
         try {
+            double x = 0, y = 0, z = 0;
             while ((line = fileInStream.readLine()) != null)
             {
                 if(line.startsWith("G0 ")){
-                    double x = 0, y = 0, z = 0;
                     for(String command:line.split(" ")){
                         if(command.startsWith("X")){
                             x = Double.parseDouble(command.substring(1));
@@ -1011,7 +1011,6 @@ public class GCode
                     points.add(point);
                 }
                 if(line.startsWith("G1 ")){
-                    double x = 0, y = 0, z = 0;
                     line = line.split(";")[0];
                     for(String command:line.split(" ")){
                         if(command.startsWith("X")){
@@ -1026,14 +1025,15 @@ public class GCode
                     }
                     Point3D point = new Point3D(x,y,z);
                     points.add(point);
+                    //System.out.println(line);
                 }
-                System.out.println(line);
+                //System.out.println(line);
             }
             for(Point3D p : points){
                 Sphere ball = new Sphere(5);
-                ball.translateXProperty().set(p.getX() * 50);
-                ball.translateYProperty().set(p.getY() * 50);
-                ball.translateZProperty().set(p.getZ() * 50);
+                ball.translateXProperty().set(p.getX());
+                ball.translateYProperty().set(p.getY());
+                ball.translateZProperty().set(p.getZ());
                 root.getChildren().add(ball);
             }
             Scene scene = new Scene(root, 800, 600, true, SceneAntialiasing.BALANCED);

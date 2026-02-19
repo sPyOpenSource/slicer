@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package org.reprap;
 
 import java.io.FileNotFoundException;
@@ -13,16 +9,16 @@ import javafx.stage.Stage;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
-
-import javafx.scene.Camera;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 
 import org.reprap.comms.GCode;
 import org.reprap.utilities.StlFile;
 import org.reprap.utilities.SvgFileParser;
+import assets.Assets;
 
 public class Gfx3D extends Application {
+    
+    private final Assets assets = new Assets();
     
     public static void main(String[] args) {
         launch(args);
@@ -40,10 +36,10 @@ public class Gfx3D extends Application {
             StlFile file = new StlFile();
             GCode reader = new GCode("/Users/xuyi/Source/GCode/test.gcode");
             SvgFileParser parser = new SvgFileParser();
-            //Scene scene = reader.viewer();
+            //Scene scene = reader.buildScene();
             //Scene scene = file.load("/Users/xuyi/Pictures/3D/edf/files/edf120.stl");
-            Scene scene = file.load("/Users/xuyi/Downloads/mendel-base.stl");
-            //Scene scene = parser.buildScene("8.svg");
+            //Scene scene = file.load(assets.getURL("/assets/stl/mendel-base.stl"));
+            Scene scene = parser.buildScene("8.svg");
             
             primaryStage.setScene(scene);
         } catch (FileNotFoundException ex) {
