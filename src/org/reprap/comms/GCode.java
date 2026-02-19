@@ -1030,7 +1030,7 @@ public class GCode
                 //System.out.println(line);
             }
             for(Point3D p : points){
-                Sphere ball = new Sphere(5);
+                Sphere ball = new Sphere(2);
                 ball.translateXProperty().set(p.getX());
                 ball.translateYProperty().set(p.getY());
                 ball.translateZProperty().set(p.getZ());

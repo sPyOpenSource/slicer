@@ -387,7 +387,6 @@ public class PCB {
 
 		if(line.startsWith("%FSLA"))
 		{
-
 			formatX = line.substring(6, 8);
 			formatY = line.substring(9, 11);
 			Debug.d("Format X: " + formatX + " Format Y: " + formatY);

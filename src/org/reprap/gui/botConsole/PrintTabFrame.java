@@ -426,7 +426,7 @@ private void pcbButtonActionPerformed(java.awt.event.ActionEvent evt)
 		return;
 	}
 	PCB p = new PCB(inputGerber, inputDrill, outputGCode, pcbp);
-                     p.writeGCodes();
+        p.writeGCodes();
 	parentBotConsoleFrame.resumePolling();
 }
 
@@ -440,24 +440,22 @@ private void layerPauseCheckActionPerformed(java.awt.event.ActionEvent evt) {//G
 }//GEN-LAST:event_layerPauseCheckActionPerformed
 
 private void selectorRadioButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectorRadioButtonMousePressed
+    @SuppressWarnings("unused")
+    String machine = "simulator";
+    boolean closeMessage = false;
 
-	@SuppressWarnings("unused")
-	String machine = "simulator";
-	boolean closeMessage = false;
+    machine = org.reprap.Preferences.RepRapMachine();
 
-	machine = org.reprap.Preferences.RepRapMachine();
-
-	try {
-		org.reprap.Preferences.saveGlobal();
-	} catch (IOException e) {
-		Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, e);
-	}
-	printer.refreshPreferences();
-	if(!closeMessage){
-		return;
-        }
-	JOptionPane.showMessageDialog(null, "As you have changed the type of RepRap machine you are using,\nyou will have to exit this program and run it again.");
-
+    try {
+            org.reprap.Preferences.saveGlobal();
+    } catch (IOException e) {
+            Logger.getLogger(PrintTabFrame.class.getName()).log(Level.SEVERE, null, e);
+    }
+    printer.refreshPreferences();
+    if(!closeMessage){
+            return;
+    }
+    JOptionPane.showMessageDialog(null, "As you have changed the type of RepRap machine you are using,\nyou will have to exit this program and run it again.");
 }//GEN-LAST:event_selectorRadioButtonMousePressed
 
 
